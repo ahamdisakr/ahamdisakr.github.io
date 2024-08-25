@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>Ahmed Hamdi Sakr | Assistant Professor, UWindsor</title>
+
+	<meta charset="utf-8">
+	<meta content='text/html; charset=utf-8' http-equiv='Content-Type'>
+	<meta http-equiv='X-UA-Compatible' content='IE=edge'>
+	<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0'>
+	<meta name="description" content="Assistant Professor, UWindsor">
+	<meta property="og:description" content="Assistant Professor, UWindsor">
+	<meta name="author" content="Ahmed Hamdi Sakr">
+	<link rel="stylesheet" type="text/css" href="style.css">
+	<link rel="shortcut icon" type="image/x-icon" href="images/icon.ico">
+	<link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css">
+</head>
+
+
+<style>
+	table {
+		width: 100%;
+	}
+</style>
+
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+<script language="JavaScript" type="text/javascript">
+
+	// question templates
+	var txtMultipleChoice = "1. Which of the following is a prime number?\na) 4\n*b) 5\nc) 6";
+	var txtMultipleAnswer = "1. Which of the following is a prime number?\n*a) 2\n*b) 3\nd) 4\n*e) 5\nf) 6\n*g) 7";
+	var txtTrueFalse = "1. 3 is a prime number.\nTrue";
+	var txtEssay = "1. Tell me your life story.";
+	var txtShort = "short 1. Two plus two equals _____.\na. four\nb. 4";
+	var txtMatching = "match 1. Match the number with its spelling.\na. 3 / three\nb. 1 / one\nc. 12 / twelve\nd. 4 / four";
+	var txtOrdering = "order 1. Ordering the following planets according to distance from the sun, shortest to longest.\nMercury\nEarth\nMars\nJupiter\nNeptune";
+
+	var allQuestions = "";
+	var numQuestions = 0;
+	var csvFile = "";
+	var error = false;
+	var qIndex = 0;
+	var errorList = new Array();
+	var errorIndexes = new Array();
+	var questionsArray = new Array();
+
+	// add question to quiz from default drop down list
+	function addQuestion() {
+		var questionList = document.getElementById("sampleQuestionTypes");
+		var selectedQuestion = questionList.value;
+
+		if (selectedQuestion == 0) {
+			document.getElementById("quiz").value += txtMultipleChoice + "\n\n";
+		} else if (selectedQuestion == 1) {
+			document.getElementById("quiz").value += txtMultipleAnswer + "\n\n";
+		} else if (selectedQuestion == 2) {
+			document.getElementById("quiz").value += txtTrueFalse + "\n\n";
+		} else if (selectedQuestion == 3) {
+			document.getElementById("quiz").value += txtEssay + "\n\n";
+		} else if (selectedQuestion == 4) {
+			document.getElementById("quiz").value += txtShort + "\n\n";
+		} else if (selectedQuestion == 5) {
+			document.getElementById("quiz").value += txtMatching + "\n\n";
+		} else if (selectedQuestion == 6) {
+			document.getElementById("quiz").value += txtOrdering + "\n\n";
+		}
+
+		// remove old textareas if they exists
+		for (i = 0; i < numQuestions; i++) {
+			var element = document.getElementById("question" + i);
+			if (typeof (element) != 'undefined' && element != null) {
+				element.remove();
+			}
+		}
+		numQuestions = 0;
+
+		document.getElementById("panelDownload").style.display = "none";
+		document.getElementById("lblError").style.display = "none";				// remove error alert
+		document.getElementById("quiz").style.display = "block";				// show quiz entry text area
+		questionsArray = [];	// remove old questions
+
+	}
+
+	// reset quiz
+	function clearQuestions() {
+		document.getElementById("quiz").value = "";
+		document.getElementById("panelDownload").style.display = "none";
+		document.getElementById("quiz").style.display = "block";				// show quiz entry text area
+		document.getElementById("lblError").style.display = "none";				// remove error alert
+		questionsArray = [];	// remove old questions
+
+		// remove old textareas if they exists
+		for (i = 0; i < numQuestions; i++) {
+			var element = document.getElementById("question" + i);
+			if (typeof (element) != 'undefined' && element != null) {
+				element.remove();
+			}
+		}
+		numQuestions = 0;
+	}
+
+	// check questions and create quiz file to download
+	function generateQuestions() {
+		document.getElementById("panelDownload").style.display = "none";
+		csvFile = "";			// start new csv file
+		error = false;			// reset error
+		errorList = [];
+		errorIndexes = [];
+
+		if (numQuestions == 0) {		// first time generating/checking questions
+			allQuestions = document.getElementById("quiz").value;
+			allQuestions = fixLastQuestion(allQuestions);			// add "\n\n" of last question if not there
+			questionsArray = allQuestions.split('\n\n');			// split into individual questions
+			numQuestions = questionsArray.length - 1 				// don't count empty element at end
+		} else {
+			document.getElementById("quiz").value = "";
+			for (qIndex = 0; qIndex < numQuestions; qIndex++) {
+				questionsArray[qIndex] = document.getElementById("question" + qIndex).value;	// update questions array from each question textarea
+			}
+		}
+
+		document.getElementById("lblDownload").innerHTML = "Test Generated with " + numQuestions + " Questions<br />";
+
+		document.getElementById("quiz").value = "";
+		allQuestions = "";
+
+		for (qIndex = 0; qIndex < numQuestions; qIndex++) {		// check type of each question
+			checkQuestion(questionsArray[qIndex]);
+
+			var element = document.getElementById("question" + qIndex);		// remove old textarea if it already exists
+			if (typeof (element) != 'undefined' && element != null) {
+				element.remove();
+			}
+
+			// create individual textarea for each question
+			document.getElementById("panelQuiz").innerHTML += "<textarea name='question" + qIndex + "' " +
+				"rows='2' cols='20' id='question" + qIndex +
+				"' title='Valid question.' style='background-color:#C8FFC8;height:100px;width:100%;'>" +
+				questionsArray[qIndex] + "</textarea>";
+		}
+
+		if (error) {	// update question textareas if they have errors
+			document.getElementById("lblError").style.display = "block";			// error alert
+			for (m = 0; m < errorIndexes.length; m++) {
+				document.getElementById("question" + errorIndexes[m]).style.backgroundColor = "#FFC8C8";
+				document.getElementById("question" + errorIndexes[m]).title = errorList[m];		// error to show on mouse hover
+			}
+		} else {		// no errors
+			document.getElementById("panelDownload").style.display = "block";	// allow download
+			document.getElementById("lblError").style.display = "none";			// remove error alert
+		}
+
+		document.getElementById("quiz").style.display = "none";				// hide quiz entry text area
+		document.getElementById("quiz").value = allQuestions;				// update quiz form
+	}
+
+	// check the question type and validity
+	function checkQuestion(question) {
+		var lines = question.split("\n");		// get each line of the question
+		var numLines = lines.length;
+
+		for (h = 0; h < numLines; h++) {	// remove white space from start and end of each line
+			lines[h] = lines[h].trim();
+			allQuestions += lines[h] + "\n"; // reassemble questions string for quiz form
+		}
+		allQuestions += "\n"; // extra line feed at end of question, question seperator
+
+		var questionREGEX = /^[0-9]{1,3}\.(?=.*[a-zA-Z]).+/;	// check for question formatting, i.e. "1. what is next?" is correct
+
+		var isQuestion = questionREGEX.test(lines[0]);
+
+		var isKeyword = questionREGEX.test(lines[0].substring(6, lines[0].length)) // check for question formatting, i.e. "short 1. what is next ___" is correct
+
+		if (isQuestion) {	// standard question valid
+			if (numLines == 1) {															// essay question
+				essay(lines[0]); // write to csv file
+			} else if (numLines == 2) {														// true/false
+				if (lines[1].toLowerCase() == "true" || lines[1].toLowerCase() == "false") {
+					trueFalse(question); // write to csv file
+				} else {
+					recordError("Only one answer was found and it was not true or false", qIndex);
+				}
+			} else if (numLines > 2) {														// multiple choice or multiple answer
+				var answer1REGEX = /^[a-zA-Z]\)[a-zA-Z0-9\s]/;	// starts with "a)"
+				var answer2REGEX = /^\*[a-zA-Z]\)[a-zA-Z0-9\s]/;	// starts with "*a)"
+
+				for (y = 1; y < numLines; y++) {
+					var test1 = answer1REGEX.test(lines[y]);
+					var test2 = answer2REGEX.test(lines[y]);
+
+					if (test1 == false && test2 == false) {
+						recordError("This question has an invalid answer: " + lines[y], qIndex);
+						return;		// exit checkQuestion() function on error
+					}
+				}
+
+				// check if one right answer or multiple right answers
+				var count = 0;
+				for (z = 1; z < numLines; z++) {	// start at second line
+					var a = lines[z].indexOf("*");
+					if (a == 0) {
+						count++;
+					}
+				}
+
+				if (count == 0) {
+					recordError("No correct answers were found for this question.", qIndex);
+				} else if (count == 1) {														// multiple choice
+					multipleChoice(question);	 // write to csv file
+				} else if (count > 1) {														// multiple answer
+					multipleAnswer(question);	 // write to csv file
+				}
+			}
+		} else if (questionREGEX.test(lines[0].substring(6, lines[0].length))) {		// check question after keyword short, order, match
+			var keyword = lines[0].substring(0, 5).toLowerCase();
+			var shortREGEX = /^[a-zA-Z]\.[a-zA-Z0-9\s]/;							// starts with "a."
+			var matchREGEX = /^[a-zA-Z]\.[a-zA-Z0-9\s]+\/[a-zA-Z0-9\s]+/;			// starts with "a." and contains "/"
+
+			if (keyword == "order") {
+				ordering(question);
+			} else if (numLines > 1) {
+				if (keyword == "short") {											// Short answer
+					for (j = 1; j < numLines; j++) {
+						if (!shortREGEX.test(lines[j])) {		// check answer starts with "a."
+							recordError("This question has an invalid answer: " + lines[j], qIndex);
+							return;		// exit checkQuestion() function on error
+						}
+					}
+					shortAnswer(question);	 // write to csv file
+				} else if (keyword == "match") {									// matching
+					for (n = 1; n < numLines; n++) {
+						if (!matchREGEX.test(lines[n])) {		// check answer starts with "a." and contains "/"
+							recordError("This question has an invalid answer: " + lines[n], qIndex);
+							return;		// exit checkQuestion() function on error
+						}
+					}
+					matching(question);	 // write to csv file
+				}
+			} else {
+				recordError("This question has no answer.", qIndex);
+			}
+		} else if (lines[0].length == 2 && numLines > 1) {							// alternative methods for question creation
+			var altQuestion = lines[0].toLowerCase();
+
+			if (altQuestion == "bl" || altQuestion == "mc" || altQuestion == "ma") {
+				if (numLines == 2) {
+					recordError("Question requires at least one answer.", qIndex);
+				} else if (numLines > 2) {
+					if (altQuestion == "bl") {
+						shortAnswerAlternative(question);	 // write to csv file
+					} else {
+						// check if atleast one right answer
+						var count2 = 0;
+						for (k = 2; k < numLines; k++) {	// start at 3rd
+							var w = lines[k].indexOf("*");
+							if (w == 0) {
+								count2++;
+							}
+						}
+
+						if (count2 == 0) {
+							if (altQuestion == "bl") {
+								recordError("Short answer questions must have at least one answer.", qIndex);
+							} else {
+								recordError("Question requires at least one correct answer.", qIndex);
+							}
+						} else {
+							if (altQuestion == "mc") {
+								multipleChoiceAlternative(question);	 // write to csv file
+							} else if (altQuestion == "ma") {
+								multipleAnswerAlternative(question);	 // write to csv file
+							}
+						}
+					}
+				}
+			}
+		} else {																		// incorrect question format
+			recordError("No question present.", qIndex);
+		}
+	}
+
+	// keep track of questions with errors
+	function recordError(errorText, errorIndex) {
+		//errorQuestions.push(errorQuestion);
+		errorList.push(errorText);
+		errorIndexes.push(errorIndex);
+		error = true;
+	}
+
+	// adds "\n" to end of text (last question) for splitting of questions into array
+	function fixLastQuestion(aQ) {
+		var last = aQ.substring(aQ.length - 1, aQ.length);
+		var secLast = aQ.substring(aQ.length - 2, aQ.length - 1);
+
+		if (last != "\n") {
+			aQ = aQ + "\n"
+		}
+
+		if (secLast != "\n") {
+			aQ = aQ + "\n"
+		}
+
+		return aQ;
+	}
+
+	// true/file csv
+	function trueFalse(tfQuestion) {
+		var tfLines = tfQuestion.split("\n");		// get each line of the question
+		var tfQ = tfQuestion.substring((tfLines[0].indexOf(".") + 2), tfLines[0].length);
+		if (tfLines[1].toLowerCase() == "true") {
+			var t = "100";
+			var f = "0";
+		}
+		else {
+			var t = "0";
+			var f = "100";
+		}
+		var tfCSV = "NewQuestion,TF,\n" +
+			"QuestionText,\"" + tfQ + "\",\n" +
+			"TRUE," + t + "\n" +
+			"FALSE," + f + "\n\n";
+		csvFile += tfCSV;
+	}
+
+	// essay csv
+	function essay(eQuestion) {
+		var eQ = eQuestion.substring((eQuestion.indexOf(".") + 2), eQuestion.length);
+		var eCSV = "NewQuestion,WR,\n" +
+			"QuestionText,\"" + eQ + "\",\n" +
+			"AnswerKey, ,\n\n";
+		csvFile += eCSV;
+	}
+
+	// ordering csv
+	function ordering(oQuestion) {
+		var oLines = oQuestion.split("\n");		// get each line of the question
+		var numOLines = oLines.length;
+		var oQ = oLines[0].substring((oLines[0].indexOf(".") + 2), oLines[0].length);
+		var oCSV = "NewQuestion,O,\n" +
+			"QuestionText,\"" + oQ + "\",\n";
+
+		for (x = 1; x < numOLines; x++) {		// add items to order
+			oCSV += "Item,\"" + oLines[x] + "\",\n";
+		}
+		oCSV += "\n"
+		csvFile += oCSV;
+	}
+
+	// multiple choice csv
+	function multipleChoice(mcQuestion) {
+		var mcLines = mcQuestion.split("\n");		// get each line of the question
+		var numMCLines = mcLines.length;
+		var mcQ = mcLines[0].substring((mcLines[0].indexOf(".") + 1), mcLines[0].length).trim();
+		var mcCSV = "NewQuestion,MC,\n" +
+			"QuestionText,\"" + mcQ + "\",\n";
+
+		for (w = 1; w < numMCLines; w++) {
+			var mcA = mcLines[w].substring((mcLines[w].indexOf(")") + 1), mcLines[w].length).trim();
+			if (mcLines[w].indexOf("*") == 0) {
+				mcCSV += "Option,100,\"" + mcA + "\",\n";	// correct answer
+			} else {
+				mcCSV += "Option,0,\"" + mcA + "\",\n";		// incorrect answer
+			}
+		}
+		mcCSV += "\n";
+		csvFile += mcCSV;
+	}
+
+	// multiple choice alternative method csv
+	function multipleChoiceAlternative(mcaQuestion) {
+		var mcaLines = mcaQuestion.split("\n");		// get each line of the question
+		var numMCALines = mcaLines.length;
+		var mcaQ = mcaLines[1].trim();
+		var mcaCSV = "NewQuestion,MC,\n" +
+			"QuestionText,\"" + mcaQ + "\",\n";
+
+		for (r = 2; r < numMCALines; r++) {
+			var mcaA = mcaLines[r].substring((mcaLines[r].indexOf("*") + 1), mcaLines[r].length).trim();
+			if (mcaLines[r].indexOf("*") == 0) {
+				mcaCSV += "Option,100,\"" + mcaA + "\",\n";	// correct answer
+			} else {
+				mcaCSV += "Option,0,\"" + mcaA + "\",\n";		// incorrect answer
+			}
+		}
+		mcaCSV += "\n";
+		csvFile += mcaCSV;
+	}
+
+	// multiple answer csv
+	function multipleAnswer(maQuestion) {
+		var maLines = maQuestion.split("\n");		// get each line of the question
+		var numMALines = maLines.length;
+		var maQ = maLines[0].substring((maLines[0].indexOf(".") + 1), maLines[0].length).trim();
+		var maCSV = "NewQuestion,MS,\n" +
+			"QuestionText,\"" + maQ + "\",\n";
+
+		for (u = 1; u < numMALines; u++) {
+			var maA = maLines[u].substring((maLines[u].indexOf(")") + 1), maLines[u].length).trim();
+			if (maLines[u].indexOf("*") == 0) {
+				maCSV += "Option,1,\"" + maA + "\",\n";	// correct answer
+			} else {
+				maCSV += "Option,0,\"" + maA + "\",\n";		// incorrect answer
+			}
+		}
+		maCSV += "\n";
+		csvFile += maCSV;
+	}
+
+	// multiple answer alternative method csv
+	function multipleAnswerAlternative(maaQuestion) {
+		var maaLines = maaQuestion.split("\n");		// get each line of the question
+		var numMAALines = maaLines.length;
+		var maaQ = maaLines[1].trim();
+		var maaCSV = "NewQuestion,MS,\n" +
+			"QuestionText,\"" + maaQ + "\",\n";
+
+		for (g = 2; g < numMAALines; g++) {
+			var maaA = maaLines[g].substring((maaLines[g].indexOf("*") + 1), maaLines[g].length).trim();
+			if (maaLines[g].indexOf("*") == 0) {
+				maaCSV += "Option,1,\"" + maaA + "\",\n";	// correct answer
+			} else {
+				maaCSV += "Option,0,\"" + maaA + "\",\n";		// incorrect answer
+			}
+		}
+		maaCSV += "\n";
+		csvFile += maaCSV;
+	}
+
+	// matching csv
+	function matching(mQuestion) {
+		var mLines = mQuestion.split("\n");		// get each line of the question
+		var numMLines = mLines.length;
+		var mQ = mLines[0].substring((mLines[0].indexOf(".") + 1), mLines[0].length).trim();
+		var mCSV = "NewQuestion,M,\n" +
+			"QuestionText,\"" + mQ + "\",\n";
+
+		for (v = 1; v < numMLines; v++) {
+			var choice = mLines[v].substring((mLines[v].indexOf(".") + 1), mLines[v].indexOf("/")).trim();
+			var match = mLines[v].substring((mLines[v].indexOf("/") + 1), mLines[v].length).trim();
+			if (choice != "") {
+				mCSV += "Choice,\"" + v + "\",\"" + choice + "\",\n";
+			}
+			mCSV += "Match,\"" + v + "\",\"" + match + "\",\n";
+		}
+		mCSV += "\n";
+		csvFile += mCSV;
+	}
+
+	// Short answer csv
+	function shortAnswer(bQuestion) {
+		var bLines = bQuestion.split("\n");		// get each line of the question
+		var numBLines = bLines.length;
+		var bQ = bLines[0].substring((bLines[0].indexOf(".") + 1), bLines[0].length).trim();
+		var bCSV = "NewQuestion,SA,\n" +
+			"QuestionText,\"" + bQ + "\",\n";
+		for (t = 1; t < numBLines; t++) {
+			var bAnswer = bLines[t].substring((bLines[t].indexOf(".") + 1), bLines[t].length).trim();
+			bCSV += "Answer,100,\"" + bAnswer + "\",\n";
+		}
+		bCSV += "\n";
+		csvFile += bCSV;
+	}
+
+	// Short answer alternative method csv
+	function shortAnswerAlternative(baQuestion) {
+		var baLines = baQuestion.split("\n");		// get each line of the question
+		var numBALines = baLines.length;
+		var baQ = baLines[1].trim();
+		var baCSV = "NewQuestion,SA,\n" +
+			"QuestionText,\"" + baQ + "\",\n";
+		for (s = 2; s < numBALines; s++) {
+			var baAnswer = baLines[s].substring((baLines[s].indexOf(".") + 1), baLines[s].length).trim();
+			baCSV += "Answer,100,\"" + baAnswer + "\",\n";
+		}
+		baCSV += "\n";
+		csvFile += baCSV;
+	}
+
+	// download brightspace csv document
+	function downloadQuestions() {
+		document.getElementById("panelDownload").style.display = "none";
+
+		filename = document.getElementById("txtQuizName").value;
+		if (filename == "") {
+			filename = "brightspaceQuiz.csv";
+		} else {
+			filename = filename.replace(/\s/g, "") + ".csv";
+		}
+
+		var element = document.createElement('a');
+		element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(csvFile));
+		element.setAttribute('download', filename);
+
+		element.style.display = 'none';
+		document.body.appendChild(element);
+
+		element.click();
+
+		document.body.removeChild(element);
+	}
+</script>
+
+<body>
+	<div class="container" id="wrapper">
+		<div class="navbar clearfix">
+            <a href="index.html">Ahmed Hamdi Sakr, Ph.D., SMIEEE</a>
+            <div class="nav-menu">
+                <a href="index.html">Home</a>
+                <a href="research.html">Research</a>
+                <a href="teaching.html">Teaching</a>
+                <a href="services.html">Services</a>
+				<a href="contact.html">Join Us</a>
+            </div>
+        </div>
+
+		<div id="body">
+			<h2>Brightspace Quiz Generator</h2>
+			<p><strong>Credit:</strong> This generator is developed by Algonquin College as an easy way of creating a collection of questions that can be imported into Brightspace quizzes and pools, saving you time in the process!</p>
+			<h3>Instructions</h3>
+			<ol>
+				<li>All questions must follow a proper format for the generator to recognize them.</li>
+				<li>Select the <strong>Question Type Samples</strong> dropdown and click <strong> Create
+				</strong> to see a sample question.</li>
+				<li>Copy and paste all your questions or type them out in the box below.</li>
+				<li>Click <strong>Generate Test Questions.</strong></li>
+				<ul>
+					<li>In case the Test Generator fails, review the questions in red. It could mean the format is not correct or something is missing.</li>
+				</ul>
+				<li>Once the generation has passed, click the <strong>Download Questions for Brightspace</strong> button at the bottom of the page.</li>
+				<li>Save the .csv file to your computer.</li>
+				<li>In the Add/Edit Questions screen in Brightspace, use the Import option and upload the .csv file and follow the prompts.</li>
+			</ol>
+			<p>
+				<hr />
+				<br />
+			</p>
+
+			<table>
+				<tr>
+					<!-- Quiz name area -->
+					<td align="left" valign="top">
+						<b>Quiz Name</b>
+						<br />
+						<input name="txtQuizName" type="text" id="txtQuizName" style="width:200px;height:20px;" />
+					</td>
+					<td align="left" valign="top">
+						<b><strong>Question Type Samples</strong></b>
+						<br />
+						<select name="sampleQuestionTypes" id="sampleQuestionTypes" style="width:200px; height:25px;">
+							<option value="0">Multiple Choice</option>
+							<option value="1">Multiple Answer</option>
+							<option value="2">True or False</option>
+							<option value="3">Essay/Written Response</option>
+							<option value="4">Short Answer</option>
+							<option value="5">Matching</option>
+							<option value="6">Ordering</option>
+						</select>
+						<button onclick="addQuestion()" class="button createbutton">Create</button>
+					</td>
+				</tr>
+				<tr>
+					<td align="center" colspan="2">
+						<b><span id="lblError" style="display:none;color:Red;">Test generation failed<br/>Hold your mouse cursor over any red box for more information<br /></span></b>
+					</td>
+				</tr>
+				<tr>
+					<!-- Quiz entry area -->
+					<td align="left" colspan="2">
+						<div id="panelQuiz" style="background-color:White;height:100%;width:100%;min-height:450px">
+							<textarea name="quiz" rows="2" cols="20" id="quiz"
+								style="height:450px;width:100%;"></textarea>
+						</div>
+					</td>
+				</tr>
+				<tr>
+					<td align="center" colspan="2">
+						<button onclick="generateQuestions()" class="button createbutton" style="width:250px;">Generate Test
+							Questions</button>
+						<button onclick="clearQuestions()" class="button createbutton"
+							style="width:250px;">Clear Test Questions</button>
+					</td>
+				</tr>
+			</table>
+			<br />
+			<!-- The download panel -->
+			<div id="panelDownload"
+				style="display:none;background-color:White;border-color:Black;border-width:1px;border-style:solid;height:120px;width:100%;padding-top:0px">
+				<table width="100%" border="0">
+					<tr>
+						<td colspan="2" align="center">
+							<button onclick="downloadQuestions()" class="button createbutton"
+								style="height:50px;width:400px;">Download Test Questions for Brightspace</button>
+						</td>
+					</tr>
+				</table>
+				<br />
+				<span id="lblDownload" style="font-weight:bold;font-style:italic;">Test Generated with 0 Questions</span>
+			</div>
+			<div class="footer">
+				<p class="footertext">
+					Copyright &copy; 2021 Ahmed Hamdi Sakr. All Rights Reserved.
+				</p>
+			</div>
+	</div>
+</body>
+
+</html>
