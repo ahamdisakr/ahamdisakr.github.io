@@ -1,113 +1,203 @@
 <!DOCTYPE html>
-<html>
+
+<html lang="en">
 
 <head>
-	<title>Ahmed Hamdi Sakr | Assistant Professor, UWindsor</title>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Ahmed Hamdi Sakr | Assistant Professor, UWindsor</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/feather-icons"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
 
-	<meta charset="utf-8">
-	<meta content='text/html; charset=utf-8' http-equiv='Content-Type'>
-	<meta http-equiv='X-UA-Compatible' content='IE=edge'>
-	<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0'>
-	<meta name="description" content="Assistant Professor, UWindsor">
-	<meta property="og:description" content="Assistant Professor, UWindsor">
-	<meta name="author" content="Ahmed Hamdi Sakr">
-	<link rel="stylesheet" type="text/css" href="style.css">
-	<link rel="shortcut icon" type="image/x-icon" href="images/icon.ico">
-	<link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet">
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css">
+    <link href="styles.css" rel="stylesheet" />
+    <script defer="True" src="app.js"></script>
 </head>
 
-<body>
-	<div class="container">
-		<div class="navbar clearfix">
-			<a href="index.html">Ahmed Hamdi Sakr, Ph.D., SMIEEE</a>
-			<div class="nav-menu">
-				<a class="current" href="index.html">Home</a>
-				<a href="research.html">Research</a>
-				<a href="teaching.html">Teaching</a>
-				<a href="services.html">Services</a>
-				<a href="contact.html">Join Us</a>
-			</div>
-		</div>
-
-		<div class="row clearfix">
-			<div class="column_img">
-				<img src="images/sakr.jpg" style="width:200px;">
-			</div>
-			<div class="column_txt">
-				<div class="info">
-					<h3>Ahmed Hamdi Sakr</h3>
-					<p>
-						Assistant Professor <br>
-						Department of Electrical and Computer Engineering<br>
-						University of Windsor<br>
-					</p>
-				</div>
-
-				<h4>About Me</h4>
-				<p>
-					I am an assistant professor in the Department of Electrical and Computer Engineering at <a
-						href="https://www.uwindsor.ca/" target="_blank">University of Windsor</a>, Canada. Prior to
-					that, I was a Principal Researcher at <a href="https://amrd.toyota.com/" target="_blank">Toyota Motor North America R&D</a> - InfoTech Labs. I received my
-					Ph.D. in Electrical and Computer Engineering from <a href="http://umanitoba.ca/"
-						target="_blank">University of Manitoba</a>, Canada.
-				</p>
-
-				<p>
-					My current research interests span the broad areas of connected and autonomous vehicles, wireless
-					and vehicular networks, edge computing, Internet of Things (IoT), signal processing, and machine
-					learning.
-				</p>
-
-				<h4>Contact Me</h4>
-				<ul class="fa-ul">
-					<li><i class="fa-li fa fa-map-marker-alt"></i>
-						Department of Electrical and Computer Engineering <br>
-						University of Windsor <br>
-						401 Sunset Avenue, Windsor, Ontario N9B 3P4, Canada</li>
-					<li><i class="fa-li fa fa-envelope"></i><a href="mailto:ahmed.sakr@uwindsor.ca">ahmed.sakr@uwindsor.ca</a></li>
-					<li><i class="fa-li fa fa-home"></i><a href="https://ahmedsakr.com/">https://ahmedsakr.com</a></li>
-					<li><i class="fa-li fa fa-phone"></i><a href="tel:+1-519-253-3000,5488">+1 (519) 253-3000 x5488</a></li>
-
-				</ul>
-			</div>
-		</div>
-
-		<hr class="ruler" />
-
-		<h3>Prospective Students</h3>
-		<p> We are currently in search of well-qualified researchers to join our lab. Please visit <a href="contact.html">this</a> page for more details. </p>
-
-		<hr class="ruler" />
-		
-		<h3 id="overwhelmed">Feeling Overwhelmed?</h4>
-        <p>
-            From time to time, students face obstacles that can affect academic performance. If you experience
-            difficulties and need help, it is important to reach out to someone. For help addressing mental or physical
-            health concerns on campus, contact (519) 253-3000:
-        <ul>
-            <li>Student Health Services at ext. 7002 (<a
-                    href="http://www.uwindsor.ca/studenthealthservices/">http://www.uwindsor.ca/studenthealthservices/</a>)
-            </li>
-            <li>Student Counselling Centre at ext. 4616 (<a
-                    href="http://www.uwindsor.ca/studentcounselling/">http://www.uwindsor.ca/studentcounselling/</a>)
-            </li>
-            <li>Peer Support Centre at ext. 4551</li>
-        </ul>
-        </p>
-
-        <p>
-            A full list of on-and off-campus resources is available at <a
-                href="http://www.uwindsor.ca/wellness">http://www.uwindsor.ca/wellness</a>. 
-        </p>
-
-
-		<div class="footer">
-			<p class="footertext">
-				Copyright &copy; 2021 Ahmed Hamdi Sakr. All Rights Reserved.
-			</p>
-		</div>
-	</div>
+<body class="font-sans gradient-bg min-h-screen" data-page="index">
+    <header class="sticky top-0 z-40 bg-white/70 backdrop-blur border-b border-gray-200">
+        <a class="sr-only focus:not-sr-only focus:outline-none focus:ring-2 focus:ring-blue-600 px-4 py-2 absolute left-2 top-2 bg-white rounded"
+            href="#main">Skip to content</a>
+        <div class="max-w-6xl mx-auto px-4">
+            <div class="flex items-center justify-between h-16">
+                <a class="flex items-center gap-2 font-semibold text-gray-900 hover:text-blue-600" href="index.html">
+                    <i aria-hidden="true" data-feather="layers"></i>
+                    <span>Ahmed Hamdi Sakr</span>
+                </a>
+                <button aria-controls="mobile-nav" aria-expanded="false" aria-label="Open menu"
+                    class="md:hidden p-2 rounded hover:bg-gray-100" id="menuBtn" type="button">
+                    <i data-feather="menu"></i>
+                </button>
+                <nav class="hidden md:block" id="primary-nav">
+                    <ul class="flex items-center gap-6">
+                        <li><a class="hover:text-blue-600" data-nav="index" href="index.html">Home</a></li>
+                        <li><a class="hover:text-blue-600" data-nav="research" href="research.html">Research</a></li>
+                        <li><a class="hover:text-blue-600" data-nav="publications" href="publications.html">Publications</a></li>
+                        <li><a class="hover:text-blue-600" data-nav="teaching" href="teaching.html">Teaching</a></li>
+                        <li><a class="hover:text-blue-600" data-nav="team" href="team.html">Team</a></li>
+                        <li><a class="hover:text-blue-600" data-nav="join" href="join.html">Join</a></li>
+                    </ul>
+                </nav>
+            </div>
+            <nav aria-hidden="true" aria-label="Mobile" class="md:hidden hidden pb-4" id="mobile-nav">
+                <ul class="grid gap-2">
+                    <li><a class="block px-3 py-2 rounded hover:bg-gray-100" data-nav="index" href="index.html">Home</a></li>
+                    <li><a class="block px-3 py-2 rounded hover:bg-gray-100" data-nav="research" href="research.html">Research</a></li>
+                    <li><a class="block px-3 py-2 rounded hover:bg-gray-100" data-nav="publications" href="publications.html">Publications</a></li>
+                    <li><a class="block px-3 py-2 rounded hover:bg-gray-100" data-nav="teaching" href="teaching.html">Teaching</a></li>
+                    <li><a class="block px-3 py-2 rounded hover:bg-gray-100" data-nav="team" href="team.html">Team</a></li>
+                    <li><a class="block px-3 py-2 rounded hover:bg-gray-100" data-nav="join" href="join.html">Join</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+    <div class="fixed inset-0 -z-10" id="vanta-bg"></div>
+    <div class="container mx-auto px-4 py-8 max-w-5xl">
+        <!-- Navigation -->
+        <!-- Header -->
+        <!-- Main Content -->
+        <main class="gap-8 fade-in py-8 grid-cols-1 grid max-w-6xl px-4 mx-auto lg:grid-cols-3" id="main">
+            <!-- About Section -->
+            <section class="hero-panel grid md:grid-cols-3 gap-6 items-center mb-10 col-span-full lg:col-span-3">
+                <div class="md:col-span-1">
+                    <img alt="Ahmed Hamdi Sakr" class="w-full max-w-xs mx-auto rounded-2xl shadow-lg" height="600"
+                        loading="eager" src="images/sakr.jpg" width="480" />
+                </div>
+                <div class="md:col-span-2 space-y-3">
+                    <h1 class="text-3xl md:text-4xl font-extrabold tracking-tight">Ahmed Hamdi Sakr<span class="align-baseline md:text-2xl font-semibold text-gray-600">, PhD, PEng, SMIEEE</span></h1>
+                    <h2 class="font-medium text-gray-600">Assistant Professor</h2>
+                    <p>Department of Electrical and Computer Engineering</br>University of Windsor</p>
+<div class="flex flex-wrap gap-3 pt-2">
+  <a href="publications.html" class="btn btn-primary">
+    <i data-feather="file-text" class="icon-4"></i><span>Publications</span>
+  </a>
+  <a href="research.html" class="btn btn-primary">
+    <i data-feather="cpu" class="icon-4"></i><span>Research</span>
+  </a>
+  <a href="teaching.html" class="btn btn-primary">
+    <i data-feather="book-open" class="icon-4"></i><span>Teaching</span>
+  </a>
+</div>
+                </div>
+            </section>
+            <div class="lg:col-span-2 bg-white rounded-xl shadow-lg p-6 hover-scale">
+                <!-- border-l-4 border-blue-500 -->
+                <div class="flex items-center mb-4">
+                    <i class="text-blue-500 mr-2" data-feather="user"></i>
+                    <h2>About Me</h2>
+                </div>
+                <p>
+                    I am an assistant professor in the Department of Electrical and Computer Engineering at
+                    <a class="text-blue-600 hover:underline" href="https://www.uwindsor.ca/">University of Windsor</a>,
+                    Canada.
+                    Prior to that, I was a Principal Researcher at
+                    <a class="text-blue-600 hover:underline" href="https://amrd.toyota.com/">Toyota Motor North America
+                        R&amp;D</a> - InfoTech Labs.
+                    I received my Ph.D. in Electrical and Computer Engineering from
+                    <a class="text-blue-600 hover:underline" href="http://umanitoba.ca/">University of Manitoba</a>,
+                    Canada.
+                </p>
+                <p>
+                    My current research interests span the broad areas of connected and autonomous vehicles, wireless
+                    and vehicular networks,
+                    edge computing, Internet of Things (IoT), signal processing, and machine learning.
+                </p>
+            </div>
+            <!-- Contact Section -->
+            <div class="bg-white rounded-xl shadow-lg p-6 hover-scale">
+                <div class="flex items-center mb-4">
+                    <i class="text-blue-500 mr-2" data-feather="mail"></i>
+                    <h2>Contact Me</h2>
+                </div>
+                <ul class="space-y-3">
+                    <li class="flex items-start">
+                        <i class="text-gray-500 mt-1 mr-2 flex-shrink-0" data-feather="map-pin"></i>
+                        <span >
+                            Department of Electrical and Computer Engineering<br />
+                            University of Windsor<br />
+                            401 Sunset Avenue, Windsor, Ontario N9B 3P4, Canada
+                        </span>
+                    </li>
+                    <li class="flex items-center">
+                        <i class="text-gray-500 mr-2" data-feather="mail"></i>
+                        <a class="text-blue-600 hover:underline"
+                            href="mailto:ahmed.sakr@uwindsor.ca">ahmed.sakr@uwindsor.ca</a>
+                    </li>
+                    <li class="flex items-center">
+                        <i class="text-gray-500 mr-2" data-feather="globe"></i>
+                        <a class="text-blue-600 hover:underline" href="https://ahmedsakr.com/">https://ahmedsakr.com</a>
+                    </li>
+                    <li class="flex items-center">
+                        <i class="text-gray-500 mr-2" data-feather="phone"></i>
+                        <a class="text-blue-600 hover:underline" href="tel:+1-519-253-3000,5488">+1 (519) 253-3000
+                            x5488</a>
+                    </li>
+                </ul>
+            </div>
+            <!-- Students Section -->
+            <div class="lg:col-span-3  bg-white rounded-xl shadow-lg p-6 hover-scale">
+                <div class="flex items-center mb-4">
+                    <i class="text-blue-500 mr-2" data-feather="users"></i>
+                    <h2>Prospective Students</h2>
+                </div>
+                <p>
+                    We are currently in search of well-qualified researchers to join our lab.
+                </p>
+                <a class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+                    href="join.html">
+                    More Details
+                    <i class="ml-2" data-feather="arrow-right"></i>
+                </a>
+            </div>
+            <!-- Wellness Section -->
+            <div class="lg:col-span-3 bg-blue-50 rounded-xl shadow-lg p-6 hover-scale">
+                <div class="flex items-center mb-4">
+                    <i class="text-blue-500 mr-2" data-feather="heart"></i>
+                    <h2>Feeling Overwhelmed?</h2>
+                </div>
+                <p>
+                    From time to time, students face obstacles that can affect academic performance.
+                    If you experience difficulties and need help, it is important to reach out to someone.
+                </p>
+                <p>
+                    For help addressing mental or physical health concerns on campus, contact (519) 253-3000:
+                </p>
+                <ul class="space-y-2 mb-6">
+                    <li class="flex items-start">
+                        <i class="text-gray-500 mt-1 mr-2 flex-shrink-0" data-feather="plus"></i>
+                        <span>
+                            Student Health Services at ext. 7002
+                            (<a class="text-blue-600 hover:underline"
+                                href="http://www.uwindsor.ca/studenthealthservices/">http://www.uwindsor.ca/studenthealthservices/</a>)
+                        </span>
+                    </li>
+                    <li class="flex items-start">
+                        <i class="text-gray-500 mt-1 mr-2 flex-shrink-0" data-feather="plus"></i>
+                        <span>
+                            Student Counselling Centre at ext. 4616
+                            (<a class="text-blue-600 hover:underline"
+                                href="http://www.uwindsor.ca/studentcounselling/">http://www.uwindsor.ca/studentcounselling/</a>)
+                        </span>
+                    </li>
+                    <li class="flex items-start">
+                        <i class="text-gray-500 mt-1 mr-2 flex-shrink-0" data-feather="plus"></i>
+                        <span>
+                            Peer Support Centre at ext. 4551
+                        </span>
+                    </li>
+                </ul>
+                <p>
+                    A full list of on-and off-campus resources is available at
+                    <a class="text-blue-600 hover:underline"
+                        href="http://www.uwindsor.ca/wellness">http://www.uwindsor.ca/wellness</a>.
+                </p>
+            </div>
+        </main>
+        <!-- Footer -->
+        <footer class="mt-12 text-center text-gray-600 fade-in">
+            <p>© 2021 Ahmed Hamdi Sakr. All rights reserved.</p>
+        </footer>
+    </div>
 </body>
 
 </html>

@@ -1,90 +1,227 @@
 <!DOCTYPE html>
-<html>
+
+<html lang="en">
 
 <head>
-	<title>Ahmed Hamdi Sakr | Assistant Professor, UWindsor</title>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Teaching | Ahmed Hamdi Sakr</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/feather-icons"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
 
-	<meta charset="utf-8">
-	<meta content='text/html; charset=utf-8' http-equiv='Content-Type'>
-	<meta http-equiv='X-UA-Compatible' content='IE=edge'>
-	<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0'>
-	<meta name="description" content="Assistant Professor, UWindsor">
-	<meta property="og:description" content="Assistant Professor, UWindsor">
-	<meta name="author" content="Ahmed Hamdi Sakr">
-	<link rel="stylesheet" type="text/css" href="style.css">
-	<link rel="shortcut icon" type="image/x-icon" href="images/icon.ico">
-	<link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet">
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link href="styles.css" rel="stylesheet" />
+    <script defer="True" src="app.js"></script>
 </head>
 
-<body>
-	<div class="container">
-		<div class="navbar clearfix">
-			<a href="index.html">Ahmed Hamdi Sakr, Ph.D., SMIEEE</a>
-			<div class="nav-menu">
-				<a href="index.html">Home</a>
-				<a href="research.html">Research</a>
-				<a class="current" href="teaching.html">Teaching</a>
-				<a href="services.html">Services</a>
-				<a href="contact.html">Join Us</a>
-			</div>
-		</div>
+<body class="font-sans gradient-bg min-h-screen" data-page="teaching">
+    <header class="sticky top-0 z-40 bg-white/70 backdrop-blur border-b border-gray-200">
+        <a class="sr-only focus:not-sr-only focus:outline-none focus:ring-2 focus:ring-blue-600 px-4 py-2 absolute left-2 top-2 bg-white rounded"
+            href="#main">Skip to content</a>
+        <div class="max-w-6xl mx-auto px-4">
+            <div class="flex items-center justify-between h-16">
+                <a class="flex items-center gap-2 font-semibold text-gray-900 hover:text-blue-600" href="index.html">
+                    <i aria-hidden="true" data-feather="layers"></i>
+                    <span>Ahmed Hamdi Sakr</span>
+                </a>
+                <button aria-controls="mobile-nav" aria-expanded="false" aria-label="Open menu"
+                    class="md:hidden p-2 rounded hover:bg-gray-100" id="menuBtn" type="button">
+                    <i data-feather="menu"></i>
+                </button>
+                <nav class="hidden md:block" id="primary-nav">
+                    <ul class="flex items-center gap-6">
+                        <li><a class="hover:text-blue-600" data-nav="index" href="index.html">Home</a></li>
+                        <li><a class="hover:text-blue-600" data-nav="research" href="research.html">Research</a></li>
+                        <li><a class="hover:text-blue-600" data-nav="publications" href="publications.html">Publications</a></li>
+                        <li><a class="hover:text-blue-600" data-nav="teaching" href="teaching.html">Teaching</a></li>
+                        <li><a class="hover:text-blue-600" data-nav="team" href="team.html">Team</a></li>
+                        <li><a class="hover:text-blue-600" data-nav="join" href="join.html">Join</a></li>
+                    </ul>
+                </nav>
+            </div>
+            <nav aria-hidden="true" aria-label="Mobile" class="md:hidden hidden pb-4" id="mobile-nav">
+                <ul class="grid gap-2">
+                    <li><a class="block px-3 py-2 rounded hover:bg-gray-100" data-nav="index" href="index.html">Home</a></li>
+                    <li><a class="block px-3 py-2 rounded hover:bg-gray-100" data-nav="research" href="research.html">Research</a></li>
+                    <li><a class="block px-3 py-2 rounded hover:bg-gray-100" data-nav="publications" href="publications.html">Publications</a></li>
+                    <li><a class="block px-3 py-2 rounded hover:bg-gray-100" data-nav="teaching" href="teaching.html">Teaching</a></li>
+                    <li><a class="block px-3 py-2 rounded hover:bg-gray-100" data-nav="team" href="team.html">Team</a></li>
+                    <li><a class="block px-3 py-2 rounded hover:bg-gray-100" data-nav="join" href="join.html">Join</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+    <div class="container mx-auto px-4 py-8 max-w-5xl">
+        <!-- Navigation -->
+        <main class="gap-8 fade-in py-8 grid-cols-1 grid max-w-6xl px-4 mx-auto" id="main">
+            <!-- Current Courses -->
+            <div class="bg-white rounded-xl shadow-lg p-6 hover-scale">
+                <div class="flex items-center mb-4">
+                    <i class="text-blue-500 mr-2" data-feather="book-open"></i>
+                    <h2>Undergraduate Courses</h2>
+                </div>
+                <ul class="space-y-4">
+                    <li>
+                        <h4>ELEC 2110 - Computer Aided Analysis</h4>
+                        <div class="mt-2 flex flex-wrap gap-2">
+                            <span class="chip">Fall 2023</span>
+                        </div>
+                    </li>
+                    <li>
+                        <h4>ELEC 2240 - Signals and Systems</h4>
+                        <div class="mt-2 flex flex-wrap gap-2">
+                            <span class="chip">Winter 2022</span>
+                            <span class="chip">Winter 2023</span>
+                            <span class="chip">Winter 2024</span>
+                            <span class="chip">Fall 2024</span>
+                            <span class="chip">Fall 2025</span>
+                        </div>
+                    </li>
+                    <li>
+                        <h4>ELEC 3290 - Analog Communications</h4>
+                        <div class="mt-2 flex flex-wrap gap-2">
+                            <span class="chip">Summer 2021</span>
+                            <span class="chip">Summer 2022</span>
+                        </div>
+                    </li>
+                    <li>
+                        <h4>ELEC 4190 - Digital Communications</h4>
+                        <div class="mt-2 flex flex-wrap gap-2">
+                            <span class="chip">Winter 2023</span>
+                            <span class="chip">Winter 2024</span>
+                            <span class="chip">Winter 2025</span>
+                        </div>
+                    </li>
+                    <li>
+                        <h4>ELEC 4400 - Wireless Communications</h4>
+                        <div class="mt-2 flex flex-wrap gap-2">
+                            <span class="chip">Summer 2021</span>
+                            <span class="chip">Summer 2022</span>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            <!-- Past Courses -->
+            <div class="bg-white rounded-xl shadow-lg p-6 hover-scale">
+                <div class="flex items-center mb-4">
+                    <i class="text-blue-500 mr-2" data-feather="book-open"></i>
+                    <h2>Graduate Courses</h2>
+                </div>
+                <ul class="space-y-4">
+                    <li>
+                        <h4>ELEC 8560 - Computer Networks</h4>
+                        <div class="mt-2 flex flex-wrap gap-2">
+                            <span class="chip">Fall 2022</span>
+                            <span class="chip">Fall 2023</span>
+                            <span class="chip">Fall 2024</span>
+                        </div>
+                    </li>
+                    <li>
+                        <h4>ELEC 8630 - Wireless Communication Systems</h4>
+                        <div class="mt-2 flex flex-wrap gap-2">
+                            <span class="chip">Summer 2021</span>
+                            <span class="chip">Summer 2022</span>
+                        </div>
+                    </li>
+                    <li>
+                        <h4>ELEC 8900 - Special Topics in Digital Communications</h4>
+                        <div class="mt-2 flex flex-wrap gap-2">
+                            <span class="chip">Winter 2023</span>
+                            <span class="chip">Winter 2024</span>
+                            <span class="chip">Winter 2025</span>
+                        </div>
+                    </li>
+                </ul>
+            </div>
 
-		<h3>Courses</h3>
-		<ul>
-			<li>ELEC 2110 - Computer Aided Analysis: F2023</li>
-			<li>ELEC 2240 - Signals and Systems: F2024, W2024, W2023, W2022</li>
-			<li>ELEC 3290 - Analog Communications: S2022, S2021</li>
-			<li>ELEC 4190 - Digital Communications: W2025, W2024, W2023</li>
-			<li>ELEC 4400 - Wireless Communications: S2022, S2021</li>
-			<li>ELEC 8560 - Computer Networks: F2024, F2023, F2022</li>
-			<li>ELEC 8630 - Wireless Communication Systems: S2022, S2021</li>
-			<li>ELEC 8900 - Special Topics in Digital Communications: W2025, W2024, W2023</li>
-		</ul>
+            <!-- Past Courses -->
+            <div class="bg-white rounded-xl shadow-lg p-6 hover-scale">
+                <div class="flex items-center mb-4">
+                    <i class="text-blue-500 mr-2" data-feather="book-open"></i>
+                    <h2>Tools for Instructors</h2>
+                </div>
+                <ul class="list-disc pl-5 space-y-1">
+                    <li>
+                        <h4>Exam Timer <a class="text-blue-600 hover:underline" href="timer.html">[Here]</a></h4>
+                    </li>
+                    <li>
+                        <h4>Brightspace Quiz Generator <a class="text-blue-600 hover:underline" href="brightspace.html">[Here]</a></h4>
+                    </li>
+                </ul>
+            </div>
 
-		<hr class="ruler" />
+  <!-- Card: How to Email Your Course Instructor -->
+  <div class="bg-white rounded-xl shadow-lg p-6 hover-scale mb-8">
+    <div class="flex items-center mb-4">
+      <i data-feather="mail" class="text-blue-500 mr-2"></i>
+      <h2 class="text-2xl font-semibold text-gray-800">How to Email Your Course Instructor</h2>
+    </div>
 
-		<h3>Tools for Instructors</h3>
-		<ul>
-			<li>Exam Timer [<a href="time.html">Link</a>]</li>
-			<li>Brightspace Quiz Generator [<a href="brightspace.html">Link</a>]</li>
-		</ul>
+    <p class="text-gray-700 mb-4">
+      Use this template when contacting your instructor. Replace anything in <strong>[square brackets]</strong> with your own details.
+    </p>
 
-		<hr class="ruler" />
+    <div class="bg-blue-50 rounded-lg p-4">
+      <h3 class="text-xl font-medium text-gray-800 mb-2">Email Template</h3>
 
-		<h3> Tips for Students</h3>
-		<h4 id="emailprof">How to Email Your Professor</h4>
-		<p>Here is an example for an email to ask about the attendance policy that you may edit and use as needed. Hover
-			over each part below for more information.</p>
-		<div style="padding: 10px; border: 2px solid black; line-height: 160%;">
-			<p class="tooltip"><em>Subject: ELEC 2240 - Inquiry Regarding Attendance Policy</em><span
-					class="tooltiptext">Informative subject line</span></p>
-			</br></br>
-			<p class="tooltip">Dear<span class="tooltiptext">Hello is OK</br>Hi and Hey are not OK</span></p>
-			<p class="tooltip">Dr.<span class="tooltiptext">Professor is OK</br>Use Dr. if they have a Ph.D.</br>Never
-					call a professor Mrs., Miss, or Mr.</span></p>
-			<p class="tooltip">Sakr<span class="tooltiptext">Last name, unless professor uses something else
-				</span></p>,
-			</br></br>
+      <p class="text-gray-700 mb-4"><strong>Subject:</strong> [Clear, specific topic, e.g., <em>ELEC 2240 - Question about Assignment 2</em> or <em>ELEC 4400 - Request for Office Hour Appointment</em> or <em>ELEC 8560 - Clarification on Lecture 5</em>]</p>
 
-			<p class="tooltip">I am currently enrolled in your Signals and Systems class<span class="tooltiptext">Introduction</span></p>.
-			<p class="tooltip">I am reaching out to seek clarification on the attendance policy<span class="tooltiptext">Why
-					you are sending the email</span></p>. <p class="tooltip">I have checked the syllabus and asked fellow
-				classmates, but could not find this information<span class="tooltiptext">What you tried to answer your own
-					question</span></p>. <p class="tooltip">I would appreciate it if you could provide details regarding the attendance policy for the course<span class="tooltiptext">Your request</span></p>.
-			</br></br>
+      <p class="text-gray-700 mb-4">Dear Dr. [Last Name],<br/>
+        <span class="text-sm text-gray-600">(Use the correct title: Professor, Dr., etc. Never call a professor Mrs., Miss, or Mr.)</span>
+      </p>
 
-			<p class="tooltip">Best regards<span class="tooltiptext">Signoff</span></p>,</br>
-			<p class="tooltip">Jane Doe<span class="tooltiptext">First and last name</span></p>, <p class="tooltip">
-				271828182<span class="tooltiptext">Student number</span></p>
-		</div>
+      <p class="text-gray-700 mb-4">
+        My name is [Your Full Name], and I am a student in your [Course Code - e.g., <em>ELEC-2240 Signals and Systems</em>] class, Section [Number, if applicable]. 
+        [If needed, include the meeting time, e.g., <em>T/Th 1:00-2:20 PM</em>.]
+      </p>
 
-		<div class="footer">
-			<p class="footertext">
-				Copyright &copy; 2021 Ahmed Hamdi Sakr. All Rights Reserved.
-			</p>
-		</div>
-	</div>
+      <p class="text-gray-700 mb-4">
+        [State clearly and politely the reason for your email. Example: <em>I am writing to ask for clarification on Question 3 of Assignment 2, specifically the expected format for the solution.</em>]
+      </p>
+
+      <p class="text-gray-700 mb-4">
+        [Provide brief context so the instructor understands the issue. Example: <em>I reviewed the lecture notes and the course site, but I could not find a detailed explanation.</em>]
+      </p>
+
+      <p class="text-gray-700 mb-4">
+        [Ask your question or make your request directly, using polite language. Example: <em>Could you please confirm whether we should include derivation steps in our submission?</em> 
+        or <em>Would it be possible to schedule a short meeting during your office hours?</em>]
+      </p>
+
+      <p class="text-gray-700 mb-4">
+        [If applicable, mention attachments and responsibility. Example: <em>I am attaching my draft and will revise it after your guidance. Thank you for your time.</em>]
+      </p>
+
+      <p class="text-gray-700 mb-4">Thank you for your time and help.</p>
+
+      <p class="text-gray-700">
+        Sincerely,<br/>
+        [Your Full Name]<br/>
+        [Student ID]
+      </p>
+    </div>
+    <!-- Card: Quick Tips -->
+    <div class="bg-white rounded-xl shadow-lg p-6 hover-scale">
+      <div class="flex items-center mb-4">
+        <i data-feather="info" class="text-blue-500 mr-2"></i>
+        <h3 class="text-xl font-medium text-gray-800">Quick Tips</h3>
+      </div>
+      <ul class="list-disc pl-5 text-gray-700 space-y-2">
+        <li>Use your <strong>university email address</strong> and a <strong>specific subject line</strong>.</li>
+        <li>Be <strong>polite and concise</strong> (8-10 sentences max). Proofread before sending.</li>
+        <li>Check the <strong>syllabus</strong> and course site/announcements first.</li>
+        <li>Allow <strong>24-48 hours</strong> for replies on weekdays.</li>
+        <li>Avoid mass emails; follow up politely after <strong>2 work days</strong> if needed.</li>
+      </ul>
+    </div>
+  </div>
+
+
+        </main>
+        <footer class="mt-12 text-center text-gray-600 fade-in">
+            <p>© 2021 Ahmed Hamdi Sakr. All rights reserved.</p>
+        </footer>
+    </div>
 </body>
 
 </html>

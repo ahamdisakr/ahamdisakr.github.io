@@ -1,0 +1,240 @@
+/* ==========
+   Site styles (framework-agnostic)
+   Save as: styles.css
+   ========== */
+:root {
+  --bg-grad-start: #f5f7fa;
+  --bg-grad-end: #c3cfe2;
+  --brand: #2563eb;
+  --ink: #111827;
+  --muted: #6b7280;
+  --card: #ffffff;
+  --ring: rgba(37, 99, 235, .35);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* Base background: solid fallback on body */
+html,
+body {
+  height: 100%;
+}
+
+body {
+  color: var(--ink);  
+  background: #f5f7fa;
+}
+
+/* Paint the gradient once, fixed behind the page */
+html::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  /* top:0; right:0; bottom:0; left:0 */
+  z-index: -1;
+  /* stay behind all content */
+  background: linear-gradient(135deg, var(--bg-grad-start) 0%, var(--bg-grad-end) 100%);
+  background-repeat: no-repeat;
+  background-size: cover;
+  /* ensures full coverage on any aspect ratio */
+  pointer-events: none;
+  /* never block clicks */
+  will-change: transform;
+  /* hint for smooth scrolling */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+main p {
+  line-height: 1.7;
+  margin: 0 0 1rem;
+}
+
+/* Optional: lists get the same rhythm */
+ul, ol { margin: 0 0 1rem; padding-left: 1.25rem; }
+
+/* Avoid extra space at the end of a block/card */
+p:last-child,
+ul:last-child,
+ol:last-child { margin-bottom: 0; }
+
+.no-mb { margin-bottom: 0 !important; }
+
+main h1,
+main h2,
+main h3 {
+  letter-spacing: -0.01em;
+}
+
+main h4 {
+  font-size: 1.125rem;
+  font-weight: 500;
+  color: var(--ink);
+  margin: 0 0 0.75rem;
+}
+
+main h3 {
+  font-size: 1.5rem;
+  font-weight: 500;
+  color: #1f2937;
+  margin: 0 0 0.5rem;
+}
+
+main h2 {
+  font-size: 1.5rem;
+  line-height: 2rem;
+  font-weight: 600;
+  color: var(--ink);
+  margin: 0 0 0.75rem;
+}
+
+a {
+  text-underline-offset: 2px;
+}
+
+
+.btn {
+  display:inline-flex; align-items:center; gap:.5rem;
+  padding:.5rem 1rem; border-radius: .75rem;
+  transition: transform .15s ease, box-shadow .15s ease, background-color .15s ease, color .15s ease;
+  box-shadow: 0 1px 2px rgba(0,0,0,.06);
+}
+.btn:hover { transform: translateY(-1px); box-shadow: 0 4px 10px rgba(0,0,0,.08); }
+.btn:focus { outline: 2px solid transparent; box-shadow: 0 0 0 2px #2563eb33, 0 1px 2px rgba(0,0,0,.06); }
+
+.btn-primary { background:#2563eb; color:#fff; }
+.btn-primary:hover { background:#1d4ed8; }
+
+.btn-secondary { background:#fff; color:#111827; border:1px solid #e5e7eb; }
+.btn-secondary:hover { background:#f9fafb; }
+
+/* Feather icon size helper */
+.icon-4 { width:1rem; height:1rem; }
+
+.card {
+  background: var(--card);
+  border-radius: 0.75rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, .06);
+}
+
+.chip {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  background-color: #dbeafe;
+  color: #1e40af;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  white-space: nowrap;
+}
+
+.fade-in {
+  animation: fadeIn 1.2s ease-in-out both;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0
+  }
+
+  to {
+    opacity: 1
+  }
+}
+
+.hover-scale {
+  transition: transform .25s ease;
+}
+
+.hover-scale:hover {
+  transform: translateY(-2px) scale(1.01);
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+  .fade-in,
+  .hover-scale {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+.nav-active {
+  color: var(--brand) !important;
+  font-weight: 600;
+  position: relative;
+}
+
+.nav-active::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -6px;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--brand);
+  opacity: .75;
+}
+
+
+:where(a, button, [role="button"], input, select, textarea):focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+  border-radius: .5rem;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  border-radius: .5rem;
+}
+
+img[loading="lazy"] {
+  background: #f3f4f6;
+}
+
+.gradient-bg {
+  background: linear-gradient(135deg, var(--bg-grad-start) 0%, var(--bg-grad-end) 100%);
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+
+.fade-in {
+  animation: fadeIn 1.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+.hover-scale {
+  transition: transform 0.3s ease;
+}
+
+.hover-scale:hover {
+  transform: scale(1.02);
+}
+
+.gradient-bg {
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+}

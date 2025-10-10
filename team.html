@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Students | Ahmed Hamdi Sakr</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/feather-icons"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+
+    <link href="styles.css" rel="stylesheet" />
+    <script defer="True" src="app.js"></script>
+</head>
+
+<body class="font-sans gradient-bg min-h-screen" data-page="team">
+    <header class="sticky top-0 z-40 bg-white/70 backdrop-blur border-b border-gray-200">
+        <a class="sr-only focus:not-sr-only focus:outline-none focus:ring-2 focus:ring-blue-600 px-4 py-2 absolute left-2 top-2 bg-white rounded"
+            href="#main">Skip to content</a>
+        <div class="max-w-6xl mx-auto px-4">
+            <div class="flex items-center justify-between h-16">
+                <a class="flex items-center gap-2 font-semibold text-gray-900 hover:text-blue-600" href="index.html">
+                    <i aria-hidden="true" data-feather="layers"></i>
+                    <span>Ahmed Hamdi Sakr</span>
+                </a>
+                <button aria-controls="mobile-nav" aria-expanded="false" aria-label="Open menu"
+                    class="md:hidden p-2 rounded hover:bg-gray-100" id="menuBtn" type="button">
+                    <i data-feather="menu"></i>
+                </button>
+                <nav class="hidden md:block" id="primary-nav">
+                    <ul class="flex items-center gap-6">
+                        <li><a class="hover:text-blue-600" data-nav="index" href="index.html">Home</a></li>
+                        <li><a class="hover:text-blue-600" data-nav="research" href="research.html">Research</a></li>
+                        <li><a class="hover:text-blue-600" data-nav="publications"
+                                href="publications.html">Publications</a></li>
+                        <li><a class="hover:text-blue-600" data-nav="teaching" href="teaching.html">Teaching</a></li>
+                        <li><a class="hover:text-blue-600" data-nav="team" href="team.html">Team</a></li>
+                        <li><a class="hover:text-blue-600" data-nav="join" href="join.html">Join</a></li>
+                    </ul>
+                </nav>
+            </div>
+            <nav aria-hidden="true" aria-label="Mobile" class="md:hidden hidden pb-4" id="mobile-nav">
+                <ul class="grid gap-2">
+                    <li><a class="block px-3 py-2 rounded hover:bg-gray-100" data-nav="index" href="index.html">Home</a>
+                    </li>
+                    <li><a class="block px-3 py-2 rounded hover:bg-gray-100" data-nav="research"
+                            href="research.html">Research</a></li>
+                    <li><a class="block px-3 py-2 rounded hover:bg-gray-100" data-nav="publications"
+                            href="publications.html">Publications</a></li>
+                    <li><a class="block px-3 py-2 rounded hover:bg-gray-100" data-nav="teaching"
+                            href="teaching.html">Teaching</a></li>
+                    <li><a class="block px-3 py-2 rounded hover:bg-gray-100" data-nav="team" href="team.html">Team</a>
+                    </li>
+                    <li><a class="block px-3 py-2 rounded hover:bg-gray-100" data-nav="join" href="join.html">Join</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+    <div class="container mx-auto px-4 py-8 max-w-5xl">
+        <!-- Navigation -->
+        <main class="gap-8 fade-in py-8 grid-cols-1 grid max-w-6xl px-4 mx-auto" id="main">
+            <!-- Opportunities -->
+            <div class="bg-blue-50 rounded-xl shadow-lg p-6 hover-scale">
+                <div class="flex items-center mb-4">
+                    <i class="text-blue-500 mr-2" data-feather="briefcase"></i>
+                    <h2>Opportunities</h2>
+                </div>
+                <p>
+                    We are always looking for motivated students interested in working on cutting-edge research
+                    in connected and autonomous systems, wireless networks, and edge computing.
+                </p>
+                <a class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+                    href="join.html">
+                    More Details
+                    <i class="ml-2" data-feather="arrow-right"></i>
+                </a>
+            </div>
+
+            <!-- Current Students -->
+
+            <div class="bg-white rounded-xl shadow-lg p-6 hover-scale">
+                <div class="flex items-center mb-4">
+                    <i class="text-blue-500 mr-2" data-feather="users"></i>
+                    <h2>Grad Students</h2>
+                </div>
+                <ul class="space-y-3">
+                    <li>
+                        <h4>Ashab Uddin</h4>
+                        <p class="no-mb">PhD Candidate · Co-supervised</p>
+                        <p class="text-sm">Research: Edge Computing for V2X</p>
+                    </li>
+                    <li>
+                        <h4>Manroop Mader</h4>
+                        <p class="no-mb">MASc Candidate</p>
+                        <p class="text-sm">Research: Edge Computing for V2X</p>
+                    </li>
+                    <li>
+                        <h4>Mohamad Elkorek</h4>
+                        <p class="no-mb">MASc Candidate</p>
+                        <p class="text-sm">Research: Edge Computing for V2X</p>
+                    </li>
+                    <li>
+                        <h4>Ahmad Ghanem</h4>
+                        <p class="no-mb">MASc Candidate</p>
+                        <p class="text-sm">Research: Edge Computing for V2X</p>
+                    </li>
+                    <li>
+                        <h4>Ahmed Daoud</h4>
+                        <p class="no-mb">MASc Candidate · Co-supervised</p>
+                        <p class="text-sm">Research: Edge Computing for V2X</p>
+                    </li>
+                    <li>
+                        <h4>Jakir Ansari</h4>
+                        <p class="no-mb">MASc Candidate</p>
+                        <p class="text-sm">Research: Edge Computing for V2X</p>
+                    </li>
+                    <li>
+                        <h4>Banu Balasubramanian</h4>
+                        <p class="no-mb">MASc Candidate · Co-supervised</p>
+                        <p class="text-sm">Research: Edge Computing for V2X</p>
+                    </li>
+                    <li>
+                        <h4>Abdullah Abrar Faiyaz</h4>
+                        <p class="no-mb">MASc (2025)</p>
+                        <p class="text-sm">Research: Edge Computing for V2X</p>
+                    </li>
+                    <li>
+                        <h4>Xueyu Wang</h4>
+                        <p class="no-mb">MASc (2025) · Co-supervised</p>
+                        <p class="text-sm">Research: Edge Computing for V2X</p>
+                    </li>
+                    <li>
+                        <h4>Tahmina Khanom Tandra</h4>
+                        <p class="no-mb">MASc (2025)</p>
+                        <p class="text-sm">Research: Edge Computing for V2X</p>
+                    </li>
+                    <li>
+                        <h4>Shishir Manjunatha</h4>
+                        <p class="no-mb">MASc (2024)</p>
+                        <p class="text-sm">Research: Edge Computing for V2X</p>
+                    </li>
+                    <li>
+                        <h4>Lahiri Kanipakam</h4>
+                        <p class="no-mb">MASc (2024)</p>
+                        <p class="text-sm">Research: Edge Computing for V2X</p>
+                    </li>
+                    <li>
+                        <h4>Arjit Malik</h4>
+                        <p class="no-mb">MASc (2024) · Co-supervised</p>
+                        <p class="text-sm">Research: Edge Computing for V2X</p>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Alumni -->
+            <div class="bg-white rounded-xl shadow-lg p-6 hover-scale">
+                <div class="flex items-center mb-4">
+                    <i class="text-blue-500 mr-2" data-feather="award"></i>
+                    <h2>Outstanding Scholars</h2>
+                </div>
+                <ul class="space-y-3">
+                    <li>
+                        <h4>Kareem Aghbari</h4>
+                        <p>Fall 2025</p>
+                    </li>
+                    <li>
+                        <h4>Qais El Baser</h4>
+                        <p>Fall 2024</p>
+                    </li>
+                    <li>
+                        <h4>Jad Nizam</h4>
+                        <p>Fall 2024, Winter 2025, Fall 2025</p>
+                    </li>
+                    <li>
+                        <h4>Gurjot Singh</h4>
+                        <p>Fall 2024</p>
+                    </li>
+                    <li>
+                        <h4>Steven Fung</h4>
+                        <p>Fall 2024, Winter 2025, Summer 2025</p>
+                    </li>
+                    <li>
+                        <h4>Gavin Feher</h4>
+                        <p>Summer 2024</p>
+                    </li>
+                </ul>
+            </div>
+
+
+            <!-- Interns -->
+            <div class="bg-white rounded-xl shadow-lg p-6 hover-scale">
+                <div class="flex items-center mb-4">
+                    <i class="text-blue-500 mr-2" data-feather="briefcase"></i>
+                    <h2>Interns</h2>
+                </div>
+                <ul class="space-y-3">
+                    <li>
+                        <h4>Maryam Kolachi</h4>
+                        <p>Elevate Internship · Summer 2025</p>
+                    </li>
+                    <li>
+                        <h4>Rohan Buch</h4>
+                        <p>Volunteer · Summer 2025</p>
+                    </li>
+                    <li>
+                        <h4>Saumya Buch</h4>
+                        <p>Volunteer · Summer 2025</p>
+                    </li>
+                    <li>
+                        <h4>Onkar Rai</h4>
+                        <p>Mitacs Globalink Research Internship · Summer 2024</p>
+                    </li>
+                    <li>
+                        <h4>Vansh Agrawal</h4>
+                        <p>Mitacs Globalink Research Internship · Summer 2023</p>
+                    </li>
+                    <li>
+                        <h4>Aman Kumar Singh</h4>
+                        <p>Mitacs Globalink Research Internship · Summer 2023</p>
+                    </li>
+                    <li>
+                        <h4>Hareekrishna Vellore Shanmugam</h4>
+                        <p>Mitacs Globalink Research Internship · Summer 2022</p>
+                    </li>
+                    <li>
+                        <h4>Darpan Khanna</h4>
+                        <p>Mitacs Globalink Research Internship · Summer 2022</p>
+                    </li>
+                    <li>
+                        <h4>Anirudh Kanchi</h4>
+                        <p>Mitacs Globalink Research Internship · Summer 2022</p>
+                    </li>
+                </ul>
+            </div>
+
+        </main>
+        <footer class="mt-12 text-center text-gray-600 fade-in">
+            <p>© 2021 Ahmed Hamdi Sakr. All rights reserved.</p>
+        </footer>
+    </div>
+</body>
+
+</html>

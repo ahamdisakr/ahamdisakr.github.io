@@ -1,22 +1,192 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="en">
 <head>
-	<title>Ahmed Hamdi Sakr | Assistant Professor, UWindsor</title>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>Brightspace Quiz Generator | Ahmed Hamdi Sakr</title>
 
-	<meta charset="utf-8">
-	<meta content='text/html; charset=utf-8' http-equiv='Content-Type'>
-	<meta http-equiv='X-UA-Compatible' content='IE=edge'>
-	<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0'>
-	<meta name="description" content="Assistant Professor, UWindsor">
-	<meta property="og:description" content="Assistant Professor, UWindsor">
-	<meta name="author" content="Ahmed Hamdi Sakr">
-	<link rel="stylesheet" type="text/css" href="style.css">
-	<link rel="shortcut icon" type="image/x-icon" href="images/icon.ico">
-	<link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet">
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/feather-icons"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    <link href="styles.css" rel="stylesheet" />
+    <script defer src="app.js"></script>
 </head>
 
+<body class="font-sans gradient-bg min-h-screen" data-page="brightspace">
+    <header class="sticky top-0 z-40 bg-white/70 backdrop-blur border-b border-gray-200">
+        <a class="sr-only focus:not-sr-only focus:outline-none focus:ring-2 focus:ring-blue-600 px-4 py-2 absolute left-2 top-2 bg-white rounded"
+            href="#main">Skip to content</a>
+
+        <div class="max-w-6xl mx-auto px-4">
+            <div class="flex items-center justify-between h-16">
+                <a class="flex items-center gap-2 font-semibold text-gray-900 hover:text-blue-600" href="index.html">
+                    <i aria-hidden="true" data-feather="layers"></i>
+                    <span>Ahmed Hamdi Sakr</span>
+                </a>
+                <button aria-controls="mobile-nav" aria-expanded="false" aria-label="Open menu"
+                    class="md:hidden p-2 rounded hover:bg-gray-100" id="menuBtn" type="button">
+                    <i data-feather="menu"></i>
+                </button>
+                <nav class="hidden md:block" id="primary-nav">
+                    <ul class="flex items-center gap-6">
+                        <li><a class="hover:text-blue-600" data-nav="index" href="index.html">Home</a></li>
+                        <li><a class="hover:text-blue-600" data-nav="research" href="research.html">Research</a></li>
+                        <li><a class="hover:text-blue-600" data-nav="publications"
+                                href="publications.html">Publications</a></li>
+                        <li><a class="hover:text-blue-600" data-nav="teaching" href="teaching.html">Teaching</a></li>
+                        <li><a class="hover:text-blue-600" data-nav="team" href="team.html">Team</a></li>
+                        <li><a class="hover:text-blue-600" data-nav="join" href="join.html">Join</a></li>
+
+                    </ul>
+                </nav>
+
+                <!-- Burger -->
+                <button id="menuBtn" type="button" aria-label="Open menu"
+                    class="md:hidden p-2 rounded hover:bg-gray-100">
+                    <i data-feather="menu"></i>
+                </button>
+            </div>
+
+            <!-- Mobile nav -->
+            <nav aria-hidden="true" aria-label="Mobile" class="md:hidden hidden pb-4" id="mobile-nav">
+                <ul class="grid gap-2">
+                    <li><a class="block px-3 py-2 rounded hover:bg-gray-100" data-nav="index" href="index.html">Home</a>
+                    </li>
+                    <li><a class="block px-3 py-2 rounded hover:bg-gray-100" data-nav="research"
+                            href="research.html">Research</a></li>
+                    <li><a class="block px-3 py-2 rounded hover:bg-gray-100" data-nav="publications"
+                            href="publications.html">Publications</a></li>
+                    <li><a class="block px-3 py-2 rounded hover:bg-gray-100" data-nav="teaching"
+                            href="teaching.html">Teaching</a></li>
+                    <li><a class="block px-3 py-2 rounded hover:bg-gray-100" data-nav="team" href="team.html">Team</a>
+                    </li>
+                    <li><a class="block px-3 py-2 rounded hover:bg-gray-100" data-nav="join" href="join.html">Join</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+    <div class="container mx-auto px-4 py-8 max-w-5xl">
+
+
+  <!-- Main -->
+  <main id="main" class="fade-in py-8 px-4 max-w-6xl mx-auto space-y-8">
+    <!-- Intro card -->
+    <div class="bg-white rounded-xl shadow-lg p-6 hover-scale">
+      <div class="flex items-center mb-4">
+        <i data-feather="grid" class="text-blue-500 mr-2"></i>
+        <h1 class="text-2xl font-semibold text-gray-800">Brightspace Quiz Generator</h1>
+      </div>
+      <p class="text-gray-700">
+        <strong>Credit:</strong> This generator was developed by Algonquin College to make it easy to create question sets you can import into Brightspace quizzes and pools.
+      </p>
+    </div>
+
+    <!-- Instructions card -->
+    <div class="bg-white rounded-xl shadow-lg p-6 hover-scale">
+      <div class="flex items-center mb-4">
+        <i data-feather="info" class="text-blue-500 mr-2"></i>
+        <h2 class="text-xl font-medium text-gray-800">Instructions</h2>
+      </div>
+      <ol class="list-decimal pl-6 text-gray-700 space-y-2">
+        <li>All questions must follow a proper format for the generator to recognize them.</li>
+        <li>Select the <strong>Question Type Samples</strong> dropdown and click <strong>Create</strong> to insert a sample question.</li>
+        <li>Copy/paste or type your questions in the editor below.</li>
+        <li>Click <strong>Generate Test Questions</strong>.</li>
+        <li class="ml-4 list-disc">If generation fails, any invalid questions will be highlighted in red—hover to see the error.</li>
+        <li>After a successful check, click <strong>Download Questions for Brightspace</strong>.</li>
+        <li>In Brightspace (Add/Edit Questions), use <em>Import</em>, upload the CSV, and follow the prompts.</li>
+      </ol>
+    </div>
+
+    <!-- Controls card -->
+    <div class="bg-white rounded-xl shadow-lg p-6 hover-scale">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Left: Quiz name -->
+        <div>
+          <label for="txtQuizName" class="block text-gray-800 font-medium mb-2">Quiz Name</label>
+          <input id="txtQuizName" name="txtQuizName" type="text"
+                 class="w-full rounded-lg border border-gray-300 p-2 focus:outline-none focus:ring-2 focus:ring-blue-600"
+                 placeholder="e.g., MidtermQuiz"/>
+        </div>
+
+        <!-- Right: Sample types -->
+        <div>
+          <label for="sampleQuestionTypes" class="block text-gray-800 font-medium mb-2">Question Type Samples</label>
+          <div class="flex gap-3">
+            <select id="sampleQuestionTypes" name="sampleQuestionTypes"
+                    class="flex-1 rounded-lg border border-gray-300 p-2 focus:outline-none focus:ring-2 focus:ring-blue-600">
+              <option value="0">Multiple Choice</option>
+              <option value="1">Multiple Answer</option>
+              <option value="2">True or False</option>
+              <option value="3">Essay/Written Response</option>
+              <option value="4">Short Answer</option>
+              <option value="5">Matching</option>
+              <option value="6">Ordering</option>
+            </select>
+            <button onclick="addQuestion()"
+                    class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-blue-600 text-white hover:bg-blue-700 transition">
+              <i data-feather="plus"></i>
+              Create
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Error label -->
+      <div class="text-center mt-6">
+        <span id="lblError" class="hidden text-red-600 font-semibold">
+          Test generation failed<br/>Hover over any red box for details.
+        </span>
+      </div>
+    </div>
+
+    <!-- Editor card -->
+    <div class="bg-white rounded-xl shadow-lg p-6 hover-scale">
+      <div class="flex items-center mb-4">
+        <i data-feather="edit-3" class="text-blue-500 mr-2"></i>
+        <h2 class="text-xl font-medium text-gray-800">Question Editor</h2>
+      </div>
+
+      <div id="panelQuiz" class="bg-white min-h-[450px]">
+        <textarea id="quiz" name="quiz" class="w-full h-[450px] rounded-lg border border-gray-300 p-3 focus:outline-none focus:ring-2 focus:ring-blue-600"></textarea>
+      </div>
+
+      <div class="flex flex-col md:flex-row items-center justify-center gap-4 mt-6">
+        <button onclick="generateQuestions()"
+                class="inline-flex items-center gap-2 px-6 py-2 rounded-xl bg-blue-600 text-white hover:bg-blue-700 transition">
+          <i data-feather="settings"></i>
+          Generate Test Questions
+        </button>
+        <button onclick="clearQuestions()"
+                class="inline-flex items-center gap-2 px-6 py-2 rounded-xl bg-gray-100 text-gray-800 hover:bg-gray-200 transition">
+          <i data-feather="trash-2"></i>
+          Clear Test Questions
+        </button>
+      </div>
+    </div>
+
+    <!-- Download panel (shown after success) -->
+    <div id="panelDownload" class="hidden bg-white rounded-xl shadow-lg p-6 hover-scale">
+      <div class="flex items-center mb-4">
+        <i data-feather="download" class="text-blue-500 mr-2"></i>
+        <h2 class="text-xl font-medium text-gray-800">Download</h2>
+      </div>
+
+      <div class="text-center">
+        <button onclick="downloadQuestions()"
+                class="inline-flex items-center gap-2 px-8 py-3 rounded-xl bg-blue-600 text-white hover:bg-blue-700 transition">
+          <i data-feather="download-cloud"></i>
+          Download Questions for Brightspace
+        </button>
+        <div class="mt-3 text-gray-700 italic" id="lblDownload">Test Generated with 0 Questions</div>
+      </div>
+    </div>
+        </main>
+        <footer class="mt-12 text-center text-gray-600 fade-in">
+            <p>© 2021 Ahmed Hamdi Sakr. All rights reserved.</p>
+        </footer>
+    </div>
 
 <style>
 	table {
@@ -500,109 +670,5 @@
 		document.body.removeChild(element);
 	}
 </script>
-
-<body>
-	<div class="container" id="wrapper">
-		<div class="navbar clearfix">
-            <a href="index.html">Ahmed Hamdi Sakr, Ph.D., SMIEEE</a>
-            <div class="nav-menu">
-                <a href="index.html">Home</a>
-                <a href="research.html">Research</a>
-                <a href="teaching.html">Teaching</a>
-                <a href="services.html">Services</a>
-				<a href="contact.html">Join Us</a>
-            </div>
-        </div>
-
-		<div id="body">
-			<h2>Brightspace Quiz Generator</h2>
-			<p><strong>Credit:</strong> This generator is developed by Algonquin College as an easy way of creating a collection of questions that can be imported into Brightspace quizzes and pools, saving you time in the process!</p>
-			<h3>Instructions</h3>
-			<ol>
-				<li>All questions must follow a proper format for the generator to recognize them.</li>
-				<li>Select the <strong>Question Type Samples</strong> dropdown and click <strong> Create
-				</strong> to see a sample question.</li>
-				<li>Copy and paste all your questions or type them out in the box below.</li>
-				<li>Click <strong>Generate Test Questions.</strong></li>
-				<ul>
-					<li>In case the Test Generator fails, review the questions in red. It could mean the format is not correct or something is missing.</li>
-				</ul>
-				<li>Once the generation has passed, click the <strong>Download Questions for Brightspace</strong> button at the bottom of the page.</li>
-				<li>Save the .csv file to your computer.</li>
-				<li>In the Add/Edit Questions screen in Brightspace, use the Import option and upload the .csv file and follow the prompts.</li>
-			</ol>
-			<p>
-				<hr />
-				<br />
-			</p>
-
-			<table>
-				<tr>
-					<!-- Quiz name area -->
-					<td align="left" valign="top">
-						<b>Quiz Name</b>
-						<br />
-						<input name="txtQuizName" type="text" id="txtQuizName" style="width:200px;height:20px;" />
-					</td>
-					<td align="left" valign="top">
-						<b><strong>Question Type Samples</strong></b>
-						<br />
-						<select name="sampleQuestionTypes" id="sampleQuestionTypes" style="width:200px; height:25px;">
-							<option value="0">Multiple Choice</option>
-							<option value="1">Multiple Answer</option>
-							<option value="2">True or False</option>
-							<option value="3">Essay/Written Response</option>
-							<option value="4">Short Answer</option>
-							<option value="5">Matching</option>
-							<option value="6">Ordering</option>
-						</select>
-						<button onclick="addQuestion()" class="button createbutton">Create</button>
-					</td>
-				</tr>
-				<tr>
-					<td align="center" colspan="2">
-						<b><span id="lblError" style="display:none;color:Red;">Test generation failed<br/>Hold your mouse cursor over any red box for more information<br /></span></b>
-					</td>
-				</tr>
-				<tr>
-					<!-- Quiz entry area -->
-					<td align="left" colspan="2">
-						<div id="panelQuiz" style="background-color:White;height:100%;width:100%;min-height:450px">
-							<textarea name="quiz" rows="2" cols="20" id="quiz"
-								style="height:450px;width:100%;"></textarea>
-						</div>
-					</td>
-				</tr>
-				<tr>
-					<td align="center" colspan="2">
-						<button onclick="generateQuestions()" class="button createbutton" style="width:250px;">Generate Test
-							Questions</button>
-						<button onclick="clearQuestions()" class="button createbutton"
-							style="width:250px;">Clear Test Questions</button>
-					</td>
-				</tr>
-			</table>
-			<br />
-			<!-- The download panel -->
-			<div id="panelDownload"
-				style="display:none;background-color:White;border-color:Black;border-width:1px;border-style:solid;height:120px;width:100%;padding-top:0px">
-				<table width="100%" border="0">
-					<tr>
-						<td colspan="2" align="center">
-							<button onclick="downloadQuestions()" class="button createbutton"
-								style="height:50px;width:400px;">Download Test Questions for Brightspace</button>
-						</td>
-					</tr>
-				</table>
-				<br />
-				<span id="lblDownload" style="font-weight:bold;font-style:italic;">Test Generated with 0 Questions</span>
-			</div>
-			<div class="footer">
-				<p class="footertext">
-					Copyright &copy; 2021 Ahmed Hamdi Sakr. All Rights Reserved.
-				</p>
-			</div>
-	</div>
 </body>
-
 </html>
