@@ -15,7 +15,7 @@
 </head>
 
 <body class="font-sans gradient-bg min-h-screen" data-page="teaching">
-<header class="fixed inset-x-0 top-0 z-[9999] bg-white/70 backdrop-blur border-b border-gray-200">
+    <header class="fixed inset-x-0 top-0 z-[9999] bg-white/70 backdrop-blur border-b border-gray-200">
         <a class="sr-only focus:not-sr-only focus:outline-none focus:ring-2 focus:ring-blue-600 px-4 py-2 absolute left-2 top-2 bg-white rounded"
             href="#main">Skip to content</a>
         <div class="max-w-6xl mx-auto px-4">
@@ -32,7 +32,8 @@
                     <ul class="flex items-center gap-6">
                         <li><a class="hover:text-blue-600" data-nav="index" href="index.html">Home</a></li>
                         <li><a class="hover:text-blue-600" data-nav="research" href="research.html">Research</a></li>
-                        <li><a class="hover:text-blue-600" data-nav="publications" href="publications.html">Publications</a></li>
+                        <li><a class="hover:text-blue-600" data-nav="publications"
+                                href="publications.html">Publications</a></li>
                         <li><a class="hover:text-blue-600" data-nav="teaching" href="teaching.html">Teaching</a></li>
                         <li><a class="hover:text-blue-600" data-nav="team" href="team.html">Team</a></li>
                         <li><a class="hover:text-blue-600" data-nav="join" href="join.html">Join</a></li>
@@ -41,12 +42,18 @@
             </div>
             <nav aria-hidden="true" aria-label="Mobile" class="md:hidden hidden pb-4" id="mobile-nav">
                 <ul class="grid gap-2">
-                    <li><a class="block px-3 py-2 rounded hover:bg-gray-100" data-nav="index" href="index.html">Home</a></li>
-                    <li><a class="block px-3 py-2 rounded hover:bg-gray-100" data-nav="research" href="research.html">Research</a></li>
-                    <li><a class="block px-3 py-2 rounded hover:bg-gray-100" data-nav="publications" href="publications.html">Publications</a></li>
-                    <li><a class="block px-3 py-2 rounded hover:bg-gray-100" data-nav="teaching" href="teaching.html">Teaching</a></li>
-                    <li><a class="block px-3 py-2 rounded hover:bg-gray-100" data-nav="team" href="team.html">Team</a></li>
-                    <li><a class="block px-3 py-2 rounded hover:bg-gray-100" data-nav="join" href="join.html">Join</a></li>
+                    <li><a class="block px-3 py-2 rounded hover:bg-gray-100" data-nav="index" href="index.html">Home</a>
+                    </li>
+                    <li><a class="block px-3 py-2 rounded hover:bg-gray-100" data-nav="research"
+                            href="research.html">Research</a></li>
+                    <li><a class="block px-3 py-2 rounded hover:bg-gray-100" data-nav="publications"
+                            href="publications.html">Publications</a></li>
+                    <li><a class="block px-3 py-2 rounded hover:bg-gray-100" data-nav="teaching"
+                            href="teaching.html">Teaching</a></li>
+                    <li><a class="block px-3 py-2 rounded hover:bg-gray-100" data-nav="team" href="team.html">Team</a>
+                    </li>
+                    <li><a class="block px-3 py-2 rounded hover:bg-gray-100" data-nav="join" href="join.html">Join</a>
+                    </li>
                 </ul>
             </nav>
         </div>
@@ -145,81 +152,93 @@
                         <h4>Exam Timer <a class="text-blue-600 hover:underline" href="timer.html">[Here]</a></h4>
                     </li>
                     <li>
-                        <h4>Brightspace Quiz Generator <a class="text-blue-600 hover:underline" href="brightspace.html">[Here]</a></h4>
+                        <h4>Brightspace Quiz Generator <a class="text-blue-600 hover:underline"
+                                href="brightspace.html">[Here]</a></h4>
                     </li>
                 </ul>
             </div>
 
-  <!-- Card: How to Email Your Course Instructor -->
-  <div class="bg-white rounded-xl shadow-lg p-6 hover-scale mb-8">
-    <div class="flex items-center mb-4">
-      <i data-feather="mail" class="text-blue-500 mr-2"></i>
-      <h2 class="text-2xl font-semibold text-gray-800">How to Email Your Course Instructor</h2>
-    </div>
+            <!-- Card: How to Email Your Course Instructor -->
+            <div class="bg-white rounded-xl shadow-lg p-6 hover-scale">
+                <div class="flex items-center mb-4">
+                    <i data-feather="mail" class="text-blue-500 mr-2"></i>
+                    <h2 class="text-2xl font-semibold text-gray-800">How to Email Your Course Instructor</h2>
+                </div>
 
-    <p class="text-gray-700 mb-4">
-      Use this template when contacting your instructor. Replace anything in <strong>[square brackets]</strong> with your own details.
-    </p>
+                <p class="text-gray-700 mb-4">
+                    Use this template when contacting your instructor. Replace anything in <strong>[square
+                        brackets]</strong> with your own details.
+                </p>
 
-    <div class="bg-blue-50 rounded-lg p-4">
-      <h3 class="text-xl font-medium text-gray-800 mb-2">Email Template</h3>
+                <div class="bg-blue-50 rounded-lg p-4">
+                    <h3 class="text-xl font-medium text-gray-800 mb-2">Email Template</h3>
 
-      <p class="text-gray-700 mb-4"><strong>Subject:</strong> [Clear, specific topic, e.g., <em>ELEC 2240 - Question about Assignment 2</em> or <em>ELEC 4400 - Request for Office Hour Appointment</em> or <em>ELEC 8560 - Clarification on Lecture 5</em>]</p>
+                    <p class="text-gray-700 mb-4"><strong>Subject:</strong> [Clear, specific topic, e.g., <em>ELEC 2240
+                            - Question about Assignment 2</em> or <em>ELEC 4400 - Request for Office Hour
+                            Appointment</em> or <em>ELEC 8560 - Clarification on Lecture 5</em>]</p>
 
-      <p class="text-gray-700 mb-4">Dear Dr. [Last Name],<br/>
-        <span class="text-sm text-gray-600">(Use the correct title: Professor, Dr., etc. Never call a professor Mrs., Miss, or Mr.)</span>
-      </p>
+                    <p class="text-gray-700 mb-4">Dear Dr. [Last Name],<br />
+                        <span class="text-sm text-gray-600">(Use the correct title: Professor, Dr., etc. Never call a
+                            professor Mrs., Miss, or Mr.)</span>
+                    </p>
 
-      <p class="text-gray-700 mb-4">
-        My name is [Your Full Name], and I am a student in your [Course Code - e.g., <em>ELEC-2240 Signals and Systems</em>] class, Section [Number, if applicable]. 
-        [If needed, include the meeting time, e.g., <em>T/Th 1:00-2:20 PM</em>.]
-      </p>
+                    <p class="text-gray-700 mb-4">
+                        My name is [Your Full Name], and I am a student in your [Course Code - e.g., <em>ELEC-2240
+                            Signals and Systems</em>] class, Section [Number, if applicable].
+                        [If needed, include the meeting time, e.g., <em>T/Th 1:00-2:20 PM</em>.]
+                    </p>
 
-      <p class="text-gray-700 mb-4">
-        [State clearly and politely the reason for your email. Example: <em>I am writing to ask for clarification on Question 3 of Assignment 2, specifically the expected format for the solution.</em>]
-      </p>
+                    <p class="text-gray-700 mb-4">
+                        [State clearly and politely the reason for your email. Example: <em>I am writing to ask for
+                            clarification on Question 3 of Assignment 2, specifically the expected format for the
+                            solution.</em>]
+                    </p>
 
-      <p class="text-gray-700 mb-4">
-        [Provide brief context so the instructor understands the issue. Example: <em>I reviewed the lecture notes and the course site, but I could not find a detailed explanation.</em>]
-      </p>
+                    <p class="text-gray-700 mb-4">
+                        [Provide brief context so the instructor understands the issue. Example: <em>I reviewed the
+                            lecture notes and the course site, but I could not find a detailed explanation.</em>]
+                    </p>
 
-      <p class="text-gray-700 mb-4">
-        [Ask your question or make your request directly, using polite language. Example: <em>Could you please confirm whether we should include derivation steps in our submission?</em> 
-        or <em>Would it be possible to schedule a short meeting during your office hours?</em>]
-      </p>
+                    <p class="text-gray-700 mb-4">
+                        [Ask your question or make your request directly, using polite language. Example: <em>Could you
+                            please confirm whether we should include derivation steps in our submission?</em>
+                        or <em>Would it be possible to schedule a short meeting during your office hours?</em>]
+                    </p>
 
-      <p class="text-gray-700 mb-4">
-        [If applicable, mention attachments and responsibility. Example: <em>I am attaching my draft and will revise it after your guidance. Thank you for your time.</em>]
-      </p>
+                    <p class="text-gray-700 mb-4">
+                        [If applicable, mention attachments and responsibility. Example: <em>I am attaching my draft and
+                            will revise it after your guidance. Thank you for your time.</em>]
+                    </p>
 
-      <p class="text-gray-700 mb-4">Thank you for your time and help.</p>
+                    <p class="text-gray-700 mb-4">Thank you for your time and help.</p>
 
-      <p class="text-gray-700">
-        Sincerely,<br/>
-        [Your Full Name]<br/>
-        [Student ID]
-      </p>
-    </div>
-    <!-- Card: Quick Tips -->
-    <div class="bg-white rounded-xl shadow-lg p-6 hover-scale">
-      <div class="flex items-center mb-4">
-        <i data-feather="info" class="text-blue-500 mr-2"></i>
-        <h3 class="text-xl font-medium text-gray-800">Quick Tips</h3>
-      </div>
-      <ul class="list-disc pl-5 text-gray-700 space-y-2">
-        <li>Use your <strong>university email address</strong> and a <strong>specific subject line</strong>.</li>
-        <li>Be <strong>polite and concise</strong> (8-10 sentences max). Proofread before sending.</li>
-        <li>Check the <strong>syllabus</strong> and course site/announcements first.</li>
-        <li>Allow <strong>24-48 hours</strong> for replies on weekdays.</li>
-        <li>Avoid mass emails; follow up politely after <strong>2 work days</strong> if needed.</li>
-      </ul>
-    </div>
-  </div>
+                    <p class="text-gray-700">
+                        Sincerely,<br />
+                        [Your Full Name]<br />
+                        [Student ID]
+                    </p>
+                </div>
+                <!-- Card: Quick Tips -->
+                <div class="bg-white rounded-xl shadow-lg p-6 hover-scale">
+                    <div class="flex items-center mb-4">
+                        <i data-feather="info" class="text-blue-500 mr-2"></i>
+                        <h3 class="text-xl font-medium text-gray-800">Quick Tips</h3>
+                    </div>
+                    <ul class="list-disc pl-5 text-gray-700 space-y-2">
+                        <li>Use your <strong>university email address</strong> and a <strong>specific subject
+                                line</strong>.</li>
+                        <li>Be <strong>polite and concise</strong> (8-10 sentences max). Proofread before sending.</li>
+                        <li>Check the <strong>syllabus</strong> and course site/announcements first.</li>
+                        <li>Allow <strong>24-48 hours</strong> for replies on weekdays.</li>
+                        <li>Avoid mass emails; follow up politely after <strong>2 work days</strong> if needed.</li>
+                    </ul>
+                </div>
+            </div>
 
 
         </main>
         <footer class="mt-12 text-center text-gray-600 fade-in">
-            <p>© 2021 Ahmed Hamdi Sakr. All rights reserved.</p>
+            <p>&copy; 2021 Ahmed Hamdi Sakr. All rights reserved.</p>
         </footer>
     </div>
 </body>

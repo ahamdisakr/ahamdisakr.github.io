@@ -15,7 +15,7 @@
 </head>
 
 <body class="font-sans gradient-bg min-h-screen" data-page="index">
-<header class="fixed inset-x-0 top-0 z-[9999] bg-white/70 backdrop-blur border-b border-gray-200">
+    <header class="fixed inset-x-0 top-0 z-[9999] bg-white/70 backdrop-blur border-b border-gray-200">
         <a class="sr-only focus:not-sr-only focus:outline-none focus:ring-2 focus:ring-blue-600 px-4 py-2 absolute left-2 top-2 bg-white rounded"
             href="#main">Skip to content</a>
         <div class="max-w-6xl mx-auto px-4">
@@ -32,7 +32,8 @@
                     <ul class="flex items-center gap-6">
                         <li><a class="hover:text-blue-600" data-nav="index" href="index.html">Home</a></li>
                         <li><a class="hover:text-blue-600" data-nav="research" href="research.html">Research</a></li>
-                        <li><a class="hover:text-blue-600" data-nav="publications" href="publications.html">Publications</a></li>
+                        <li><a class="hover:text-blue-600" data-nav="publications"
+                                href="publications.html">Publications</a></li>
                         <li><a class="hover:text-blue-600" data-nav="teaching" href="teaching.html">Teaching</a></li>
                         <li><a class="hover:text-blue-600" data-nav="team" href="team.html">Team</a></li>
                         <li><a class="hover:text-blue-600" data-nav="join" href="join.html">Join</a></li>
@@ -41,12 +42,18 @@
             </div>
             <nav aria-hidden="true" aria-label="Mobile" class="md:hidden hidden pb-4" id="mobile-nav">
                 <ul class="grid gap-2">
-                    <li><a class="block px-3 py-2 rounded hover:bg-gray-100" data-nav="index" href="index.html">Home</a></li>
-                    <li><a class="block px-3 py-2 rounded hover:bg-gray-100" data-nav="research" href="research.html">Research</a></li>
-                    <li><a class="block px-3 py-2 rounded hover:bg-gray-100" data-nav="publications" href="publications.html">Publications</a></li>
-                    <li><a class="block px-3 py-2 rounded hover:bg-gray-100" data-nav="teaching" href="teaching.html">Teaching</a></li>
-                    <li><a class="block px-3 py-2 rounded hover:bg-gray-100" data-nav="team" href="team.html">Team</a></li>
-                    <li><a class="block px-3 py-2 rounded hover:bg-gray-100" data-nav="join" href="join.html">Join</a></li>
+                    <li><a class="block px-3 py-2 rounded hover:bg-gray-100" data-nav="index" href="index.html">Home</a>
+                    </li>
+                    <li><a class="block px-3 py-2 rounded hover:bg-gray-100" data-nav="research"
+                            href="research.html">Research</a></li>
+                    <li><a class="block px-3 py-2 rounded hover:bg-gray-100" data-nav="publications"
+                            href="publications.html">Publications</a></li>
+                    <li><a class="block px-3 py-2 rounded hover:bg-gray-100" data-nav="teaching"
+                            href="teaching.html">Teaching</a></li>
+                    <li><a class="block px-3 py-2 rounded hover:bg-gray-100" data-nav="team" href="team.html">Team</a>
+                    </li>
+                    <li><a class="block px-3 py-2 rounded hover:bg-gray-100" data-nav="join" href="join.html">Join</a>
+                    </li>
                 </ul>
             </nav>
         </div>
@@ -64,20 +71,22 @@
                         loading="eager" src="images/sakr.jpg" width="480" />
                 </div>
                 <div class="md:col-span-2 space-y-3">
-                    <h1 class="text-3xl md:text-4xl font-extrabold tracking-tight">Ahmed Hamdi Sakr<span class="align-baseline md:text-2xl font-semibold text-gray-600">, PhD, PEng, SMIEEE</span></h1>
+                    <h1 class="text-3xl md:text-4xl font-extrabold tracking-tight">Ahmed Hamdi Sakr<span
+                            class="align-baseline md:text-2xl font-semibold text-gray-600">, PhD, PEng, SMIEEE</span>
+                    </h1>
                     <h2 class="font-medium text-gray-600">Assistant Professor</h2>
                     <p>Department of Electrical and Computer Engineering</br>University of Windsor</p>
-<div class="flex flex-wrap gap-3 pt-2">
-  <a href="publications.html" class="btn btn-primary">
-    <i data-feather="file-text" class="icon-4"></i><span>Publications</span>
-  </a>
-  <a href="research.html" class="btn btn-primary">
-    <i data-feather="cpu" class="icon-4"></i><span>Research</span>
-  </a>
-  <a href="teaching.html" class="btn btn-primary">
-    <i data-feather="book-open" class="icon-4"></i><span>Teaching</span>
-  </a>
-</div>
+                    <div class="flex flex-wrap gap-3 pt-2">
+                        <a href="publications.html" class="btn btn-primary">
+                            <i data-feather="file-text" class="icon-4"></i><span>Publications</span>
+                        </a>
+                        <a href="research.html" class="btn btn-primary">
+                            <i data-feather="cpu" class="icon-4"></i><span>Research</span>
+                        </a>
+                        <a href="teaching.html" class="btn btn-primary">
+                            <i data-feather="book-open" class="icon-4"></i><span>Teaching</span>
+                        </a>
+                    </div>
                 </div>
             </section>
             <div class="lg:col-span-2 bg-white rounded-xl shadow-lg p-6 hover-scale">
@@ -112,7 +121,7 @@
                 <ul class="space-y-3">
                     <li class="flex items-start">
                         <i class="text-gray-500 mt-1 mr-2 flex-shrink-0" data-feather="map-pin"></i>
-                        <span >
+                        <span>
                             Department of Electrical and Computer Engineering<br />
                             University of Windsor<br />
                             401 Sunset Avenue, Windsor, Ontario N9B 3P4, Canada
@@ -195,7 +204,7 @@
         </main>
         <!-- Footer -->
         <footer class="mt-12 text-center text-gray-600 fade-in">
-            <p>© 2021 Ahmed Hamdi Sakr. All rights reserved.</p>
+            <p>&copy; 2021 Ahmed Hamdi Sakr. All rights reserved.</p>
         </footer>
     </div>
 </body>
