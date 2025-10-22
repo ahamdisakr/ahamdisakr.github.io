@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Interactive Fourier Series Coefficient Demo (Standalone v2)</title>
+<style>
+:root{
+  --bg:#0b1220;         /* page background */
+  --fg:#e6edf3;         /* text color */
+  --muted:#94a3b8;      /* secondary text */
+  --accent:#34d399;     /* main accent (recon line & stems default) */
+  --accent2:#f59e0b;    /* original signal line */
+  --accent3:#ef4444;    /* error line */
+  --grid:#1f2937;       /* not used directly; grid color set in JS */
+  --card:#111827;       /* panel background */
+}
+  * { box-sizing: border-box; }
+  body { margin: 0; padding: 24px; background: var(--bg); color: var(--fg); font: 14px/1.4 system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji"; }
+  h1 { font-size: 20px; margin: 0 0 4px; }
+  p  { color: var(--muted); margin: 0 0 16px; }
+  .wrap { max-width: 1100px; margin: 0 auto; }
+  .controls { display: grid; grid-template-columns: 1.2fr 1fr 1fr 1fr; gap: 12px; margin-bottom: 10px; }
+  .control { background: var(--card); padding: 12px; border-radius: 12px; border: 1px solid #0f172a; }
+  label { font-weight: 600; display: block; margin-bottom: 6px; color: #cbd5e1; }
+  select, input[type="number"], input[type="range"] { width: 100%; padding: 8px 10px; border-radius: 8px; background: #0b162c; color: var(--fg); border: 1px solid #1f2a44; }
+  input[type="range"] { padding: 0; height: 28px; }
+  .toggles { display:flex; gap:16px; align-items:center; margin-bottom: 16px; }
+  .canvas-row { display: grid; grid-template-columns: 1fr; gap: 12px; }
+  .card { background: var(--card); border: 1px solid #0f172a; border-radius: 12px; padding: 10px 12px; }
+  .card h2 { font-size: 16px; margin: 0 0 6px; color: #cbd5e1; }
+  canvas { width: 100%; height: 260px; display: block; background: #0a1326; border-radius: 8px; }
+  .legend { display: flex; gap: 16px; font-size: 12px; color: #cbd5e1; margin: 6px 0 0; flex-wrap: wrap; }
+  .chip { display:inline-flex; align-items:center; gap:6px; }
+  .dot { width:10px; height:10px; border-radius:50%; display:inline-block; }
+  .dot.x { background: var(--accent2); }
+  .dot.y { background: var(--accent); }
+  .dot.e { background: var(--accent3); }
+  footer { margin-top: 18px; color: var(--muted); font-size: 12px; }
+  .small { font-size: 12px; color: var(--muted); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Interactive Fourier Series Coefficient Demo</h1>
+  <p>Choose a signal, number of coefficients, phase shift, and how many cycles to show. You can also overlay the error e(t) = x(t) − y(t).</p>
+
+  <div class="controls">
+    <div class="control">
+      <label for="wave">Signal Type</label>
+      <select id="wave">
+        <option value="square">Square</option>
+        <option value="triangle">Triangle</option>
+        <option value="ramp">Ramp (Sawtooth)</option>
+        <option value="full_rectified_sine">Full-wave Rectified Sine</option>
+        <option value="full_rectified_cosine">Full-wave Rectified Cosine</option>
+        <option value="half_rectified_sine">Half-wave Rectified Sine</option>
+        <option value="half_rectified_cosine">Half-wave Rectified Cosine</option>
+      </select>
+    </div>
+    <div class="control">
+      <label for="ncoef"># of coefficients N: <span id="nval">0</span></label>
+      <input type="range" min="0" max="15" step="1" value="0" id="ncoef" />
+      <div class="small">N=0 ⇒ use only c₀ (i.e., a₀/2).</div>
+    </div>
+    <div class="control">
+      <label for="phase">Phase Shift (% of period): <span id="pval">0</span>%</label>
+      <input type="range" min="-50" max="50" step="1" value="0" id="phase" />
+    </div>
+    <div class="control">
+      <label for="cycles">Cycles shown in time plot: <span id="cval">3</span></label>
+      <input type="range" min="1" max="5" step="1" value="3" id="cycles" />
+    </div>
+  </div>
+
+  <div class="toggles">
+    <label><input type="checkbox" id="showError" /> Show error e(t) = x(t) − y(t)</label>
+  </div>
+
+  <div class="canvas-row">
+    <div class="card">
+      <h2>Time-Domain Signal & Reconstruction</h2>
+      <canvas id="timeCanvas" width="1100" height="280"></canvas>
+      <div class="legend">
+        <span class="chip"><span class="dot x"></span>Original x(t)</span>
+        <span class="chip"><span class="dot y"></span>Reconstruction y(t)</span>
+        <span class="chip"><span class="dot e"></span>Error e(t)</span>
+      </div>
+    </div>
+    <div class="card">
+      <h2>Magnitude Spectrum |c[n]|</h2>
+      <canvas id="magCanvas" width="1100" height="280"></canvas>
+    </div>
+    <div class="card">
+      <h2>Phase Spectrum ∠c[n] (rad)</h2>
+      <canvas id="phaseCanvas" width="1100" height="280"></canvas>
+    </div>
+  </div>
+
+</div>
+
+<script>
+(function(){
+  // Core config
+  const T = 1.0;               // period [s]
+  const Ts = 1e-4;             // sampling time [s] for coefficient integration
+  const tOne = Array.from({length: Math.floor(1/Ts)+1}, (_,k)=>k*Ts); // [0, T]
+
+  const TWO_PI = Math.PI*2;
+
+  // DOM
+  const elWave  = document.getElementById('wave');
+  const elNcoef = document.getElementById('ncoef');
+  const elNval  = document.getElementById('nval');
+  const elPhase = document.getElementById('phase');
+  const elPval  = document.getElementById('pval');
+  const elCycles= document.getElementById('cycles');
+  const elCval  = document.getElementById('cval');
+  const elShowE = document.getElementById('showError');
+
+  const timeCanvas  = document.getElementById('timeCanvas');
+  const magCanvas   = document.getElementById('magCanvas');
+  const phaseCanvas = document.getElementById('phaseCanvas');
+
+  // Helpers
+  function wrapMod(x, M){ return ((x % M) + M) % M; }
+
+  function makeWaveSamples(kind, phasePct, tArray){
+    const x = new Array(tArray.length);
+    const ph = phasePct/100 * T; // phase as time shift
+    for (let k=0; k<tArray.length; k++) {
+      const ti = tArray[k];
+      const tm = ti + T + ph; // shift and avoid negatives
+      const u = wrapMod(tm, T); // in [0, T)
+      switch(kind){
+        case 'square':
+          x[k] = (u <= T/2) ? 1 : -1;
+          break;
+        case 'triangle':
+          x[k] = 4/T * (Math.abs(u - T/2) - T/4);
+          break;
+        case 'ramp':
+          x[k] = (u <= T/2) ? (2*u/T) : (2*u/T - 1);
+          break;
+        case 'full_rectified_sine':
+          x[k] = Math.abs(Math.sin(TWO_PI*u/T));
+          break;
+        case 'full_rectified_cosine':
+          x[k] = Math.abs(Math.cos(TWO_PI*u/T));
+          break;
+        case 'half_rectified_sine': {
+          let val = Math.sin(TWO_PI*u/T);
+          x[k] = (val < 0) ? 0 : val;
+          break;
+        }
+        case 'half_rectified_cosine': {
+          let val = Math.cos(TWO_PI*u/T);
+          x[k] = (val < 0) ? 0 : val;
+          break;
+        }
+        default:
+          x[k] = 0;
+      }
+    }
+    return x;
+  }
+
+  function dot(a,b){
+    let s=0;
+    for(let i=0;i<a.length;i++) s += a[i]*b[i];
+    return s;
+  }
+
+  function computeCoeffs(x, N){
+    // numerical integration via sampling (rectangle rule) on one period
+    const L = x.length;
+    const a = new Array(N+1).fill(0); // indices 0..N (a[0] unused in standard form)
+    const b = new Array(N+1).fill(0);
+    // precompute cos/sin tables
+    const cosn = []; const sinn = [];
+    for(let n=1;n<=N;n++){
+      const cn = new Array(L); const sn = new Array(L);
+      for(let k=0;k<L;k++){
+        const ang = TWO_PI*n*tOne[k]/T;
+        cn[k] = Math.cos(ang);
+        sn[k] = Math.sin(ang);
+      }
+      cosn[n]=cn; sinn[n]=sn;
+    }
+    const sum = x.reduce((s,v)=>s+v,0);
+    const a0 = 2*sum/L; // trapezoid correction negligible at fine Ts; rectangle is OK here
+    for(let n=1;n<=N;n++){
+      a[n] = 2/T * dot(x, cosn[n]) / (L/T);
+      b[n] = 2/T * dot(x, sinn[n]) / (L/T);
+    }
+    return {a0, a, b};
+  }
+
+  function reconstruct(tArray, coeffs, N){
+    const {a0, a, b} = coeffs;
+    const y = new Array(tArray.length).fill(a0/2);
+    for(let n=1;n<=N;n++){
+      for(let k=0;k<tArray.length;k++){
+        const ang = TWO_PI*n*tArray[k]/T;
+        y[k] += a[n]*Math.cos(ang) + b[n]*Math.sin(ang);
+      }
+    }
+    return y;
+  }
+
+  function makeComplexCoeffs(a0, a, b, N, span=15){
+    // Build c[n] for -span..span using real coefficients up to N
+    const size = 2*span+1;
+    const f = new Array(size).fill(0).map(_=>({re:0, im:0}));
+    const mid = span;
+    // c0
+    f[mid] = {re: a0/2, im: 0};
+    for(let n=1;n<=Math.min(N, span); n++){
+      const c = {re: a[n]/2, im: -b[n]/2};
+      f[mid+n] = {re: c.re, im: c.im};
+      f[mid-n] = {re: c.re, im: -c.im}; // conjugate
+    }
+    return {f, span};
+  }
+
+  // Drawing helpers with y-axis labels
+  function clearCanvas(ctx){
+    const {width, height} = ctx.canvas;
+    ctx.clearRect(0,0,width,height);
+    ctx.fillStyle = "#0a1326";
+    ctx.fillRect(0,0,width,height);
+  }
+
+  function drawGrid(ctx, plot){
+    const {x0, y0, w, h} = plot;
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(x0,y0,w,h);
+    ctx.clip();
+
+    ctx.strokeStyle = "#15223e";
+    ctx.lineWidth = 1;
+    // vertical
+    for(let gx=0; gx<=w; gx+=50){ ctx.beginPath(); ctx.moveTo(x0+gx, y0); ctx.lineTo(x0+gx, y0+h); ctx.stroke(); }
+    // horizontal
+    for(let gy=0; gy<=h; gy+=50){ ctx.beginPath(); ctx.moveTo(x0, y0+gy); ctx.lineTo(x0+w, y0+gy); ctx.stroke(); }
+
+    ctx.restore();
+  }
+
+  function yTicks(minv, maxv, count=5){
+    const ticks = [];
+    if (minv===maxv){ minv -= 1; maxv += 1; }
+    const step = (maxv-minv)/(count-1);
+    for(let i=0;i<count;i++){ ticks.push(minv + i*step); }
+    return {min: minv, max: maxv, ticks};
+  }
+
+function plotSignalWithAxes(ctx, tArray, seriesList, opts){
+  const {width, height} = ctx.canvas;
+  const margin = {left: 48, right: 12, top: 10, bottom: 22};
+  const plot = {x0: margin.left, y0: margin.top, w: width - margin.left - margin.right, h: height - margin.top - margin.bottom};
+
+  // --- compute ranges ---
+  const xmin = tArray[0], xmax = tArray[tArray.length-1];
+  const yRange = opts && opts.yRange;
+  let ymin, ymax;
+  if (yRange) {
+    [ymin, ymax] = yRange;
+  } else {
+    ymin = Infinity; ymax = -Infinity;
+    seriesList.forEach(s => {
+      ymin = Math.min(ymin, Math.min(...s.y));
+      ymax = Math.max(ymax, Math.max(...s.y));
+    });
+    if (!isFinite(ymin) || !isFinite(ymax)) { ymin = -1; ymax = 1; }
+    const pad = 0.1*(ymax - ymin || 1); ymin -= pad; ymax += pad;
+  }
+  const yt = yTicks(ymin, ymax, 5);
+
+  // mappers
+  const xToPx = (x) => plot.x0 + (x - xmin) * (plot.w/(xmax - xmin));
+  const yToPx = (y) => plot.y0 + plot.h - ((y - yt.min)/(yt.max - yt.min)) * plot.h;
+
+  // clear bg
+  ctx.clearRect(0,0,width,height);
+  ctx.fillStyle = "#0a1326";
+  ctx.fillRect(0,0,width,height);
+
+  // --- GRID aligned to ticks ---
+  ctx.save();
+  ctx.beginPath(); ctx.rect(plot.x0, plot.y0, plot.w, plot.h); ctx.clip();
+
+  // horizontal grid at y-ticks
+  ctx.strokeStyle = "#15223e"; ctx.lineWidth = 1;
+  yt.ticks.forEach(v => {
+    const y = yToPx(v);
+    ctx.beginPath(); ctx.moveTo(plot.x0, y); ctx.lineTo(plot.x0 + plot.w, y); ctx.stroke();
+  });
+
+  // vertical grid at x-ticks (mark each period; subdivide if you want)
+  const T = 1.0;
+  const cycles = Math.round((xmax - xmin) / T);
+  const xTickVals = [];
+  for (let c = 0; c <= cycles; c++) xTickVals.push(c*T);
+  // Optional: minor ticks every T/2 or T/4
+  xTickVals.forEach(xv => {
+    const x = xToPx(xv);
+    if (x >= plot.x0 && x <= plot.x0 + plot.w) {
+      ctx.beginPath(); ctx.moveTo(x, plot.y0); ctx.lineTo(x, plot.y0 + plot.h); ctx.stroke();
+    }
+  });
+
+  ctx.restore();
+
+  // --- axes & tick labels ---
+  // y labels
+  ctx.fillStyle = "#94a3b8"; ctx.font = "12px system-ui";
+  ctx.textAlign = "right"; ctx.textBaseline = "middle";
+  yt.ticks.forEach(v => {
+    const y = yToPx(v);
+    ctx.fillText(v.toFixed(2), plot.x0 - 6, y);
+    ctx.strokeStyle = "#223356"; ctx.beginPath(); ctx.moveTo(plot.x0-3, y); ctx.lineTo(plot.x0, y); ctx.stroke();
+  });
+
+  // x axis at y=0 if visible
+  if (yt.min <= 0 && yt.max >= 0) {
+    const y0 = yToPx(0);
+    ctx.strokeStyle = "#223356"; ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.moveTo(plot.x0, y0); ctx.lineTo(plot.x0 + plot.w, y0); ctx.stroke();
+  }
+
+  // x labels at whole cycles
+  ctx.fillStyle = "#94a3b8"; ctx.textAlign = "center"; ctx.textBaseline = "top";
+  for (let c = 0; c <= cycles; c++){
+    const x = xToPx(c*T);
+    if (x >= plot.x0 && x <= plot.x0 + plot.w) ctx.fillText(String(c), x, plot.y0 + plot.h + 4);
+  }
+
+  // --- plot series (unchanged) ---
+  seriesList.forEach(s => {
+    ctx.strokeStyle = s.color; ctx.lineWidth = s.width || 2; ctx.beginPath();
+    for(let i=0;i<tArray.length;i++){
+      const xpx = xToPx(tArray[i]);
+      const ypx = yToPx(s.y[i]);
+      if(i===0) ctx.moveTo(xpx, ypx); else ctx.lineTo(xpx, ypx);
+    }
+    ctx.stroke();
+  });
+}
+
+
+// ---- Magnitude stem plot: stems start at y=0; grid aligned to ticks & integer n ----
+function stemPlotWithAxes(ctx, values, opts = {}) {
+  const { width, height } = ctx.canvas;
+  const margin = { left: 48, right: 12, top: 10, bottom: 22 };
+  const plot = {
+    x0: margin.left,
+    y0: margin.top,
+    w: width - margin.left - margin.right,
+    h: height - margin.top - margin.bottom
+  };
+
+  // Clear & background
+  ctx.clearRect(0, 0, width, height);
+  ctx.fillStyle = "#0a1326";
+  ctx.fillRect(0, 0, width, height);
+
+  // ----- RANGE & MAPPERS (moved before grid so grid can align to ticks) -----
+  let ymin = 0, ymax;
+  if (opts.yRange && opts.yRange.length === 2) {
+    [ymin, ymax] = opts.yRange;
+  } else {
+    const vmax = Math.max(...values.map(v => Math.abs(v)));
+    const top = (typeof opts.yMax === "number") ? opts.yMax : (vmax === 0 ? 1 : vmax * 1.1);
+    ymax = top;
+  }
+  const yToPx = v => plot.y0 + plot.h - ((v - ymin) / (ymax - ymin)) * plot.h;
+
+  const tickCount = 5;
+  const yTicksVals = Array.from({ length: tickCount }, (_, i) => ymin + (i * (ymax - ymin)) / (tickCount - 1));
+
+  // x positions for integer n
+  const N = values.length;
+  const nspan = (typeof opts.nspan === "number") ? opts.nspan : Math.floor((N - 1) / 2);
+  const marginX = 10;
+  const step = (plot.w - 2 * marginX) / (N - 1 || 1);
+
+  // y=0 pixel (for stems baseline)
+  const y0px = (0 >= ymin && 0 <= ymax) ? yToPx(0) : (plot.y0 + plot.h);
+
+  // ----- GRID aligned to y-ticks and integer n -----
+  ctx.save();
+  ctx.beginPath();
+  ctx.rect(plot.x0, plot.y0, plot.w, plot.h);
+  ctx.clip();
+
+  // horizontal grid at y-ticks
+  ctx.strokeStyle = "#15223e";
+  ctx.lineWidth = 1;
+  yTicksVals.forEach(v => {
+    const y = yToPx(v);
+    ctx.beginPath(); ctx.moveTo(plot.x0, y); ctx.lineTo(plot.x0 + plot.w, y); ctx.stroke();
+  });
+
+  // vertical grid at each integer n position
+  for (let i = 0; i < N; i++) {
+    const x = plot.x0 + marginX + i * step;
+    ctx.beginPath(); ctx.moveTo(x, plot.y0); ctx.lineTo(x, plot.y0 + plot.h); ctx.stroke();
+  }
+  ctx.restore();
+
+  // ----- Y TICKS + LABELS -----
+  ctx.fillStyle = "#94a3b8";
+  ctx.font = "12px system-ui";
+  ctx.textAlign = "right";
+  ctx.textBaseline = "middle";
+  yTicksVals.forEach(v => {
+    const y = yToPx(v);
+    ctx.fillText(v.toFixed(2), plot.x0 - 6, y);
+    ctx.strokeStyle = "#223356";
+    ctx.beginPath(); ctx.moveTo(plot.x0 - 3, y); ctx.lineTo(plot.x0, y); ctx.stroke();
+  });
+
+  // x-axis at y=0 (if visible)
+  if (0 >= ymin && 0 <= ymax) {
+    ctx.strokeStyle = "#223356";
+    ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.moveTo(plot.x0, y0px); ctx.lineTo(plot.x0 + plot.w, y0px); ctx.stroke();
+  }
+
+  // ----- STEMS -----
+  const color = opts.color || "#34d399";
+  ctx.strokeStyle = color;
+  ctx.fillStyle = color;
+  ctx.lineWidth = 3;
+
+  for (let i = 0; i < N; i++) {
+    const x = plot.x0 + marginX + i * step;
+    const v = Math.abs(values[i]);
+    const y = yToPx(v);
+
+    ctx.beginPath(); ctx.moveTo(x, y0px); ctx.lineTo(x, y); ctx.stroke();
+    ctx.beginPath(); ctx.arc(x, y, 5, 0, Math.PI * 2); ctx.fill();
+  }
+
+  // n labels along x
+  ctx.fillStyle = "#94a3b8";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "top";
+  for (let i = 0; i < N; i += (N > 23 ? 2 : 1)) {
+    const x = plot.x0 + marginX + i * step;
+    const n = i - nspan;
+    ctx.fillText(String(n), x, plot.y0 + plot.h + 4);
+  }
+}
+
+
+// ---- Phase stem plot: stems start at y=0; grid aligned to phase ticks & integer n ----
+function phasePlotWithAxes(ctx, values, opts = {}) {
+  const { width, height } = ctx.canvas;
+  const margin = { left: 48, right: 12, top: 10, bottom: 22 };
+  const plot = {
+    x0: margin.left,
+    y0: margin.top,
+    w: width - margin.left - margin.right,
+    h: height - margin.top - margin.bottom
+  };
+
+  // Clear & background
+  ctx.clearRect(0, 0, width, height);
+  ctx.fillStyle = "#0a1326";
+  ctx.fillRect(0, 0, width, height);
+
+  // ----- RANGE & MAPPERS (moved before grid so grid can align to ticks) -----
+  const defMin = -Math.PI, defMax = Math.PI;
+  const [ymin, ymax] = (opts.yRange && opts.yRange.length === 2) ? opts.yRange : [defMin, defMax];
+
+  const yToPx = v => plot.y0 + plot.h - ((v - ymin) / (ymax - ymin)) * plot.h;
+  const y0px = (0 >= ymin && 0 <= ymax) ? yToPx(0) : (plot.y0 + plot.h);
+
+  // phase tick values (5 ticks across the range)
+  const tickCount = 5;
+  const tickVals = Array.from({ length: tickCount }, (_, i) => ymin + (i * (ymax - ymin)) / (tickCount - 1));
+
+  // integer n positions (vertical grid)
+  const N = values.length;
+  const nspan = (typeof opts.nspan === "number") ? opts.nspan : Math.floor((N - 1) / 2);
+  const marginX = 10;
+  const step = (plot.w - 2 * marginX) / (N - 1 || 1);
+
+  // ----- GRID aligned to phase ticks and integer n -----
+  ctx.save();
+  ctx.beginPath();
+  ctx.rect(plot.x0, plot.y0, plot.w, plot.h);
+  ctx.clip();
+
+  // horizontal grid at phase ticks
+  ctx.strokeStyle = "#15223e";
+  ctx.lineWidth = 1;
+  tickVals.forEach(v => {
+    const y = yToPx(v);
+    ctx.beginPath(); ctx.moveTo(plot.x0, y); ctx.lineTo(plot.x0 + plot.w, y); ctx.stroke();
+  });
+
+  // vertical grid at each integer n position
+  for (let i = 0; i < N; i++) {
+    const x = plot.x0 + marginX + i * step;
+    ctx.beginPath(); ctx.moveTo(x, plot.y0); ctx.lineTo(x, plot.y0 + plot.h); ctx.stroke();
+  }
+  ctx.restore();
+
+  // ----- Y TICKS + LABELS -----
+  ctx.fillStyle = "#94a3b8";
+  ctx.font = "12px system-ui";
+  ctx.textAlign = "right";
+  ctx.textBaseline = "middle";
+  for (const v of tickVals) {
+    const y = yToPx(v);
+    const lab =
+      Math.abs(v - Math.PI) < 1e-6 ? "π" :
+      Math.abs(v + Math.PI) < 1e-6 ? "−π" :
+      Math.abs(v - Math.PI / 2) < 1e-6 ? "π/2" :
+      Math.abs(v + Math.PI / 2) < 1e-6 ? "−π/2" :
+      Math.abs(v) < 1e-6 ? "0" : v.toFixed(2);
+    ctx.fillText(lab, plot.x0 - 6, y);
+    ctx.strokeStyle = "#223356";
+    ctx.beginPath(); ctx.moveTo(plot.x0 - 3, y); ctx.lineTo(plot.x0, y); ctx.stroke();
+  }
+
+  // x-axis at y=0 (if visible)
+  if (0 >= ymin && 0 <= ymax) {
+    ctx.strokeStyle = "#223356";
+    ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.moveTo(plot.x0, y0px); ctx.lineTo(plot.x0 + plot.w, y0px); ctx.stroke();
+  }
+
+  // ----- STEMS -----
+  const color = opts.color || "#34d399";
+  ctx.strokeStyle = color;
+  ctx.fillStyle = color;
+  ctx.lineWidth = 3;
+
+  for (let i = 0; i < N; i++) {
+    const x = plot.x0 + marginX + i * step;
+    const v = values[i]; // assume already wrapped/limited if desired
+    const y = yToPx(v);
+
+    ctx.beginPath(); ctx.moveTo(x, y0px); ctx.lineTo(x, y); ctx.stroke();
+    ctx.beginPath(); ctx.arc(x, y, 5, 0, Math.PI * 2); ctx.fill();
+  }
+
+  // n labels
+  ctx.fillStyle = "#94a3b8";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "top";
+  for (let i = 0; i < N; i += (N > 23 ? 2 : 1)) {
+    const x = plot.x0 + marginX + i * step;
+    const n = i - nspan;
+    ctx.fillText(String(n), x, plot.y0 + plot.h + 4);
+  }
+}
+
+  function drawAll(){
+    const wave = elWave.value;
+    const N = parseInt(elNcoef.value,10);
+    const phasePct = parseInt(elPhase.value,10);
+    const cycles = parseInt(elCycles.value,10);
+    elNval.textContent = N;
+    elPval.textContent = phasePct;
+    elCval.textContent = cycles;
+
+    // Build dense one-period samples for coefficient estimation
+    const xOne = makeWaveSamples(wave, phasePct, tOne);
+    const coeffs = computeCoeffs(xOne, N);
+
+    // Build plot-time array for the requested cycles
+    const dtPlot = 1/1000; // 1 ms plotting resolution (lighter than coefficient grid)
+    const tPlot = Array.from({length: Math.floor(cycles*T/dtPlot)+1}, (_,k)=>k*dtPlot);
+    const xPlot = makeWaveSamples(wave, phasePct, tPlot);
+    const yPlot = reconstruct(tPlot, coeffs, N);
+
+    const showE = elShowE.checked;
+    const ePlot = xPlot.map((v,i)=>v - yPlot[i]);
+
+    // Time plot
+    const ctxT = timeCanvas.getContext('2d');
+    const series = [
+      {y:xPlot, color:"#f59e0b", width:2},
+      {y:yPlot, color:"#34d399", width:2},
+    ];
+    if (showE) series.push({y:ePlot, color:"#ef4444", width:2});
+    plotSignalWithAxes(ctxT, tPlot, series, { yRange: [-1.2, 1.2] });
+
+    // magnitude and phase arrays for -span..span
+    const {f, span} = makeComplexCoeffs(coeffs.a0, coeffs.a, coeffs.b, N, 15);
+    const mags = f.map(c => Math.hypot(c.re, c.im));
+    const phs  = f.map(c => Math.atan2(c.im, c.re));
+	
+	function wrapToHalfPi(a){
+	  while (a >  Math.PI) a -= 2*Math.PI;
+	  while (a <= -Math.PI) a += 2*Math.PI;
+	  return a;
+	}
+	const phsLimited = phs.map(wrapToHalfPi);
+
+    const ctxM = magCanvas.getContext('2d');
+    stemPlotWithAxes(ctxM, mags, {nspan: 15, yRange: [0, 1.2]});
+
+    const ctxP = phaseCanvas.getContext('2d');
+    // phasePlotWithAxes(ctxP, phsLimited, {nspan: span});
+	phasePlotWithAxes(ctxP, phsLimited, { nspan: 15, yRange: [-Math.PI, Math.PI] });
+  }
+
+  [elWave, elNcoef, elPhase, elCycles, elShowE].forEach(el => el.addEventListener('input', drawAll));
+  drawAll();
+})();
+</script>
+</body>
+</html>
