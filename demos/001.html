@@ -97,6 +97,7 @@
       </select>
     <!-- <div class="toggles"> -->
     <label><input type="checkbox" id="showError" /> Show error e(t) = x(t) - y(t)</label>
+    <label><input type="checkbox" id="showHarmonics" /> Show Harmonics</label>
   <!-- </div> -->
 
     </div>
@@ -122,7 +123,7 @@
       <canvas id="timeCanvas" width="1100" height="280"></canvas>
       <div class="mt-2 flex flex-wrap gap-2">
         <span class="chip"><span class="dot x"></span>Original x(t)</span>
-        <span class="chip"><span class="dot y"></span>Reconstruction y(t)</span>
+        <span class="chip"><span class="dot y"></span>Reconstructed y(t)</span>
         <span class="chip"><span class="dot e"></span>Error e(t)</span>
       </div>
     </div>
@@ -162,6 +163,7 @@
   const elCycles= document.getElementById('cycles');
   const elCval  = document.getElementById('cval');
   const elShowE = document.getElementById('showError');
+  const elShowH = document.getElementById('showHarmonics');
 
   const timeCanvas  = document.getElementById('timeCanvas');
   const magCanvas   = document.getElementById('magCanvas');
@@ -253,6 +255,66 @@
     return y;
   }
 
+  // Decompose Fourier series into additive components you can plot.
+// Returns:
+//  - dc:           Array(L)                // a0/2 across time
+//  - cos:          Array(N+1)->Array(L)    // cos[n][k] = a[n] * cos(n*w0*t[k]); cos[0] = null
+//  - sin:          Array(N+1)->Array(L)    // sin[n][k] = b[n] * sin(n*w0*t[k]); sin[0] = null
+//  - harmonic:     Array(N+1)->Array(L)    // harmonic[n] = cos[n] + sin[n]  (n>=1); harmonic[0] = dc
+//  - partialSums:  Array(N+1)->Array(L)    // cumulative sum: dc + Σ_{m=1..n} harmonic[m]
+//  - recon:        Array(L)                // final reconstruction (same as your reconstruct)
+//  - meta:         per-harmonic info: { a[n], b[n], A[n], phi[n] } where
+//                    A[n] = sqrt(a[n]^2 + b[n]^2),  a[n]cos + b[n]sin = A[n]cos(n*w0*t - phi[n]),
+//                    phi[n] = atan2(b[n], a[n])
+function decomposeReconstruction(tArray, coeffs, N){
+  const { a0, a, b } = coeffs;
+  const L = tArray.length;
+  const dc = new Array(L).fill(a0/2);
+
+  const cos = new Array(N+1).fill(null);
+  const sin = new Array(N+1).fill(null);
+  const harmonic = new Array(N+1).fill(null);
+  const partialSums = new Array(N+1).fill(null);
+  const meta = new Array(N+1).fill(null);
+
+  // n = 0 (DC)
+  harmonic[0] = dc.slice();
+  partialSums[0] = dc.slice();
+  meta[0] = { a0, note: "DC term = a0/2" };
+
+  // n >= 1
+  for (let n = 1; n <= N; n++){
+    const cn = new Array(L);
+    const sn = new Array(L);
+    const hn = new Array(L);
+    for (let k = 0; k < L; k++){
+      const ang = TWO_PI * n * tArray[k] / T;
+      const c = a[n] * Math.cos(ang);
+      const s = b[n] * Math.sin(ang);
+      cn[k] = c;
+      sn[k] = s;
+      hn[k] = c + s;
+    }
+    cos[n] = cn;
+    sin[n] = sn;
+    harmonic[n] = hn;
+
+    const prev = partialSums[n-1] || dc;
+    const ps = new Array(L);
+    for (let k = 0; k < L; k++) ps[k] = prev[k] + hn[k];
+    partialSums[n] = ps;
+
+    // amplitude/phase info for convenience
+    const A = Math.hypot(a[n], b[n]);
+    const phi = Math.atan2(b[n], a[n]); // so: a cos + b sin = A cos(n*w0 t - phi)
+    meta[n] = { a: a[n], b: b[n], A, phi };
+  }
+
+  const recon = partialSums[N] || dc.slice();
+  return { dc, cos, sin, harmonic, partialSums, recon, meta };
+}
+
+
   function makeComplexCoeffs(a0, a, b, N, span=15){
     // Build c[n] for -span..span using real coefficients up to N
     const size = 2*span+1;
@@ -274,23 +336,6 @@
     ctx.clearRect(0,0,width,height);
     ctx.fillStyle = "#0a1326";
     ctx.fillRect(0,0,width,height);
-  }
-
-  function drawGrid(ctx, plot){
-    const {x0, y0, w, h} = plot;
-    ctx.save();
-    ctx.beginPath();
-    ctx.rect(x0,y0,w,h);
-    ctx.clip();
-
-    ctx.strokeStyle = "#15223e";
-    ctx.lineWidth = 1;
-    // vertical
-    for(let gx=0; gx<=w; gx+=50){ ctx.beginPath(); ctx.moveTo(x0+gx, y0); ctx.lineTo(x0+gx, y0+h); ctx.stroke(); }
-    // horizontal
-    for(let gy=0; gy<=h; gy+=50){ ctx.beginPath(); ctx.moveTo(x0, y0+gy); ctx.lineTo(x0+w, y0+gy); ctx.stroke(); }
-
-    ctx.restore();
   }
 
   function yTicks(minv, maxv, count=5){
@@ -606,6 +651,25 @@ function phasePlotWithAxes(ctx, values, opts = {}) {
   }
 }
 
+function plotAllHarmonics(ctx, tArray, coeffs, N, opts = {}) {
+  const parts = decomposeReconstruction(tArray, coeffs, N);
+  const colorFor = (n, N) => `hsl(${Math.round(360 * (n - 1) / Math.max(1, N))}, 70%, 55%)`;
+  const termWidth = opts.termWidth ?? 1.2;
+
+  const series = [];
+  if (opts.includeDC) series.push({ y: parts.dc, color: "#9ca3af", width: termWidth, alpha: 0.9 });
+  for (let n = 1; n <= N; n++) {
+    series.push({ y: parts.harmonic[n], color: colorFor(n, N), width: termWidth, alpha: 0.9 });
+  }
+  if (opts.includeRecon ?? true) series.push({ y: parts.recon, color: "#60a5fa", width: 2 });
+
+  if (opts.returnSeries) return series;
+
+  const plotOpts = {};
+  if (opts.yRange) plotOpts.yRange = opts.yRange;
+  plotSignalWithAxes(ctx, tArray, series, plotOpts);
+}
+
   function drawAll(){
     const wave = elWave.value;
     const N = parseInt(elNcoef.value,10);
@@ -624,17 +688,27 @@ function phasePlotWithAxes(ctx, values, opts = {}) {
     const tPlot = Array.from({length: Math.floor(cycles*T/dtPlot)+1}, (_,k)=>k*dtPlot);
     const xPlot = makeWaveSamples(wave, phasePct, tPlot);
     const yPlot = reconstruct(tPlot, coeffs, N);
-
+    
     const showE = elShowE.checked;
+    const showH = elShowH.checked;
     const ePlot = xPlot.map((v,i)=>v - yPlot[i]);
-
+    
     // Time plot
     const ctxT = timeCanvas.getContext('2d');
+    const harmonicSeries = plotAllHarmonics(ctxT, tPlot, coeffs, N, {
+      termWidth: 1,
+      includeDC: true,
+      includeRecon: false,
+      returnSeries: true
+    });
     const series = [
+      ...(showH ? harmonicSeries : []),
       {y:xPlot, color:"#f59e0b", width:2},
       {y:yPlot, color:"#34d399", width:2},
     ];
     if (showE) series.push({y:ePlot, color:"#ef4444", width:2});
+    // if (showH) series.push(...harmonicSeries); // else combined.push({ y: yPlot, color: "#60a5fa", width: 2 });
+
     plotSignalWithAxes(ctxT, tPlot, series, { yRange: [-1.2, 1.2] });
 
     // magnitude and phase arrays for -span..span
@@ -657,7 +731,7 @@ function phasePlotWithAxes(ctx, values, opts = {}) {
 	phasePlotWithAxes(ctxP, phsLimited, { nspan: 15, yRange: [-Math.PI, Math.PI] });
   }
 
-  [elWave, elNcoef, elPhase, elCycles, elShowE].forEach(el => el.addEventListener('input', drawAll));
+  [elWave, elNcoef, elPhase, elCycles, elShowE, elShowH].forEach(el => el.addEventListener('input', drawAll));
   drawAll();
 })();
 </script>
