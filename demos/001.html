@@ -1,29 +1,38 @@
 <!DOCTYPE html>
+
 <html lang="en">
+
 <head>
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Interactive Fourier Series Coefficient Demo (Standalone v2)</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+<title>Interactive Fourier Series Coefficient Demo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/feather-icons"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+
+    <link href="/styles.css" rel="stylesheet" />
+    <script defer="True" src="/app.js"></script>
+
 <style>
 :root{
-  --bg:#0b1220;         /* page background */
-  --fg:#e6edf3;         /* text color */
+  /* --bg:#0b1220;         page background */
+  /* --fg:#e6edf3;         text color */
   --muted:#94a3b8;      /* secondary text */
   --accent:#34d399;     /* main accent (recon line & stems default) */
   --accent2:#f59e0b;    /* original signal line */
   --accent3:#ef4444;    /* error line */
-  --grid:#1f2937;       /* not used directly; grid color set in JS */
-  --card:#111827;       /* panel background */
+  /* --grid:#1f2937;       not used directly; grid color set in JS */
+  --card:#111827;       panel background
 }
   * { box-sizing: border-box; }
-  body { margin: 0; padding: 24px; background: var(--bg); color: var(--fg); font: 14px/1.4 system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji"; }
-  h1 { font-size: 20px; margin: 0 0 4px; }
-  p  { color: var(--muted); margin: 0 0 16px; }
+  /* body { margin: 0; padding: 24px; background: var(--bg); color: var(--fg); font: 14px/1.4 system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji"; } */
+  /* h1 { font-size: 20px; margin: 0 0 4px; } */
+  /* p  { color: var(--muted); margin: 0 0 16px; } */
   .wrap { max-width: 1100px; margin: 0 auto; }
   .controls { display: grid; grid-template-columns: 1.2fr 1fr 1fr 1fr; gap: 12px; margin-bottom: 10px; }
   .control { background: var(--card); padding: 12px; border-radius: 12px; border: 1px solid #0f172a; }
   label { font-weight: 600; display: block; margin-bottom: 6px; color: #cbd5e1; }
-  select, input[type="number"], input[type="range"] { width: 100%; padding: 8px 10px; border-radius: 8px; background: #0b162c; color: var(--fg); border: 1px solid #1f2a44; }
+  select, input[type="number"], input[type="range"] { width: 100%; padding: 8px 10px; border-radius: 8px; background: #cbd5e1; color: var(--fg); border: 1px solid #1f2a44; }
   input[type="range"] { padding: 0; height: 28px; }
   .toggles { display:flex; gap:16px; align-items:center; margin-bottom: 16px; }
   .canvas-row { display: grid; grid-template-columns: 1fr; gap: 12px; }
@@ -36,14 +45,55 @@
   .dot.x { background: var(--accent2); }
   .dot.y { background: var(--accent); }
   .dot.e { background: var(--accent3); }
-  footer { margin-top: 18px; color: var(--muted); font-size: 12px; }
+  /* footer { margin-top: 18px; color: var(--muted); font-size: 12px; } */
   .small { font-size: 12px; color: var(--muted); }
 </style>
 </head>
-<body>
-<div class="wrap">
-  <h1>Interactive Fourier Series Coefficient Demo</h1>
-  <p>Choose a signal, number of coefficients, phase shift, and how many cycles to show. You can also overlay the error e(t) = x(t) − y(t).</p>
+
+<body class="font-sans gradient-bg min-h-screen" data-page="fsdemo">
+
+  <header class="fixed inset-x-0 top-0 z-[9999] bg-white/70 backdrop-blur border-b border-gray-200">
+        <div class="max-w-6xl mx-auto px-4">
+            <div class="flex items-center justify-between h-16">
+                <a class="flex items-center gap-2 font-semibold text-gray-900 hover:text-blue-600" href="/index.html">
+                    <i aria-hidden="true" data-feather="layers"></i>
+                    <span>Ahmed Hamdi Sakr, PhD</span>
+                </a>
+                <button aria-controls="mobile-nav" aria-expanded="false" aria-label="Open menu"
+                    class="md:hidden p-2 rounded hover:bg-gray-100" id="menuBtn" type="button">
+                    <i data-feather="menu"></i>
+                </button>
+                <nav class="hidden md:block" id="primary-nav">
+                    <ul class="flex items-center gap-6">
+                        <li><a class="hover:text-blue-600" data-nav="index" href="/index.html">Home</a></li>
+                        <li><a class="hover:text-blue-600" data-nav="research" href="/research.html">Research</a></li>
+                        <li><a class="hover:text-blue-600" data-nav="publications" href="/publications.html">Publications</a></li>
+                        <li><a class="hover:text-blue-600" data-nav="teaching" href="/teaching.html">Teaching</a></li>
+                        <li><a class="hover:text-blue-600" data-nav="team" href="/team.html">Team</a></li>
+                        <li><a class="hover:text-blue-600" data-nav="join" href="/join.html">Join</a></li>
+                    </ul>
+                </nav>
+            </div>
+            <nav aria-hidden="true" aria-label="Mobile" class="md:hidden hidden pb-4" id="mobile-nav">
+                <ul class="grid gap-2">
+                    <li><a class="block px-3 py-2 rounded hover:bg-gray-100" data-nav="index" href="/index.html">Home</a></li>
+                    <li><a class="block px-3 py-2 rounded hover:bg-gray-100" data-nav="research" href="/research.html">Research</a></li>
+                    <li><a class="block px-3 py-2 rounded hover:bg-gray-100" data-nav="publications" href="/publications.html">Publications</a></li>
+                    <li><a class="block px-3 py-2 rounded hover:bg-gray-100" data-nav="teaching" href="/teaching.html">Teaching</a></li>
+                    <li><a class="block px-3 py-2 rounded hover:bg-gray-100" data-nav="team" href="/team.html">Team</a></li>
+                    <li><a class="block px-3 py-2 rounded hover:bg-gray-100" data-nav="join" href="/join.html">Join</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+        <div class="container mx-auto px-4 py-8 max-w-5xl">
+        <!-- Navigation -->
+        <main class="fade-in py-8 px-4 max-w-6xl mx-auto pt-20" id="main">
+
+  <div class="bg-white rounded-xl shadow-lg p-6">
+  <h2 class="mb-4">Interactive Fourier Series Coefficient Demo</h2>
+  <p>Choose a signal, number of coefficients, phase shift, and how many cycles to show. You can also overlay the error e(t) = x(t) - y(t).</p>
 
   <div class="controls">
     <div class="control">
@@ -57,11 +107,16 @@
         <option value="half_rectified_sine">Half-wave Rectified Sine</option>
         <option value="half_rectified_cosine">Half-wave Rectified Cosine</option>
       </select>
+    <!-- <div class="toggles"> -->
+    <label><input type="checkbox" id="showError" /> Show error e(t) = x(t) - y(t)</label>
+  <!-- </div> -->
+
     </div>
+
     <div class="control">
-      <label for="ncoef"># of coefficients N: <span id="nval">0</span></label>
+      <label for="ncoef">Number of coefficients N: <span id="nval">0</span></label>
       <input type="range" min="0" max="15" step="1" value="0" id="ncoef" />
-      <div class="small">N=0 ⇒ use only c₀ (i.e., a₀/2).</div>
+      <!-- <div class="small">N=0 ⇒ use only c₀ (i.e., a₀/2).</div> -->
     </div>
     <div class="control">
       <label for="phase">Phase Shift (% of period): <span id="pval">0</span>%</label>
@@ -73,9 +128,6 @@
     </div>
   </div>
 
-  <div class="toggles">
-    <label><input type="checkbox" id="showError" /> Show error e(t) = x(t) − y(t)</label>
-  </div>
 
   <div class="canvas-row">
     <div class="card">
@@ -98,6 +150,12 @@
   </div>
 
 </div>
+
+        </main>
+        <footer class="mt-12 text-center text-gray-600 fade-in">
+            <p>&copy; 2021 Ahmed Hamdi Sakr. All rights reserved.</p>
+        </footer>
+
 
 <script>
 (function(){
@@ -519,9 +577,9 @@ function phasePlotWithAxes(ctx, values, opts = {}) {
     const y = yToPx(v);
     const lab =
       Math.abs(v - Math.PI) < 1e-6 ? "π" :
-      Math.abs(v + Math.PI) < 1e-6 ? "−π" :
+      Math.abs(v + Math.PI) < 1e-6 ? "-π" :
       Math.abs(v - Math.PI / 2) < 1e-6 ? "π/2" :
-      Math.abs(v + Math.PI / 2) < 1e-6 ? "−π/2" :
+      Math.abs(v + Math.PI / 2) < 1e-6 ? "-π/2" :
       Math.abs(v) < 1e-6 ? "0" : v.toFixed(2);
     ctx.fillText(lab, plot.x0 - 6, y);
     ctx.strokeStyle = "#223356";
