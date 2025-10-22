@@ -15,20 +15,12 @@
 
 <style>
 :root{
-  /* --bg:#0b1220;         page background */
-  /* --fg:#e6edf3;         text color */
   --muted:#94a3b8;      /* secondary text */
   --accent:#34d399;     /* main accent (recon line & stems default) */
   --accent2:#f59e0b;    /* original signal line */
   --accent3:#ef4444;    /* error line */
-  /* --grid:#1f2937;       not used directly; grid color set in JS */
-  --card:#111827;       panel background
+  --card:#111827;       /* panel background */
 }
-  * { box-sizing: border-box; }
-  /* body { margin: 0; padding: 24px; background: var(--bg); color: var(--fg); font: 14px/1.4 system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji"; } */
-  /* h1 { font-size: 20px; margin: 0 0 4px; } */
-  /* p  { color: var(--muted); margin: 0 0 16px; } */
-  .wrap { max-width: 1100px; margin: 0 auto; }
   .controls { display: grid; grid-template-columns: 1.2fr 1fr 1fr 1fr; gap: 12px; margin-bottom: 10px; }
   .control { background: var(--card); padding: 12px; border-radius: 12px; border: 1px solid #0f172a; }
   label { font-weight: 600; display: block; margin-bottom: 6px; color: #cbd5e1; }
@@ -39,14 +31,10 @@
   .card { background: var(--card); border: 1px solid #0f172a; border-radius: 12px; padding: 10px 12px; }
   .card h2 { font-size: 16px; margin: 0 0 6px; color: #cbd5e1; }
   canvas { width: 100%; height: 260px; display: block; background: #0a1326; border-radius: 8px; }
-  .legend { display: flex; gap: 16px; font-size: 12px; color: #cbd5e1; margin: 6px 0 0; flex-wrap: wrap; }
-  .chip { display:inline-flex; align-items:center; gap:6px; }
   .dot { width:10px; height:10px; border-radius:50%; display:inline-block; }
   .dot.x { background: var(--accent2); }
   .dot.y { background: var(--accent); }
   .dot.e { background: var(--accent3); }
-  /* footer { margin-top: 18px; color: var(--muted); font-size: 12px; } */
-  .small { font-size: 12px; color: var(--muted); }
 </style>
 </head>
 
@@ -116,7 +104,6 @@
     <div class="control">
       <label for="ncoef">Number of coefficients N: <span id="nval">0</span></label>
       <input type="range" min="0" max="15" step="1" value="0" id="ncoef" />
-      <!-- <div class="small">N=0 ⇒ use only c₀ (i.e., a₀/2).</div> -->
     </div>
     <div class="control">
       <label for="phase">Phase Shift (% of period): <span id="pval">0</span>%</label>
@@ -133,18 +120,18 @@
     <div class="card">
       <h2>Time-Domain Signal & Reconstruction</h2>
       <canvas id="timeCanvas" width="1100" height="280"></canvas>
-      <div class="legend">
+      <div class="mt-2 flex flex-wrap gap-2">
         <span class="chip"><span class="dot x"></span>Original x(t)</span>
         <span class="chip"><span class="dot y"></span>Reconstruction y(t)</span>
         <span class="chip"><span class="dot e"></span>Error e(t)</span>
       </div>
     </div>
     <div class="card">
-      <h2>Magnitude Spectrum |c[n]|</h2>
+      <h2>Magnitude Spectrum |a<sub>n</sub>|</h2>
       <canvas id="magCanvas" width="1100" height="280"></canvas>
     </div>
     <div class="card">
-      <h2>Phase Spectrum ∠c[n] (rad)</h2>
+      <h2>Phase Spectrum &angle;a<sub>n</sub> (rad)</h2>
       <canvas id="phaseCanvas" width="1100" height="280"></canvas>
     </div>
   </div>
