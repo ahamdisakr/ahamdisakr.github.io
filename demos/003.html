@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+<meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+<title>Interactive Fourier Transform Filtering Demo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/feather-icons"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+
+    <link href="/styles.css" rel="stylesheet" />
+    <script defer="True" src="/app.js"></script>
+
+<style>
+:root{
+  --muted:#94a3b8; 
+  --axis:#223356; 
+  --grid:#15223e; 
+  --xcolor:#f59e0b; 
+  --ycolor:#60a5fa; 
+  --hcolor:#22c55e;
+  --card:#111827;
+}
+  .controls { display: grid; grid-template-columns: 1.2fr 1fr 1fr 1fr; gap: 12px; margin-bottom: 10px; }
+  .control { background: var(--card); padding: 12px; border-radius: 12px; border: 1px solid #0f172a; }
+  label { font-weight: 600; display: block; margin-bottom: 6px; color: #cbd5e1; }
+  select, input[type="number"], input[type="range"] { width: 100%; padding: 8px 10px; border-radius: 8px; background: #cbd5e1; color: var(--fg); border: 1px solid #1f2a44; }
+  input[type="range"] { padding: 0; height: 28px; }
+  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+  .wrap{max-width:none;margin:0 auto}
+  .small{font-size:12px;color:#9fb1d1}
+  .canvas-row { display: grid; grid-template-columns: 1fr; gap: 12px; }
+  .card { background: var(--card); border: 1px solid #0f172a; border-radius: 12px; padding: 10px 12px; }
+  .card h2 { font-size: 16px; margin: 0 0 6px; color: #cbd5e1; }
+  canvas { width: 100%; height: 260px; display: block; background: #0a1326; border-radius: 8px; }
+  .dot { width:10px; height:10px; border-radius:50%; display:inline-block; }
+  .dot.x{background: var(--xcolor)}
+ .dot.y{background: var(--ycolor)}
+ .dot.h{background: var(--hcolor)}
+.actions{display:flex;gap:8px;margin-top:8px}
+button:disabled{opacity:0.6}
+.row{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;margin-top:6px}
+</style>
+</head>
+<body>
+
+<body class="font-sans gradient-bg min-h-screen" data-page="ftctdemo">
+  <header class="fixed inset-x-0 top-0 z-[9999] bg-white/70 backdrop-blur border-b border-gray-200">
+        <div class="max-w-6xl mx-auto px-4">
+            <div class="flex items-center justify-between h-16">
+                <a class="flex items-center gap-2 font-semibold text-gray-900 hover:text-blue-600" href="/index.html">
+                    <i aria-hidden="true" data-feather="layers"></i>
+                    <span>Ahmed Hamdi Sakr, PhD</span>
+                </a>
+                <button aria-controls="mobile-nav" aria-expanded="false" aria-label="Open menu"
+                    class="md:hidden p-2 rounded hover:bg-gray-100" id="menuBtn" type="button">
+                    <i data-feather="menu"></i>
+                </button>
+                <nav class="hidden md:block" id="primary-nav">
+                    <ul class="flex items-center gap-6">
+                        <li><a class="hover:text-blue-600" data-nav="index" href="/index.html">Home</a></li>
+                        <li><a class="hover:text-blue-600" data-nav="research" href="/research.html">Research</a></li>
+                        <li><a class="hover:text-blue-600" data-nav="publications" href="/publications.html">Publications</a></li>
+                        <li><a class="hover:text-blue-600" data-nav="teaching" href="/teaching.html">Teaching</a></li>
+                        <li><a class="hover:text-blue-600" data-nav="team" href="/team.html">Team</a></li>
+                        <li><a class="hover:text-blue-600" data-nav="join" href="/join.html">Join</a></li>
+                    </ul>
+                </nav>
+            </div>
+            <nav aria-hidden="true" aria-label="Mobile" class="md:hidden hidden pb-4" id="mobile-nav">
+                <ul class="grid gap-2">
+                    <li><a class="block px-3 py-2 rounded hover:bg-gray-100" data-nav="index" href="/index.html">Home</a></li>
+                    <li><a class="block px-3 py-2 rounded hover:bg-gray-100" data-nav="research" href="/research.html">Research</a></li>
+                    <li><a class="block px-3 py-2 rounded hover:bg-gray-100" data-nav="publications" href="/publications.html">Publications</a></li>
+                    <li><a class="block px-3 py-2 rounded hover:bg-gray-100" data-nav="teaching" href="/teaching.html">Teaching</a></li>
+                    <li><a class="block px-3 py-2 rounded hover:bg-gray-100" data-nav="team" href="/team.html">Team</a></li>
+                    <li><a class="block px-3 py-2 rounded hover:bg-gray-100" data-nav="join" href="/join.html">Join</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+        <div class="container mx-auto px-4 py-8 max-w-5xl">
+        <!-- Navigation -->
+        <main class="fade-in py-8 px-4 max-w-6xl mx-auto pt-20" id="main">
+
+  <div class="bg-white rounded-xl shadow-lg p-6">
+  <h2 class="mb-4">Interactive Fourier Transform Demo</h2>
+    <p>Pick a signal and filter. For BPF/Notch, Q is f<sub>c</sub>/BW. Upload/record audio and A/B play.</p>
+    </header>
+
+<div class="controls" style="grid-template-columns: repeat(2, minmax(0, 1fr));">
+        <div class="control">
+      <label for="signalSel">Signal</label>
+      <select id="signalSel">
+        <option value="cosine">Cosine</option>
+        <option value="sumcos">Sum of Cosines</option>
+        <option value="square">Square</option>
+        <option value="triangle">Triangle</option>
+        <option value="saw">Sawtooth</option>
+        <option value="chirp">Chirp (linear)</option>
+        <option value="noise">White Noise</option>
+        <option value="demo">Preloaded Demo Audio</option>
+        <option value="upload">Upload Audio…</option>
+        <option value="record">Record Audio…</option>
+      </select>
+
+      <div id="signalExtra" class="row" style="display:grid">
+        <div class="small">f₀ = <strong><span id="f0val">200</span> Hz</strong></div>
+        <input id="f0" type="range" min="20" max="8000" step="1" value="200"/>
+      </div>
+
+      <input id="fileInput" type="file" accept="audio/*" style="display:none;margin-top:8px"/>
+      <div id="recordRow" class="actions" style="display:none">
+        <button  class="chip" id="btnRec">● Record</button>
+        <button  class="chip" id="btnStop" disabled>■ Stop</button>
+      </div>
+      <div class="actions">
+        <button  class="chip" id="btnPlayX" disabled>▶ Play Original</button>
+        <button  class="chip" id="btnPlayY" disabled>▶ Play Filtered</button>
+      </div>
+    </div>
+
+    <div class="control">
+      <label for="filterSel">Filter</label>
+      <select id="filterSel">
+        <option value="lpf">Low-pass (biquad)</option>
+        <option value="hpf">High-pass (biquad)</option>
+        <option value="bpf">Band-pass (biquad)</option>
+        <option value="notch">Notch (biquad)</option>
+      </select>
+
+      <div id="rowFc" class="row">
+        <div class="small"><span id="fcLabel">f<sub>c</sub></span> = <strong><span id="fcval">1000</span> Hz</strong></div>
+        <input id="fc" type="range" min="20" max="20000" step="1" value="1000"/>
+      </div>
+
+      <div id="rowBW" class="row" style="display:none">
+        <div class="small">BW = <strong><span id="bwval">1000</span> Hz</strong></div>
+        <input id="bw" type="range" min="10" max="12000" step="1" value="1000"/>
+      </div>
+
+      <div class="small" style="margin-top:8px">
+        Center: <strong><span id="fcBadge">1000</span> Hz</strong>,
+        Q = <strong><span id="qBadge">1.000</span></strong>
+      </div>
+    </div>
+
+    <div class="control">
+      <label>Sampling & Window</label>
+      <div class="small">Fs=<span id="fsBadge"></span> Hz</div>
+      <div class="small">Window T=<span id="TBadge"></span> s</div>
+      <div class="small">FFT N=<span id="NBadge"></span></div>
+    </div>
+
+    <div class="control">
+      <label>Legend</label>
+      <div class="legend">
+        <span class="chip"><span class="dot x"></span>Input x</span>
+        <span class="chip"><span class="dot h"></span>Filter h/H</span>
+        <span class="chip"><span class="dot y"></span>Output y</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid">
+    <div class="card"><h2>Input x(t)</h2><canvas id="cx"></canvas></div>
+    <div class="card"><h2>|X(f)|</h2><canvas id="cX"></canvas></div>
+    <div class="card"><h2>Impulse response h(t)</h2><canvas id="ch"></canvas></div>
+    <div class="card"><h2>|H(f)|</h2><canvas id="cH"></canvas></div>
+    <div class="card"><h2>Output y(t)</h2><canvas id="cy"></canvas></div>
+    <div class="card"><h2>|Y(f)|</h2><canvas id="cY"></canvas></div>
+  </div>
+</div>
+
+        </main>
+        <footer class="mt-12 text-center text-gray-600 fade-in">
+            <p>&copy; 2021 Ahmed Hamdi Sakr. All rights reserved.</p>
+        </footer>
+
+
+<script>
+(function(){
+  const TWO_PI = Math.PI*2;
+  const Fs = 44100;
+  const T  = 1.0;
+  const N  = 4096;
+  const t  = Array.from({length: Math.floor(Fs*T)}, (_,k)=> k/Fs);
+  const faxis = Array.from({length: N}, (_,k) => (k - N/2) * (Fs/N));
+
+  const elSignal = document.getElementById('signalSel');
+  const elFilter = document.getElementById('filterSel');
+  const elF0 = document.getElementById('f0');
+  const elF0Val = document.getElementById('f0val');
+  const fsBadge = document.getElementById('fsBadge');
+  const TBadge = document.getElementById('TBadge');
+  const NBadge = document.getElementById('NBadge');
+  const fcBadge = document.getElementById('fcBadge');
+  const qBadge = document.getElementById('qBadge');
+
+  const rowFc = document.getElementById('rowFc');
+  const rowBW = document.getElementById('rowBW');
+  const elFc = document.getElementById('fc');
+  const elBw = document.getElementById('bw');
+  const fcLabel = document.getElementById('fcLabel');
+  const elFcVal = document.getElementById('fcval');
+  const elBwVal = document.getElementById('bwval');
+
+  const signalExtra = document.getElementById('signalExtra');
+  const fileInput = document.getElementById('fileInput');
+  const btnPlayX = document.getElementById('btnPlayX');
+  const btnPlayY = document.getElementById('btnPlayY');
+  const btnRec = document.getElementById('btnRec');
+  const btnStop = document.getElementById('btnStop');
+  const recordRow = document.getElementById('recordRow');
+
+  const cx = document.getElementById('cx').getContext('2d');
+  const cX = document.getElementById('cX').getContext('2d');
+  const ch = document.getElementById('ch').getContext('2d');
+  const cH = document.getElementById('cH').getContext('2d');
+  const cy = document.getElementById('cy').getContext('2d');
+  const cY = document.getElementById('cY').getContext('2d');
+
+  let zoomX, zoomXspec, zoomH, zoomHspec, zoomY, zoomYspec;
+
+  fsBadge.textContent = Fs;
+  TBadge.textContent = T.toFixed(2);
+  NBadge.textContent = N;
+
+  // Initialize zoom handlers once using default axes
+(function initZoomHandlers(){
+  const timeInit = [0, T];
+  const freqInit = [-Fs/2, Fs/2];
+
+  // Redraw callback just re-runs drawAll()
+  const mkRedraw = () => () => drawAll();
+
+  // Attach; bounds keep panning/zoom within initial domain
+  zoomX     = attachZoomPan(cx.canvas,  {initRange: timeInit, hardBounds: timeInit}, mkRedraw());
+  zoomXspec = attachZoomPan(cX.canvas,  {initRange: freqInit, hardBounds: freqInit}, mkRedraw());
+  zoomH     = attachZoomPan(ch.canvas,  {initRange: timeInit, hardBounds: timeInit}, mkRedraw());
+  zoomHspec = attachZoomPan(cH.canvas,  {initRange: freqInit, hardBounds: freqInit}, mkRedraw());
+  zoomY     = attachZoomPan(cy.canvas,  {initRange: timeInit, hardBounds: timeInit}, mkRedraw());
+  zoomYspec = attachZoomPan(cY.canvas,  {initRange: freqInit, hardBounds: freqInit}, mkRedraw());
+})();
+
+  let AC;
+  let bufferX = null;
+  let bufferY = null;
+  let mediaStream = null;
+  let mediaRecorder = null;
+  let recChunks = [];
+
+  function ensureAC(){
+    if (!AC) AC = new (window.AudioContext || window.webkitAudioContext)({sampleRate: Fs});
+    return AC;
+  }
+  function playBuffer(buf){
+    const ac = ensureAC();
+    const src = ac.createBufferSource();
+    src.buffer = buf;
+    src.connect(ac.destination);
+    src.start();
+  }
+  
+  function getActiveFs(){
+	  return (typeof bufferX === "object" && bufferX && typeof bufferX.sampleRate === "number")
+		? bufferX.sampleRate
+		: Fs;
+	}
+
+  function FFT(re, im){
+    const n = re.length; let j = 0;
+    for (let i=1; i<n; i++){
+      let bit = n >> 1;
+      for (; j & bit; bit >>= 1) j ^= bit;
+      j ^= bit;
+      if (i < j){ [re[i],re[j]]=[re[j],re[i]]; [im[i],im[j]]=[im[j],im[i]]; }
+    }
+    for (let len=2; len<=n; len<<=1){
+      const ang = -2*Math.PI/len;
+      const wlenRe = Math.cos(ang), wlenIm = Math.sin(ang);
+      for (let i=0; i<n; i+=len){
+        let wRe=1, wIm=0;
+        for (let k=0; k<len/2; k++){
+          const uRe = re[i+k], uIm = im[i+k];
+          const vRe = re[i+k+len/2]*wRe - im[i+k+len/2]*wIm;
+          const vIm = re[i+k+len/2]*wIm + im[i+k+len/2]*wRe;
+          re[i+k] = uRe + vRe; im[i+k] = uIm + vIm;
+          re[i+k+len/2] = uRe - vRe; im[i+k+len/2] = uIm - vIm;
+          const nwRe = wRe*wlenRe - wIm*wlenIm;
+          const nwIm = wRe*wlenIm + wIm*wlenRe;
+          wRe = nwRe; wIm = nwIm;
+        }
+      }
+    }
+  }
+  function fftRealMag(x){
+    const re = x.slice(0,N); if (re.length < N) re.push(...new Array(N-re.length).fill(0));
+    const im = new Array(N).fill(0);
+    FFT(re, im);
+    const half = N>>1;
+    const mag = new Array(N);
+    for (let i=0;i<half;i++){ const k=i+half; mag[i]=Math.hypot(re[k],im[k]); }
+    for (let i=0;i<half;i++){ mag[i+half]=Math.hypot(re[i],im[i]); }
+    for (let i=0;i<N;i++) mag[i] /= N;
+    return mag;
+  }
+
+  function plotXY(ctx, X, Y, opts={}){
+    const {width,height} = ctx.canvas;
+    const margin = {left:56,right:12,top:10,bottom:26};
+    const plot = {x0:margin.left,y0:margin.top,w:width-margin.left-margin.right,h:height-margin.top-margin.bottom};
+
+    const xmin = opts.xRange?opts.xRange[0]:Math.min(...X);
+    const xmax = opts.xRange?opts.xRange[1]:Math.max(...X);
+    let ymin = opts.yRange?opts.yRange[0]:Math.min(...Y);
+    let ymax = opts.yRange?opts.yRange[1]:Math.max(...Y);
+    if (ymin===ymax){ ymin-=1; ymax+=1; }
+    const pad=0.08*(ymax-ymin||1); ymin-=pad; ymax+=pad;
+
+    const xToPx = (x)=> plot.x0 + (x-xmin)*(plot.w/(xmax-xmin));
+    const yToPx = (y)=> plot.y0 + plot.h - ((y-ymin)/(ymax-ymin))*plot.h;
+
+    ctx.clearRect(0,0,width,height);
+    ctx.fillStyle="#0a1326"; ctx.fillRect(0,0,width,height);
+
+    const yTicks=5,xTicks=5;
+    ctx.save(); ctx.beginPath(); ctx.rect(plot.x0,plot.y0,plot.w,plot.h); ctx.clip();
+    ctx.strokeStyle="#15223e"; ctx.lineWidth=1;
+    for(let i=0;i<yTicks;i++){ const v=ymin+i*(ymax-ymin)/(yTicks-1); const y=yToPx(v); ctx.beginPath(); ctx.moveTo(plot.x0,y); ctx.lineTo(plot.x0+plot.w,y); ctx.stroke(); }
+    for(let i=0;i<xTicks;i++){ const u=xmin+i*(xmax-xmin)/(xTicks-1); const x=xToPx(u); ctx.beginPath(); ctx.moveTo(x,plot.y0); ctx.lineTo(x,plot.y0+plot.h); ctx.stroke(); }
+    ctx.restore();
+
+    ctx.fillStyle="#94a3b8"; ctx.font="12px system-ui"; ctx.textAlign="right"; ctx.textBaseline="middle";
+    for(let i=0;i<yTicks;i++){ const v=ymin+i*(ymax-ymin)/(yTicks-1); const y=yToPx(v); ctx.fillText(v.toFixed(2), plot.x0-8, y); ctx.strokeStyle="#223356"; ctx.beginPath(); ctx.moveTo(plot.x0-4,y); ctx.lineTo(plot.x0,y); ctx.stroke(); }
+    ctx.textAlign="center"; ctx.textBaseline="top";
+    for(let i=0;i<xTicks;i++){ const u=xmin+i*(xmax-xmin)/(xTicks-1); const x=xToPx(u); const lab=(Math.abs(u)<1e-9)?"0":(Math.abs(u)>=1000?(u/1000).toFixed(1)+"k":u.toFixed(1)); ctx.fillText(lab, x, plot.y0+plot.h+6); }
+
+    if (ymin<=0 && ymax>=0){ const y0=yToPx(0); ctx.strokeStyle="#223356"; ctx.lineWidth=1.5; ctx.beginPath(); ctx.moveTo(plot.x0,y0); ctx.lineTo(plot.x0+plot.w,y0); ctx.stroke(); }
+
+    ctx.strokeStyle=opts.color||"#60a5fa"; ctx.lineWidth=opts.width||2; ctx.globalAlpha=opts.alpha??1;
+    ctx.beginPath();
+    for(let i=0;i<X.length;i++){ const x=xToPx(X[i]); const y=yToPx(Y[i]); if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y); }
+    ctx.stroke(); ctx.globalAlpha=1;
+  }
+
+	function genSignal(kind, f0, tArr){
+	  const TWO_PI = Math.PI * 2;
+	  const x = new Array(tArr.length);
+	  switch(kind){
+		case 'cosine':
+		  for (let i=0;i<tArr.length;i++) x[i] = Math.cos(TWO_PI*f0*tArr[i]); break;
+		case 'sumcos':
+		  for (let i=0;i<tArr.length;i++) x[i] =
+			0.6*Math.cos(TWO_PI*f0*tArr[i]) +
+			0.4*Math.cos(TWO_PI*2*f0*tArr[i] + Math.PI/4); break;
+		case 'square':
+		  for (let i=0;i<tArr.length;i++) x[i] = Math.sign(Math.sin(TWO_PI*f0*tArr[i])) || 1; break;
+		case 'triangle':
+		  for (let i=0;i*tArr.length;i++); // (harmless no-op marker)
+		  for (let i=0;i<tArr.length;i++){ const ph=(tArr[i]*f0)%1; x[i]=4*Math.abs(ph-0.5)-1; } break;
+		case 'saw':
+		  for (let i=0;i*tArr.length;i++); // (harmless no-op marker)
+		  for (let i=0;i<tArr.length;i++){ const ph=(tArr[i]*f0)%1; x[i]=2*ph-1; } break;
+		case 'chirp': {
+		  const f1=f0, f2=4*f0;
+		  for (let i=0;i<tArr.length;i++){ const tau=i/(tArr.length-1); x[i]=Math.cos(TWO_PI*(f1*tArr[i]+0.5*(f2-f1)*tArr[i]*tau)); }
+		  break;
+		}
+		case 'noise':
+		  for (let i=0;i*tArr.length;i++); // (harmless no-op marker)
+		  for (let i=0;i<tArr.length;i++) x[i]=(Math.random()*2-1)*0.6; break;
+		case 'demo':
+		  for (let i=0;i*tArr.length;i++); // (harmless no-op marker)
+		  for (let i=0;i*tArr.length;i++) x[i]=0.7*Math.cos(TWO_PI*440*tArr[i])+0.5*Math.cos(TWO_PI*880*tArr[i]); break;
+		default:
+		  for (let i=0;i<tArr.length;i++) x[i]=0;
+	  }
+	  return x;
+	}
+
+  function arrayToAudioBuffer(arr){
+    const ac = ensureAC();
+    const buf = ac.createBuffer(1, arr.length, Fs);
+    buf.getChannelData(0).set(Float32Array.from(arr));
+    return buf;
+  }
+
+  function biquadCoeffs(type, fc, Q, Fs){
+    const w0 = TWO_PI*fc/Fs;
+    const cosw = Math.cos(w0), sinw = Math.sin(w0);
+    const alpha = sinw/(2*Q);
+    let b0,b1,b2,a0,a1,a2;
+    if (type==='lpf'){ b0=(1-cosw)/2; b1=1-cosw; b2=(1-cosw)/2; a0=1+alpha; a1=-2*cosw; a2=1-alpha; }
+    else if (type==='hpf'){ b0=(1+cosw)/2; b1=-(1+cosw); b2=(1+cosw)/2; a0=1+alpha; a1=-2*cosw; a2=1-alpha; }
+    else if (type==='bpf'){ b0= sinw/2; b1=0; b2=-sinw/2; a0=1+alpha; a1=-2*cosw; a2=1-alpha; }
+    else if (type==='notch'){ b0=1; b1=-2*cosw; b2=1; a0=1+alpha; a1=-2*cosw; a2=1-alpha; }
+    else { b0=(1-cosw)/2; b1=1-cosw; b2=(1-cosw)/2; a0=1+alpha; a1=-2*cosw; a2=1-alpha; }
+    return { b0:b0/a0, b1:b1/a0, b2:b2/a0, a1:a1/a0, a2:a2/a0 };
+  }
+  function biquadFilter(x, coeffs){
+    const y = new Array(x.length).fill(0);
+    let x1=0,x2=0,y1=0,y2=0;
+    const {b0,b1,b2,a1,a2} = coeffs;
+    for (let n=0;n<x.length;n++){ const xn=x[n]; const yn=b0*xn + b1*x1 + b2*x2 - a1*y1 - a2*y2; y[n]=yn; x2=x1; x1=xn; y2=y1; y1=yn; }
+    return y;
+  }
+  function biquadFreqResp(coeffs, freqs){
+    const {b0,b1,b2,a1,a2} = coeffs;
+    const Hmag = new Array(freqs.length);
+    for (let i=0;i<freqs.length;i++){
+      const w = TWO_PI*freqs[i]/Fs;
+      const c = Math.cos(w), s = -Math.sin(w);
+      const z1r=c, z1i=s; const z2r=c*c - s*s, z2i = 2*c*s;
+      const numRe = b0 + b1*z1r + b2*z2r;
+      const numIm =      b1*z1i + b2*z2i;
+      const denRe = 1 + a1*z1r + a2*z2r;
+      const denIm =     a1*z1i + a2*z2i;
+      const denMag2 = denRe*denRe + denIm*denIm;
+      const Hr = (numRe*denRe + numIm*denIm)/denMag2;
+      const Hi = (numIm*denRe - numRe*denIm)/denMag2;
+      Hmag[i] = Math.hypot(Hr, Hi);
+    }
+    return Hmag;
+  }
+
+  function getFilterParams(){
+    const type = elFilter.value;
+    const fc = parseFloat(elFc.value);
+    const bw = parseFloat(elBw.value);
+    let fcEff = fc, QEff = 0.707;
+
+    if (type==='bpf' || type==='notch'){
+      const Q = Math.max(0.1, Math.min(50, fc / Math.max(1, bw)));
+      QEff = Q;
+      rowBW.style.display = 'grid';
+      fcLabel.innerHTML = 'f<sub>c</sub>';
+    } else {
+      rowBW.style.display = 'none';
+      QEff = 0.707;
+      fcLabel.innerHTML = 'f<sub>c</sub>';
+    }
+    fcBadge.textContent = fcEff.toFixed(0);
+    qBadge.textContent = QEff.toFixed(3);
+    elFcVal.textContent = fcEff.toFixed(0);
+    elBwVal.textContent = bw.toFixed(0);
+    return { type, fcEff, QEff };
+  }
+
+  // --- Zoom & Pan for a time/freq canvas ---
+// Keeps a display-only xRange and calls `redraw(xRange)` when it changes.
+function attachZoomPan(canvas, {initRange, hardBounds}, redraw) {
+  let xRange = initRange.slice();     // [xmin, xmax] for display only
+  let isPanning = false;
+  let panStartX = 0;
+  let panStartRange = xRange.slice();
+
+  const pxToX = (px) => {
+    const {left, width} = canvas.getBoundingClientRect();
+    const u = (px - left) / width;            // 0..1 in canvas
+    return xRange[0] + u * (xRange[1] - xRange[0]);
+  };
+
+  const clampRange = (r) => {
+    // optional hard bounds (e.g., [-Fs/2, Fs/2] or [0, T])
+    if (!hardBounds) return r;
+    const [H0, H1] = hardBounds;
+    const w = r[1] - r[0];
+    let a = Math.max(H0, r[0]), b = Math.min(H1, r[1]);
+    if (b - a < 1e-12) { // prevent collapse
+      const mid = (H0 + H1) / 2;
+      a = mid - w/2; b = mid + w/2;
+    }
+    return [a, b];
+  };
+
+  // Zoom on wheel (ctrl+wheel = faster on some OS; we set our own speed)
+  canvas.addEventListener('wheel', (e) => {
+    e.preventDefault();
+    const xMouse = pxToX(e.clientX);
+    const zoomFactor = (e.deltaY < 0) ? 0.9 : 1.1; // 10% steps
+    const [a, b] = xRange;
+    const da = (xMouse - a) * (1 - zoomFactor);
+    const db = (b - xMouse) * (1 - zoomFactor);
+    xRange = clampRange([a + da, b - db]);
+    redraw(xRange);
+  }, {passive:false});
+
+  // Pan: mousedown + drag
+  canvas.addEventListener('mousedown', (e) => {
+    isPanning = true;
+    panStartX = e.clientX;
+    panStartRange = xRange.slice();
+  });
+  window.addEventListener('mousemove', (e) => {
+    if (!isPanning) return;
+    const {width} = canvas.getBoundingClientRect();
+    const dx_px = e.clientX - panStartX;
+    const w = panStartRange[1] - panStartRange[0];
+    const dx = -dx_px / width * w;  // negative to follow cursor
+    xRange = clampRange([panStartRange[0] + dx, panStartRange[1] + dx]);
+    redraw(xRange);
+  });
+  window.addEventListener('mouseup', () => { isPanning = false; });
+
+  // Double-click to reset
+  canvas.addEventListener('dblclick', () => {
+    xRange = initRange.slice();
+    redraw(xRange);
+  });
+
+  // External access if you need it
+  return {
+    getRange: () => xRange.slice(),
+    setRange: (r) => { xRange = clampRange(r.slice()); redraw(xRange); },
+    reset: () => { xRange = initRange.slice(); redraw(xRange); }
+  };
+}
+
+
+  function drawAll(){
+    const kind = elSignal.value;
+    const f0 = parseFloat(elF0.value);
+    elF0Val.textContent = f0.toFixed(0);
+
+    const isSynth = ['cosine','sumcos','square','triangle','saw','chirp','noise'].includes(kind);
+    signalExtra.style.display = isSynth ? 'grid' : 'none';
+    fileInput.style.display = (kind==='upload') ? 'block' : 'none';
+    recordRow.style.display = (kind==='record') ? 'flex' : 'none';
+
+	// Use the recording/upload Fs when present; otherwise default
+	const FsProc = getActiveFs();
+
+	// Rebuild the 1-second plotting time base and matching freq axis at FsProc
+	const tPlot   = Array.from({length: Math.floor(FsProc * T)}, (_,k)=> k / FsProc);
+	const faxisProc = Array.from({length: N}, (_,k) => (k - N/2) * (FsProc / N));
+
+	// Optional: show the processing Fs in the UI (replaces old badge value)
+	fsBadge.textContent = FsProc;
+
+	const {type: ftype, fcEff, QEff} = getFilterParams();
+	const coeffs = biquadCoeffs(ftype, fcEff, QEff, FsProc);
+
+    // --- NEW: separate arrays for plotting vs full-length audio ---
+	let xPlot, xAudio;
+
+	if ((kind==='upload' || kind==='record') && bufferX) {
+	  const arr = bufferX.getChannelData(0);
+	  xAudio = Array.from(arr);                                               // FULL clip
+	  xPlot  = Array.from(arr.slice(0, Math.min(arr.length, tPlot.length))); // 1 s for plots
+	} else if (kind==='demo') {
+	  xPlot  = genSignal('demo', f0, tPlot);
+	  xAudio = xPlot;
+	  bufferX = arrayToAudioBuffer(xAudio);  // playback @ AC sampleRate
+	} else {
+	  xPlot  = genSignal(kind, f0, tPlot);
+	  xAudio = xPlot;
+	  bufferX = arrayToAudioBuffer(xAudio);
+	}
+
+    // Filter both
+    // Spectra
+	const Hmag = biquadFreqResp(coeffs, faxisProc);
+	const Xmag = fftRealMag(xPlot);
+	const yPlot  = biquadFilter(xPlot,  coeffs);
+	const yAudio = biquadFilter(xAudio, coeffs);
+	const Ymag = fftRealMag(yPlot);
+
+    // Audio buffers
+    bufferY = arrayToAudioBuffer(yAudio);
+
+    // Plots
+    
+plotXY(cx, tPlot, xPlot, {
+  color: getComputedStyle(document.documentElement).getPropertyValue("--xcolor").trim(),
+  xRange: zoomX ? zoomX.getRange() : [0, T]
+});
+
+plotXY(cX, faxisProc, Xmag, { color:getComputedStyle(document.documentElement).getPropertyValue("--xcolor").trim(), yRange:[0, 1] , xRange: zoomXspec ? zoomXspec.getRange() : [-FsProc/2, FsProc/2] });
+
+	const Lh = 400;
+	const impulse = new Array(Lh).fill(0); impulse[0]=1;
+	const h = biquadFilter(impulse, coeffs);
+	const th = Array.from({length:Lh}, (_,i)=> i / FsProc);
+
+	plotXY(ch, th, h, { color:getComputedStyle(document.documentElement).getPropertyValue("--hcolor").trim(), xRange:[0, th[th.length-1]] });
+
+	plotXY(cH, faxisProc, Hmag, { color:getComputedStyle(document.documentElement).getPropertyValue("--hcolor").trim(), yRange:[0, 1] , xRange: zoomXspec ? zoomXspec.getRange() : [-FsProc/2, FsProc/2] });
+
+plotXY(cy, tPlot, yPlot, {
+  color: getComputedStyle(document.documentElement).getPropertyValue("--ycolor").trim(),
+  xRange: zoomX ? zoomX.getRange() : [0, T]
+});
+
+	plotXY(cY, faxisProc, Ymag, { color:getComputedStyle(document.documentElement).getPropertyValue("--ycolor").trim(), yRange:[0, 1] , xRange: zoomXspec ? zoomXspec.getRange() : [-FsProc/2, FsProc/2] });
+
+
+// plotXY(cx, tPlot, xPlot, {
+//   color: getComputedStyle(document.documentElement).getPropertyValue("--xcolor").trim(),
+//   xRange: zoomX ? zoomX.getRange() : [0, T]
+// });
+
+// plotXY(ch, th, h, {
+//   color: getComputedStyle(document.documentElement).getPropertyValue("--hcolor").trim(),
+//   xRange: zoomH ? zoomH.getRange() : [0, th[th.length-1]]
+// });
+
+// plotXY(cy, tPlot, yPlot, {
+//   color: getComputedStyle(document.documentElement).getPropertyValue("--ycolor").trim(),
+//   xRange: zoomY ? zoomY.getRange() : [0, T]
+// });
+
+// plotXY(cX, faxisProc, Xmag, {
+//   color: "#8ab4f8",
+//   xRange: zoomXspec ? zoomXspec.getRange() : [-FsProc/2, FsProc/2]
+// });
+
+// plotXY(cH, faxisProc, Hmag, {
+//   color: "#22c55e",
+//   yRange: [0, 1.2],
+//   xRange: zoomHspec ? zoomHspec.getRange() : [-FsProc/2, FsProc/2]
+// });
+
+// plotXY(cY, faxisProc, Ymag, {
+//   color: "#fca5a5",
+//   xRange: zoomYspec ? zoomYspec.getRange() : [-FsProc/2, FsProc/2]
+// });
+
+
+    const hasBuf = !!bufferX;
+    btnPlayX.disabled = !hasBuf;
+    btnPlayY.disabled = !hasBuf;
+  }
+
+  document.getElementById('fileInput').addEventListener('change', async (e)=>{
+    const file = e.target.files[0];
+    if (!file) return;
+    const ac = ensureAC();
+    const arrayBuf = await file.arrayBuffer();
+    bufferX = await ac.decodeAudioData(arrayBuf);
+    drawAll();
+  });
+
+  async function startRecording(){
+    if (!navigator.mediaDevices) { alert("getUserMedia unavailable in this browser."); return; }
+    if (!mediaStream) mediaStream = await navigator.mediaDevices.getUserMedia({audio:true});
+    recChunks = [];
+    mediaRecorder = new MediaRecorder(mediaStream);
+    mediaRecorder.ondataavailable = (e)=>{ if (e.data.size>0) recChunks.push(e.data); };
+    mediaRecorder.onstop = async ()=>{
+      const blob = new Blob(recChunks, {type: 'audio/webm'});
+      const ac = ensureAC();
+      const arrayBuf = await blob.arrayBuffer();
+      bufferX = await ac.decodeAudioData(arrayBuf);
+      drawAll();
+    };
+    mediaRecorder.start();
+    btnRec.disabled = true; btnStop.disabled = false;
+  }
+  function stopRecording(){
+    if (mediaRecorder && mediaRecorder.state !== 'inactive') mediaRecorder.stop();
+    btnRec.disabled = false; btnStop.disabled = true;
+  }
+
+  elSignal.addEventListener('change', drawAll);
+  elFilter.addEventListener('change', drawAll);
+  elF0.addEventListener('input', drawAll);
+  elFc.addEventListener('input', drawAll);
+  elBw.addEventListener('input', drawAll);
+  btnPlayX.addEventListener('click', ()=>{ if (bufferX) playBuffer(bufferX); });
+  btnPlayY.addEventListener('click', ()=>{ if (bufferY) playBuffer(bufferY); });
+  btnRec.addEventListener('click', startRecording);
+  btnStop.addEventListener('click', stopRecording);
+
+  drawAll();
+})();
+</script>
+</body>
+</html>

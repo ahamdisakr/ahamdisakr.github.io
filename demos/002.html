@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+<meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+<title>Interactive Fourier Analysis Demo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/feather-icons"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+
+    <link href="/styles.css" rel="stylesheet" />
+    <script defer="True" src="/app.js"></script>
+
+<style>
+:root{
+  --muted:#94a3b8; 
+  --axis:#223356; 
+  --grid:#15223e; 
+  --xcolor:#f59e0b; 
+  --ycolor:#60a5fa; 
+  --hcolor:#22c55e;
+  --card:#111827;
+}
+  .controls { display: grid; grid-template-columns: 1.2fr 1fr 1fr 1fr; gap: 12px; margin-bottom: 10px; }
+  .control { background: var(--card); padding: 12px; border-radius: 12px; border: 1px solid #0f172a; }
+  label { font-weight: 600; display: block; margin-bottom: 6px; color: #cbd5e1; }
+  select, input[type="number"], input[type="range"] { width: 100%; padding: 8px 10px; border-radius: 8px; background: #cbd5e1; color: var(--fg); border: 1px solid #1f2a44; }
+  input[type="range"] { padding: 0; height: 28px; }
+  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+  .wrap{max-width:none;margin:0 auto}
+
+  .canvas-row { display: grid; grid-template-columns: 1fr; gap: 12px; }
+  .card { background: var(--card); border: 1px solid #0f172a; border-radius: 12px; padding: 10px 12px; }
+  .card h2 { font-size: 16px; margin: 0 0 6px; color: #cbd5e1; }
+  canvas { width: 100%; height: 260px; display: block; background: #0a1326; border-radius: 8px; }
+  .dot { width:10px; height:10px; border-radius:50%; display:inline-block; }
+  .dot.x{background: var(--xcolor)}
+ .dot.y{background: var(--ycolor)}
+ .dot.h{background: var(--hcolor)}
+
+</style>
+</head>
+
+<body class="font-sans gradient-bg min-h-screen" data-page="ftdemo">
+
+  <header class="fixed inset-x-0 top-0 z-[9999] bg-white/70 backdrop-blur border-b border-gray-200">
+        <div class="max-w-6xl mx-auto px-4">
+            <div class="flex items-center justify-between h-16">
+                <a class="flex items-center gap-2 font-semibold text-gray-900 hover:text-blue-600" href="/index.html">
+                    <i aria-hidden="true" data-feather="layers"></i>
+                    <span>Ahmed Hamdi Sakr, PhD</span>
+                </a>
+                <button aria-controls="mobile-nav" aria-expanded="false" aria-label="Open menu"
+                    class="md:hidden p-2 rounded hover:bg-gray-100" id="menuBtn" type="button">
+                    <i data-feather="menu"></i>
+                </button>
+                <nav class="hidden md:block" id="primary-nav">
+                    <ul class="flex items-center gap-6">
+                        <li><a class="hover:text-blue-600" data-nav="index" href="/index.html">Home</a></li>
+                        <li><a class="hover:text-blue-600" data-nav="research" href="/research.html">Research</a></li>
+                        <li><a class="hover:text-blue-600" data-nav="publications" href="/publications.html">Publications</a></li>
+                        <li><a class="hover:text-blue-600" data-nav="teaching" href="/teaching.html">Teaching</a></li>
+                        <li><a class="hover:text-blue-600" data-nav="team" href="/team.html">Team</a></li>
+                        <li><a class="hover:text-blue-600" data-nav="join" href="/join.html">Join</a></li>
+                    </ul>
+                </nav>
+            </div>
+            <nav aria-hidden="true" aria-label="Mobile" class="md:hidden hidden pb-4" id="mobile-nav">
+                <ul class="grid gap-2">
+                    <li><a class="block px-3 py-2 rounded hover:bg-gray-100" data-nav="index" href="/index.html">Home</a></li>
+                    <li><a class="block px-3 py-2 rounded hover:bg-gray-100" data-nav="research" href="/research.html">Research</a></li>
+                    <li><a class="block px-3 py-2 rounded hover:bg-gray-100" data-nav="publications" href="/publications.html">Publications</a></li>
+                    <li><a class="block px-3 py-2 rounded hover:bg-gray-100" data-nav="teaching" href="/teaching.html">Teaching</a></li>
+                    <li><a class="block px-3 py-2 rounded hover:bg-gray-100" data-nav="team" href="/team.html">Team</a></li>
+                    <li><a class="block px-3 py-2 rounded hover:bg-gray-100" data-nav="join" href="/join.html">Join</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+        <div class="container mx-auto px-4 py-8 max-w-5xl">
+        <!-- Navigation -->
+        <main class="fade-in py-8 px-4 max-w-6xl mx-auto pt-20" id="main">
+
+  <div class="bg-white rounded-xl shadow-lg p-6">
+  <h2 class="mb-4">Interactive Fourier Transform Demo</h2>
+  <p>Slider changes the frequency of the input signal.</p>
+
+<div class="controls" style="grid-template-columns: repeat(2, minmax(0, 1fr));">
+    <div class="control">
+      <label for="f0">Input frequency f<sub>0</sub> (Hz): <span id="f0val">10</span></label>
+      <input id="f0" type="range" min="1" max="400" step="1" value="10"/>
+    </div>
+
+        <div class="control">
+      <label>Legend</label>
+      <div class="legend">
+        <span class="chip"><span class="dot x"></span>Input x</span>
+        <span class="chip"><span class="dot h"></span>Filter h/H</span>
+        <span class="chip"><span class="dot y"></span>Output y</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid">
+    <div class="card">
+      <h2>x(t) = cos(2π f<sub>0</sub> t)</h2>
+      <canvas id="cx"></canvas>
+    </div>
+    <div class="card">
+      <h2>|X(f)| = 1&frasl;2 [&delta;(f-f<sub>0</sub>) + &delta;(f+f<sub>0</sub>)]</h2>
+      <canvas id="cX"></canvas>
+    </div>
+    <div class="card">
+      <h2>h(t) = &alpha; e<sup>-&alpha; t</sup> u(t), &alpha; = 2π·50</h2>
+      <canvas id="ch"></canvas>
+    </div>
+    <div class="card">
+      <h2>|H(f)| = &alpha; / &radic;(&alpha;&sup2; + (2&pi;f)&sup2;)</h2>
+      <canvas id="cH"></canvas>
+    </div>
+    <div class="card">
+      <h2>y(t) = |H(f<sub>0</sub>)| cos(2π f<sub>0</sub> t + &phi;(f<sub>0</sub>))</h2>
+      <canvas id="cy"></canvas>
+    </div>
+    <div class="card">
+      <h2>|Y(f)| = 1&frasl;2 |H(f<sub>0</sub>)|[&delta;(f-f<sub>0</sub>) + &delta;(f+f<sub>0</sub>)]</h2>
+      <canvas id="cY"></canvas>
+    </div>
+  </div>
+
+</div>
+
+        </main>
+        <footer class="mt-12 text-center text-gray-600 fade-in">
+            <p>&copy; 2021 Ahmed Hamdi Sakr. All rights reserved.</p>
+        </footer>
+
+
+<script>
+(function(){
+  // ---------- Config ----------
+  const TWO_PI = Math.PI * 2;
+  const T = 0.5;               // time window for plotting (seconds)
+  const Fs = 5000;             // time sampling for smooth curves
+  const dt = 1/Fs;
+  const Ntime = Math.floor(T*Fs);
+  const t = Array.from({length:Ntime}, (_,k)=>k*dt);
+  const alpha = TWO_PI * 50;   // &alpha; = 2π·50
+
+  // Frequency axis for continuous plots (for H only)
+  const Fmin = -500, Fmax = 500;         // Hz range for |H(f)|/impulses
+  const Nf   = 1001;
+  const f = Array.from({length:Nf}, (_,i)=> Fmin + i*(Fmax-Fmin)/(Nf-1));
+
+  // DOM
+  const elF0 = document.getElementById('f0');
+  const elF0Val = document.getElementById('f0val');
+
+  const cx = document.getElementById('cx').getContext('2d');
+  const cX = document.getElementById('cX').getContext('2d');
+  const ch = document.getElementById('ch').getContext('2d');
+  const cH = document.getElementById('cH').getContext('2d');
+  const cy = document.getElementById('cy').getContext('2d');
+  const cY = document.getElementById('cY').getContext('2d');
+
+  // ---------- Helpers ----------
+  function plotXY(ctx, X, Y, opts={}){	
+    const {width, height} = ctx.canvas;
+    const margin = {left: 56, right: 12, top: 10, bottom: 26};
+    const plot = {x0: margin.left, y0: margin.top, w: width - margin.left - margin.right, h: height - margin.top - margin.bottom};
+
+    // ranges
+    const xmin = (opts.xRange ? opts.xRange[0] : Math.min(...X));
+    const xmax = (opts.xRange ? opts.xRange[1] : Math.max(...X));
+    let ymin = (opts.yRange ? opts.yRange[0] : Math.min(...Y));
+    let ymax = (opts.yRange ? opts.yRange[1] : Math.max(...Y));
+    if (ymin===ymax){ ymin -= 1; ymax += 1; }
+    const pad = 0*0.08*(ymax - ymin || 1); ymin -= pad; ymax += pad;
+
+    // mappers
+    const xToPx = (x) => plot.x0 + (x - xmin) * (plot.w/(xmax - xmin));
+    const yToPx = (y) => plot.y0 + plot.h - ((y - ymin)/(ymax - ymin))*plot.h;
+
+    // clear
+    ctx.clearRect(0,0,width,height);
+    ctx.fillStyle = "#0a1326"; ctx.fillRect(0,0,width,height);
+
+    // grid aligned with ticks
+    const yTicks = 5, xTicks = 5;
+    ctx.save(); ctx.beginPath(); ctx.rect(plot.x0, plot.y0, plot.w, plot.h); ctx.clip();
+    ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue("--grid") || "#15223e";
+    ctx.lineWidth = 1;
+    for(let i=0;i<yTicks;i++){
+      const v = ymin + i*(ymax-ymin)/(yTicks-1);
+      const y = yToPx(v);
+      ctx.beginPath(); ctx.moveTo(plot.x0, y); ctx.lineTo(plot.x0 + plot.w, y); ctx.stroke();
+    }
+    for(let i=0;i<xTicks;i++){
+      const u = xmin + i*(xmax-xmin)/(xTicks-1);
+      const x = xToPx(u);
+      ctx.beginPath(); ctx.moveTo(x, plot.y0); ctx.lineTo(x, plot.y0 + plot.h); ctx.stroke();
+    }
+    ctx.restore();
+
+    // labels
+    ctx.fillStyle = "#94a3b8"; ctx.font = "12px system-ui"; ctx.textAlign = "right"; ctx.textBaseline = "middle";
+    for(let i=0;i<yTicks;i++){
+      const v = ymin + i*(ymax-ymin)/(yTicks-1);
+      const y = yToPx(v);
+      ctx.fillText(v.toFixed(2), plot.x0 - 8, y);
+      ctx.strokeStyle = "#223356"; ctx.beginPath(); ctx.moveTo(plot.x0-4, y); ctx.lineTo(plot.x0, y); ctx.stroke();
+    }
+    ctx.textAlign = "center"; ctx.textBaseline = "top";
+    for(let i=0;i<xTicks;i++){
+      const u = xmin + i*(xmax-xmin)/(xTicks-1);
+      const x = xToPx(u);
+      const lab = (Math.abs(u)<1e-9) ? "0" : (Math.abs(u)>=1000 ? (u/1000).toFixed(1)+"k" : u.toFixed(1));
+      ctx.fillText(lab, x, plot.y0 + plot.h + 6);
+    }
+
+    // axis at y=0
+    if (ymin<=0 && ymax>=0){
+      const y0px = yToPx(0);
+      ctx.strokeStyle = "#223356"; ctx.lineWidth = 1.5;
+      ctx.beginPath(); ctx.moveTo(plot.x0, y0px); ctx.lineTo(plot.x0 + plot.w, y0px); ctx.stroke();
+    }
+
+    // draw
+    ctx.strokeStyle = opts.color || "#60a5fa"; ctx.lineWidth = opts.width || 2; ctx.globalAlpha = opts.alpha ?? 1;
+    ctx.beginPath();
+    for(let i=0;i<X.length;i++){
+      const x = xToPx(X[i]); const y = yToPx(Y[i]);
+      if (i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+    }
+    ctx.stroke();
+	// --- draw optional markers that use the same axis scales ---
+	if (opts.markers && Array.isArray(opts.markers)) {
+	  for (const m of opts.markers) {
+		const xpx = plot.x0 + (m.x - xmin) * (plot.w / (xmax - xmin));
+		const ypx = plot.y0 + plot.h - ((m.y - ymin) / (ymax - ymin)) * plot.h;
+		const r = m.radius ?? 4;
+		ctx.fillStyle = m.color || "#fff";
+		ctx.beginPath(); ctx.arc(xpx, ypx, r, 0, 2*Math.PI); ctx.fill();
+		if (m.stroke) { ctx.lineWidth = m.strokeWidth ?? 1.5; ctx.strokeStyle = m.stroke; ctx.stroke(); }
+	  }
+	}
+
+    ctx.globalAlpha = 1;
+  }
+
+  function plotImpulses(ctx, fmin, fmax, stems, opts={}){
+    // stems: [{f: frequency (Hz), h: height, color?:str, label?:str}]
+    const {width, height} = ctx.canvas;
+    const margin = {left: 56, right: 12, top: 10, bottom: 26};
+    const plot = {x0: margin.left, y0: margin.top, w: width - margin.left - margin.right, h: height - margin.top - margin.bottom};
+
+    const ymin = 0, ymax = (opts.yMax ?? Math.max(1, ...stems.map(s=>s.h))*1.1);
+    const xToPx = (x) => plot.x0 + (x - fmin) * (plot.w/(fmax - fmin));
+    const yToPx = (y) => plot.y0 + plot.h - ((y - ymin)/(ymax - ymin))*plot.h;
+
+    // clear
+    ctx.clearRect(0,0,width,height);
+    ctx.fillStyle = "#0a1326"; ctx.fillRect(0,0,width,height);
+
+    // grid aligned to ticks
+    const yTicks = 5, xTicks = 5;
+    ctx.save(); ctx.beginPath(); ctx.rect(plot.x0, plot.y0, plot.w, plot.h); ctx.clip();
+    ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue("--grid") || "#15223e";
+    ctx.lineWidth = 1;
+    for(let i=0;i<yTicks;i++){
+      const v = ymin + i*(ymax-ymin)/(yTicks-1);
+      const y = yToPx(v);
+      ctx.beginPath(); ctx.moveTo(plot.x0, y); ctx.lineTo(plot.x0 + plot.w, y); ctx.stroke();
+    }
+    for(let i=0;i<xTicks;i++){
+      const u = fmin + i*(fmax-fmin)/(xTicks-1);
+      const x = xToPx(u);
+      ctx.beginPath(); ctx.moveTo(x, plot.y0); ctx.lineTo(x, plot.y0 + plot.h); ctx.stroke();
+    }
+    ctx.restore();
+
+    // y ticks
+    ctx.fillStyle = "#94a3b8"; ctx.font = "12px system-ui"; ctx.textAlign = "right"; ctx.textBaseline = "middle";
+    for(let i=0;i<yTicks;i++){
+      const v = ymin + i*(ymax-ymin)/(yTicks-1);
+      const y = yToPx(v);
+      ctx.fillText(v.toFixed(2), plot.x0 - 8, y);
+      ctx.strokeStyle = "#223356"; ctx.beginPath(); ctx.moveTo(plot.x0-4, y); ctx.lineTo(plot.x0, y); ctx.stroke();
+    }
+    // x labels
+    ctx.textAlign = "center"; ctx.textBaseline = "top";
+    for(let i=0;i<xTicks;i++){
+      const u = fmin + i*(fmax-fmin)/(xTicks-1);
+      const x = xToPx(u);
+      const lab = (Math.abs(u)<1e-9) ? "0" : u.toFixed(0);
+      ctx.fillText(lab, x, plot.y0 + plot.h + 6);
+    }
+
+    // stems
+    stems.forEach(s => {
+      const x = xToPx(s.f);
+      const y = yToPx(s.h);
+      const y0 = yToPx(0);
+      ctx.strokeStyle = s.color || opts.color || "#fca5a5";
+      ctx.lineWidth = opts.stemWidth ?? 2.5;
+      ctx.beginPath(); ctx.moveTo(x, y0); ctx.lineTo(x, y); ctx.stroke();
+      ctx.beginPath(); ctx.arc(x, y, opts.dotRadius ?? 3.5, 0, Math.PI*2); ctx.fillStyle = ctx.strokeStyle; ctx.fill();
+      if (s.label){
+        ctx.fillStyle = "#cbd5e1"; ctx.font = "12px system-ui"; ctx.textAlign = "left"; ctx.textBaseline = "bottom";
+        ctx.fillText(s.label, x+6, y-2);
+      }
+    });
+  }
+  
+  // ---------- Main draw ----------
+  function drawAll(){
+    const f0 = parseFloat(elF0.value);
+    elF0Val.textContent = f0.toFixed(0);
+
+    // Input cosine
+    const x = t.map(tt => Math.cos(TWO_PI * f0 * tt));
+
+    // LPF analytics
+    const Hmag = f.map(ff => {
+      const den = Math.sqrt(alpha*alpha + (TWO_PI*ff)*(TWO_PI*ff));
+      return alpha / den;
+    });
+    const phi0 = -Math.atan2(TWO_PI*f0, alpha);          // phase at +f0
+    const A0   = alpha / Math.sqrt(alpha*alpha + (TWO_PI*f0)*(TWO_PI*f0)); // |H(f0)|
+
+    // Output time-domain (analytic)
+    const y = t.map(tt => A0 * Math.cos(TWO_PI * f0 * tt + phi0));
+
+    // Spectral impulses (magnitudes only)
+    const Xstems = [
+      { f: -f0, h: 0.5 },
+      { f: +f0, h: 0.5 },
+    ];
+    const Ystems = [
+      { f: -f0, h: 0.5*A0 },
+      { f: +f0, h: 0.5*A0 },
+    ];
+
+    // ---- Plot all six ----
+    plotXY(cx, t, x,   { color: getComputedStyle(document.documentElement).getPropertyValue("--xcolor").trim(), width:2, xRange:[0, T], yRange:[-1.1, 1.1] });
+    plotImpulses(cX, -500, 500, Xstems, { yMax: 0.6, color: getComputedStyle(document.documentElement).getPropertyValue("--xcolor").trim() });
+
+    const h = t.map(tt => (tt>=0 ? alpha * Math.exp(-alpha*tt) : 0));
+    <!-- plotXY(ch, t, h,   { color: getComputedStyle(document.documentElement).getPropertyValue("--hcolor").trim(), width:2, xRange:[0, T] }); -->
+    plotXY(ch, t, h,   { color: getComputedStyle(document.documentElement).getPropertyValue("--hcolor").trim(), width:2, xRange:[0, 0.02], yRange:[0, alpha] });
+    <!-- plotXY(cH, f, Hmag, { color:"#22c55e", width:2, xRange:[-500, 500], yRange:[0,1.05] }); -->
+	
+	const Habs = (ff) => {
+	  const num = alpha;
+	  const den = Math.sqrt(alpha*alpha + (2*Math.PI*ff)*(2*Math.PI*ff));
+	  return num/den;
+	};
+
+	plotXY(cH, f, Hmag, {
+	  color: "#22c55e",
+	  width: 2,
+	  xRange: [-500, 500],
+	  yRange: [0, 1.05],
+	  markers: [
+		{ x: -f0, y: Habs(-f0), color: getComputedStyle(document.documentElement).getPropertyValue("--xcolor").trim(), radius: 4 },
+		{ x:  +f0, y: Habs( +f0), color: getComputedStyle(document.documentElement).getPropertyValue("--xcolor").trim(), radius: 4 },
+	  ]
+	});
+
+    plotXY(cy, t, y,   { color: getComputedStyle(document.documentElement).getPropertyValue("--ycolor").trim(), width:2, xRange:[0, T], yRange:[-1.1, 1.1] });
+    plotImpulses(cY, -500, 500, Ystems, { yMax: 0.6, color: getComputedStyle(document.documentElement).getPropertyValue("--ycolor").trim() });
+  }
+
+  // listeners
+  elF0.addEventListener('input', drawAll);
+
+  // initial
+  drawAll();
+})();
+</script>
+</body>
+</html>
