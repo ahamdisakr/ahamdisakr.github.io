@@ -211,24 +211,3 @@ img[loading="lazy"] {
   border: 0;
 }
 
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-
-  to {
-    opacity: 1;
-  }
-}
-
-.hover-scale {
-  transition: transform 0.3s ease;
-}
-
-.hover-scale:hover {
-  transform: scale(1.02);
-}
-
-.gradient-bg {
-  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-}
