@@ -7,88 +7,28 @@
     <title>Timer | Ahmed Hamdi Sakr</title>
     <meta name="description" content="Exam countdown timer and live local-time clock with quick notes, for use in class and exams." />
 
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/feather-icons@4.29.2/dist/feather.min.js"></script>
-    <link href="styles.css" rel="stylesheet" />
+    <script defer src="https://cdn.jsdelivr.net/npm/feather-icons@4.29.2/dist/feather.min.js"></script>
+    <link href="/styles.css" rel="stylesheet" />
+    <link href="/timer.css" rel="stylesheet" />
     <link rel="icon" type="image/x-icon" href="/images/icon.ico" />
-    <script defer src="app.js"></script>
-    <style>
-        /* In fullscreen keep only the name in the top bar (no links / menu, and the name is not clickable) */
-        html:fullscreen #primary-nav, html:fullscreen #menuBtn, html:fullscreen #mobile-nav { display: none !important; }
-        html:fullscreen header a { pointer-events: none; }
-        html:-webkit-full-screen #primary-nav, html:-webkit-full-screen #menuBtn, html:-webkit-full-screen #mobile-nav { display: none !important; }
-        html:-webkit-full-screen header a { pointer-events: none; }
-
-        /* utility classes (flex, chip) would otherwise override the hidden attribute */
-        [hidden] { display: none !important; }
-
-        /* ---- Clock / Timer switch ---- */
-        .switch { position: relative; width: 3rem; height: 1.75rem; border-radius: 9999px; background: #cbd5e1; border: 0; padding: 0; cursor: pointer; transition: background-color .2s ease; flex-shrink: 0; }
-        .switch .knob { position: absolute; top: .25rem; left: .25rem; width: 1.25rem; height: 1.25rem; border-radius: 9999px; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,.3); transition: transform .2s ease; }
-        .switch[aria-checked="true"] { background: #2563eb; }
-        .switch[aria-checked="true"] .knob { transform: translateX(1.25rem); }
-        .mode-label { font-size: .95rem; color: #6b7280; transition: color .2s ease; }
-        .mode-label[data-active="true"] { color: #1d4ed8; font-weight: 600; }
-
-        /* ---- Clock and timer views share one cell: the card keeps the same size in both modes ---- */
-        .viewstack { display: grid; }
-        .viewstack > .view { grid-area: 1 / 1; min-width: 0; align-self: center; }
-        .viewstack > .view.is-off { visibility: hidden; pointer-events: none; }
-
-
-        /* ---- Local clock (big text; same digit size as the timer; colon = two dots centred on the digits) ---- */
-        .bigclock { text-align: center; color: #333; padding: .5rem 0; }
-        .bc-label { font-size: .95rem; color: #374151; }
-        .bc-time { display: flex; align-items: center; justify-content: center; font-size: clamp(3.5rem, 15.4vw, 11.2rem); font-weight: 700; line-height: 1.15; font-variant-numeric: tabular-nums; letter-spacing: -.02em; margin: .25rem 0; }
-        .bc-colon { display: flex; flex-direction: column; gap: .2em; margin: 0 .2em; position: relative; top: .055em; animation: bccolon 1s steps(1) infinite; }
-        .bc-colon i { display: block; width: .13em; height: .13em; border-radius: 9999px; background: #6b6b6b; }
-        @keyframes bccolon { 50% { opacity: .25; } }
-        .bc-time small { font-size: .3em; align-self: flex-start; margin: .2em 0 0 .15em; letter-spacing: 0; }
-        .bc-date { font-weight: 700; font-size: 1.05rem; }
-        .bc-zone { font-size: .8rem; color: #6b7280; margin-top: .35rem; }
-        @media (prefers-reduced-motion: reduce) { .bc-colon { animation: none; } }
-
-        /* ---- Countdown display ---- */
-        .tdisp { display: grid; grid-template-columns: auto auto auto auto auto; justify-content: center; align-items: center; column-gap: clamp(.4rem, 2vw, 1.5rem); row-gap: .5rem; margin: 1rem 0 .75rem; }
-        .tile { position: relative; display: flex; align-items: center; justify-content: center; width: clamp(4rem, 19vw, 15rem); aspect-ratio: 4 / 3; background: #f8fafc; border: 1px solid #e5e7eb; border-radius: 1.25rem; box-shadow: inset 0 2px 6px rgba(15,23,42,.06), 0 4px 12px rgba(15,23,42,.06); overflow: hidden; }
-        .tile span { font-size: clamp(2.5rem, 11vw, 8rem); font-weight: 700; line-height: 1; font-variant-numeric: tabular-nums; color: #1f2937; transition: color .3s ease; }
-        .tlabel { text-align: center; font-size: .75rem; letter-spacing: .08em; text-transform: uppercase; color: #6b7280; }
-        .colon { display: flex; flex-direction: column; gap: clamp(.6rem, 2.5vw, 1.6rem); }
-        .colon i { display: block; width: clamp(.5rem, 1.6vw, 1rem); height: clamp(.5rem, 1.6vw, 1rem); border-radius: 9999px; background: #9ca3af; }
-        .tdisp[data-state="warn"] .tile span { color: #d97706; }
-        .tdisp[data-state="danger"] .tile span, .tdisp[data-state="done"] .tile span { color: #dc2626; }
-        .tdisp[data-state="done"] .tile { animation: tblink 1s ease-in-out infinite; }
-        @keyframes tblink { 50% { opacity: .45; } }
-        @media (prefers-reduced-motion: reduce) { .tdisp[data-state="done"] .tile { animation: none; } }
-
-        /* ---- Presets, manual inputs, buttons ---- */
-        .preset { cursor: pointer; border: 1px solid transparent; font-weight: 600; padding: .35rem .9rem; transition: background-color .15s ease, color .15s ease; }
-        .preset:hover { background: #bfdbfe; }
-        .preset[aria-pressed="true"] { background: #2563eb; color: #fff; }
-        .preset:disabled { opacity: .5; cursor: not-allowed; }
-        .btn:disabled { opacity: .5; cursor: not-allowed; transform: none; }
-        .minput { width: 4.5rem; text-align: center; font-size: 1.25rem; font-variant-numeric: tabular-nums; padding: .4rem .25rem; border: 1px solid #d1d5db; border-radius: .5rem; background: #fff; }
-        .minput:focus { outline: none; box-shadow: 0 0 0 2px #2563eb; }
-        .minput:disabled { background: #f3f4f6; color: #9ca3af; }
-        .mlab { display: flex; flex-direction: column; align-items: center; gap: .25rem; font-size: .75rem; letter-spacing: .08em; text-transform: uppercase; color: #6b7280; }
-    </style>
+    <script defer src="/app.js"></script>
 </head>
 
-<body class="font-sans gradient-bg min-h-screen" data-page="timer">
+<body data-page="timer">
     <div id="site-nav"></div>
-    <div class="container mx-auto px-4 py-8 max-w-5xl">
+    <div class="site-container">
         <!-- Main -->
-        <main id="main" class="fade-in py-8 px-4 max-w-6xl mx-auto space-y-8 pt-20">
+        <main id="main" class="page page--stack fade-in">
             <h1 class="sr-only">Timer</h1>
 
             <!-- Card: Current Time / Timer -->
-            <div class="bg-white rounded-xl shadow-lg p-6 hover-scale">
-                <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
-                    <div class="flex items-center">
-                        <i data-feather="clock" class="text-blue-500 mr-2"></i>
-                        <h2 class="text-2xl font-semibold text-gray-800" id="cardTitle">Current Time</h2>
+            <div class="panel">
+                <div class="panel-header">
+                    <div class="panel-title">
+                        <i data-feather="clock"></i>
+                        <h2 class="title-lg" id="cardTitle">Current Time</h2>
                     </div>
-                    <div class="flex items-center gap-3">
+                    <div class="toggle-group">
                         <span class="chip" id="nowChip" hidden></span>
                         <span class="chip" id="bgChip" hidden></span>
                         <span class="mode-label" id="lblClock" data-active="true">Clock</span>
@@ -124,10 +64,10 @@
                         <div class="tlabel">Seconds</div>
                     </div>
 
-                    <p class="text-center text-xl font-semibold text-red-600 mb-3" id="timerMsg" role="status"
+                    <p class="timer-msg" id="timerMsg" role="status"
                         aria-live="polite" style="min-height:1.75rem"></p>
 
-                    <div class="flex flex-wrap justify-center gap-3 mb-5">
+                    <div class="timer-actions">
                         <button type="button" class="btn btn-secondary" id="btnReset">
                             <i data-feather="rotate-ccw" class="icon-4"></i><span>Reset</span>
                         </button>
@@ -140,7 +80,7 @@
                         <button type="button" class="btn btn-secondary" id="btnAdd5" title="Add five minutes">+5 min</button>
                     </div>
 
-                    <div class="flex flex-wrap justify-center gap-2" id="presets" role="group" aria-label="Timer length">
+                    <div class="preset-row" id="presets" role="group" aria-label="Timer length">
                         <button type="button" class="chip preset" data-sec="900" aria-pressed="false">15 min</button>
                         <button type="button" class="chip preset" data-sec="1800" aria-pressed="false">30 min</button>
                         <button type="button" class="chip preset" data-sec="2700" aria-pressed="false">45 min</button>
@@ -151,11 +91,11 @@
                         <button type="button" class="chip preset" data-manual="1" aria-pressed="false">Manual</button>
                     </div>
 
-                    <div class="flex justify-center items-end gap-2 mt-4 mb-2" id="manualBox" hidden>
+                    <div class="manual-row" id="manualBox" hidden>
                         <label class="mlab">Hours<input class="minput" id="mH" type="number" min="0" max="99" value="0" inputmode="numeric" /></label>
-                        <span class="text-2xl text-gray-400 pb-1" aria-hidden="true">:</span>
+                        <span class="colon-sep" aria-hidden="true">:</span>
                         <label class="mlab">Minutes<input class="minput" id="mM" type="number" min="0" max="59" value="0" inputmode="numeric" /></label>
-                        <span class="text-2xl text-gray-400 pb-1" aria-hidden="true">:</span>
+                        <span class="colon-sep" aria-hidden="true">:</span>
                         <label class="mlab">Seconds<input class="minput" id="mS" type="number" min="0" max="59" value="0" inputmode="numeric" /></label>
                     </div>
                 </div>
@@ -163,37 +103,37 @@
                 </div>
 
 
-                <div class="flex flex-wrap items-center justify-center gap-x-6 gap-y-3 mt-5">
+                <div class="timer-tools">
                     <button id="fsBtn" type="button"
-                        class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-blue-600 text-white hover:bg-blue-700 transition">
+                        class="btn btn-primary">
                         <span id="fsEnter"><i data-feather="maximize-2"></i></span>
                         <span id="fsExit" hidden><i data-feather="minimize-2"></i></span>
                         <span id="fsLabel">Fullscreen</span>
                     </button>
-                    <div class="flex flex-wrap items-center justify-center gap-2">
+                    <div class="awake-toggle">
                         <button type="button" class="switch" id="awakeSwitch" role="switch" aria-checked="true"
                             aria-label="Keep screen awake"><span class="knob"></span></button>
-                        <span class="text-sm text-gray-700 whitespace-nowrap">Keep screen awake</span>
+                        <span class="text-sm text-soft nowrap">Keep screen awake</span>
                     </div>
                 </div>
             </div>
 
             <!-- Card: Notes -->
-            <div class="bg-white rounded-xl shadow-lg p-6 hover-scale">
-                <div class="flex items-center mb-4">
-                    <i data-feather="edit-3" class="text-blue-500 mr-2"></i>
-                    <h3 class="text-xl font-semibold text-gray-800">Quick Notes</h3>
+            <div class="panel">
+                <div class="panel-title">
+                    <i data-feather="edit-3"></i>
+                    <h3 class="title-md">Quick Notes</h3>
                 </div>
 
-                <p class="text-gray-700 mb-2">Use this box for quick reminders.</p>
+                <p class="text-soft mb-2">Use this box for quick reminders.</p>
                 <textarea rows="7"
-                    class="w-full rounded-lg border border-gray-300 p-3 focus:outline-none focus:ring-2 focus:ring-blue-600"
+                    class="field field--full field--roomy"
                     placeholder="- Please write your student number on each page"></textarea>
             </div>
 
         </main>
-        <footer class="mt-12 text-center text-gray-600 fade-in">
-            <p>&copy; 2021 Ahmed Hamdi Sakr. All rights reserved.</p>
+        <footer class="site-footer fade-in">
+            <p>&copy; 2021&ndash;2026 Ahmed Hamdi Sakr. All rights reserved.</p>
         </footer>
     </div>
 

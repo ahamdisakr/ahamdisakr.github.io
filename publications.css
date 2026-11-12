@@ -1,0 +1,15 @@
+/* publications.css : styles for publications.html only (shared styles live in /styles.css) */
+
+.acc-h { margin: 0; scroll-margin-top: 5.5rem; }
+.acc-btn { display: flex; width: 100%; align-items: center; justify-content: space-between; gap: .75rem; background: none; border: 0; padding: 0; margin: 0; text-align: left; font: inherit; color: inherit; cursor: pointer; }
+.acc-title { display: inline-flex; align-items: center; gap: .6rem; flex-wrap: wrap; }
+.acc-chev { flex-shrink: 0; color: #6b7280; transition: transform .25s ease; }
+.acc-btn:hover .acc-chev { color: #2563eb; }
+.acc-btn[aria-expanded="true"] .acc-chev { transform: rotate(180deg); }
+.acc-panel { display: grid; grid-template-rows: 1fr; }
+.acc-inner { min-height: 0; overflow: hidden; }
+.acc-inner > ul { margin-top: 1rem; }
+.js .acc-panel { grid-template-rows: 0fr; transition: grid-template-rows .3s ease; }
+.js .acc-panel.open { grid-template-rows: 1fr; }
+@media (prefers-reduced-motion: reduce) { .js .acc-panel, .acc-chev { transition: none; } }
+

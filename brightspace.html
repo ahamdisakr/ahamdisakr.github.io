@@ -6,65 +6,67 @@
   <title>Brightspace Quiz Generator | Ahmed Hamdi Sakr</title>
   <meta name="description" content="Brightspace Quiz Generator: create question sets as CSV files to import into Brightspace quizzes and pools." />
 
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/feather-icons@4.29.2/dist/feather.min.js"></script>
-    <link href="styles.css" rel="stylesheet" />
+    <script defer src="https://cdn.jsdelivr.net/npm/feather-icons@4.29.2/dist/feather.min.js"></script>
+    <link href="/styles.css" rel="stylesheet" />
     <link rel="icon" type="image/x-icon" href="/images/icon.ico" />
-    <script defer src="app.js"></script>
+    <script defer src="/app.js"></script>
 </head>
 
-<body class="font-sans gradient-bg min-h-screen" data-page="brightspace">
+<body data-page="brightspace">
     <div id="site-nav"></div>
-    <div class="container mx-auto px-4 py-8 max-w-5xl">
+    <div class="site-container">
 
 
   <!-- Main -->
-  <main id="main" class="fade-in py-8 px-4 max-w-6xl mx-auto space-y-8 pt-20">
+  <main id="main" class="page page--stack fade-in">
     <!-- Intro card -->
-    <div class="bg-white rounded-xl shadow-lg p-6 hover-scale">
-      <div class="flex items-center mb-4">
-        <i data-feather="grid" class="text-blue-500 mr-2"></i>
-        <h1 class="text-2xl font-semibold text-gray-800">Brightspace Quiz Generator</h1>
+    <div class="panel">
+      <div class="panel-title">
+        <i data-feather="grid"></i>
+        <h1 class="title-lg">Brightspace Quiz Generator</h1>
       </div>
-      <p class="text-gray-700">
+      <p class="text-soft">
         <strong>Credit:</strong> This generator was developed by Algonquin College to make it easy to create question sets you can import into Brightspace quizzes and pools.
       </p>
     </div>
 
     <!-- Instructions card -->
-    <div class="bg-white rounded-xl shadow-lg p-6 hover-scale">
-      <div class="flex items-center mb-4">
-        <i data-feather="info" class="text-blue-500 mr-2"></i>
-        <h2 class="text-xl font-semibold text-gray-800">Instructions</h2>
+    <div class="panel">
+      <div class="panel-title">
+        <i data-feather="info"></i>
+        <h2 class="title-md">Instructions</h2>
       </div>
-      <ol class="list-decimal pl-6 text-gray-700 space-y-2">
+      <ol class="steps text-soft stack-2">
         <li>All questions must follow a proper format for the generator to recognize them.</li>
         <li>Select the <strong>Question Type Samples</strong> dropdown and click <strong>Create</strong> to insert a sample question.</li>
         <li>Copy/paste or type your questions in the editor below.</li>
-        <li>Click <strong>Generate Test Questions</strong>.</li>
-        <li class="ml-4 list-disc">If generation fails, any invalid questions will be highlighted in red. Hover to see the error.</li>
+        <li>Click <strong>Generate Test Questions</strong>.
+          <ul class="bullets">
+            <li>If generation fails, any invalid questions will be highlighted in red. Hover to see the error.</li>
+          </ul>
+        </li>
         <li>After a successful check, click <strong>Download Questions for Brightspace</strong>.</li>
         <li>In Brightspace (Add/Edit Questions), use <em>Import</em>, upload the CSV, and follow the prompts.</li>
       </ol>
     </div>
 
     <!-- Controls card -->
-    <div class="bg-white rounded-xl shadow-lg p-6 hover-scale">
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div class="panel">
+      <div class="form-grid">
         <!-- Left: Quiz name -->
         <div>
-          <label for="txtQuizName" class="block text-gray-800 font-semibold mb-2">Quiz Name</label>
+          <label for="txtQuizName" class="field-label">Quiz Name</label>
           <input id="txtQuizName" name="txtQuizName" type="text"
-                 class="w-full rounded-lg border border-gray-300 p-2 focus:outline-none focus:ring-2 focus:ring-blue-600"
+                 class="field field--full"
                  placeholder="e.g., MidtermQuiz"/>
         </div>
 
         <!-- Right: Sample types -->
         <div>
-          <label for="sampleQuestionTypes" class="block text-gray-800 font-semibold mb-2">Question Type Samples</label>
-          <div class="flex gap-3">
+          <label for="sampleQuestionTypes" class="field-label">Question Type Samples</label>
+          <div class="field-row">
             <select id="sampleQuestionTypes" name="sampleQuestionTypes"
-                    class="flex-1 rounded-lg border border-gray-300 p-2 focus:outline-none focus:ring-2 focus:ring-blue-600">
+                    class="field field--grow">
               <option value="0">Multiple Choice</option>
               <option value="1">Multiple Answer</option>
               <option value="2">True or False</option>
@@ -74,7 +76,7 @@
               <option value="6">Ordering</option>
             </select>
             <button onclick="addQuestion()"
-                    class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-blue-600 text-white hover:bg-blue-700 transition">
+                    class="btn btn-primary">
               <i data-feather="plus"></i>
               Create
             </button>
@@ -84,31 +86,31 @@
 
       <!-- Error label -->
       <div class="text-center mt-6">
-        <span id="lblError" class="hidden text-red-600 font-semibold">
+        <span id="lblError" class="hidden text-error">
           Test generation failed<br/>Hover over any red box for details.
         </span>
       </div>
     </div>
 
     <!-- Editor card -->
-    <div class="bg-white rounded-xl shadow-lg p-6 hover-scale">
-      <div class="flex items-center mb-4">
-        <i data-feather="edit-3" class="text-blue-500 mr-2"></i>
-        <h2 class="text-xl font-semibold text-gray-800">Question Editor</h2>
+    <div class="panel">
+      <div class="panel-title">
+        <i data-feather="edit-3"></i>
+        <h2 class="title-md">Question Editor</h2>
       </div>
 
-      <div id="panelQuiz" class="bg-white min-h-[450px]">
-        <textarea id="quiz" name="quiz" class="w-full h-[450px] rounded-lg border border-gray-300 p-3 focus:outline-none focus:ring-2 focus:ring-blue-600"></textarea>
+      <div id="panelQuiz" class="editor-box">
+        <textarea id="quiz" name="quiz" class="field field--full field--roomy field--tall"></textarea>
       </div>
 
-      <div class="flex flex-col md:flex-row items-center justify-center gap-4 mt-6">
+      <div class="button-bar">
         <button onclick="generateQuestions()"
-                class="inline-flex items-center gap-2 px-6 py-2 rounded-xl bg-blue-600 text-white hover:bg-blue-700 transition">
+                class="btn btn-primary btn--wide">
           <i data-feather="settings"></i>
           Generate Test Questions
         </button>
         <button onclick="clearQuestions()"
-                class="inline-flex items-center gap-2 px-6 py-2 rounded-xl bg-gray-100 text-gray-800 hover:bg-gray-200 transition">
+                class="btn btn-muted btn--wide">
           <i data-feather="trash-2"></i>
           Clear Test Questions
         </button>
@@ -116,34 +118,28 @@
     </div>
 
     <!-- Download panel (shown after success) -->
-    <div id="panelDownload" class="hidden bg-white rounded-xl shadow-lg p-6 hover-scale">
-      <div class="flex items-center mb-4">
-        <i data-feather="download" class="text-blue-500 mr-2"></i>
-        <h2 class="text-xl font-semibold text-gray-800">Download</h2>
+    <div id="panelDownload" class="hidden panel">
+      <div class="panel-title">
+        <i data-feather="download"></i>
+        <h2 class="title-md">Download</h2>
       </div>
 
       <div class="text-center">
         <button onclick="downloadQuestions()"
-                class="inline-flex items-center gap-2 px-8 py-3 rounded-xl bg-blue-600 text-white hover:bg-blue-700 transition">
+                class="btn btn-primary btn--lg">
           <i data-feather="download-cloud"></i>
           Download Questions for Brightspace
         </button>
-        <div class="mt-3 text-gray-700 italic" id="lblDownload">Test Generated with 0 Questions</div>
+        <div class="text-soft italic mt-3" id="lblDownload">Test Generated with 0 Questions</div>
       </div>
     </div>
         </main>
-        <footer class="mt-12 text-center text-gray-600 fade-in">
-            <p>&copy; 2021 Ahmed Hamdi Sakr. All rights reserved.</p>
+        <footer class="site-footer fade-in">
+            <p>&copy; 2021&ndash;2026 Ahmed Hamdi Sakr. All rights reserved.</p>
         </footer>
     </div>
 
-<style>
-	table {
-		width: 100%;
-	}
-</style>
-
-<script language="JavaScript" type="text/javascript">
+<script>
 
 	// question templates
 	var txtMultipleChoice = "1. Which of the following is a prime number?\na) 4\n*b) 5\nc) 6";
@@ -159,39 +155,30 @@
 	var csvFile = "";
 	var error = false;
 	var qIndex = 0;
-	var errorList = new Array();
-	var errorIndexes = new Array();
-	var questionsArray = new Array();
+	var errorList = [];
+	var errorIndexes = [];
+	var questionsArray = [];
+
+	// remove the per-question textareas from the last check
+	function removeQuestionBoxes() {
+		for (var i = 0; i < numQuestions; i++) {
+			var element = document.getElementById("question" + i);
+			if (element) element.remove();
+		}
+		numQuestions = 0;
+	}
 
 	// add question to quiz from default drop down list
 	function addQuestion() {
 		var questionList = document.getElementById("sampleQuestionTypes");
 		var selectedQuestion = questionList.value;
 
-		if (selectedQuestion == 0) {
-			document.getElementById("quiz").value += txtMultipleChoice + "\n\n";
-		} else if (selectedQuestion == 1) {
-			document.getElementById("quiz").value += txtMultipleAnswer + "\n\n";
-		} else if (selectedQuestion == 2) {
-			document.getElementById("quiz").value += txtTrueFalse + "\n\n";
-		} else if (selectedQuestion == 3) {
-			document.getElementById("quiz").value += txtEssay + "\n\n";
-		} else if (selectedQuestion == 4) {
-			document.getElementById("quiz").value += txtShort + "\n\n";
-		} else if (selectedQuestion == 5) {
-			document.getElementById("quiz").value += txtMatching + "\n\n";
-		} else if (selectedQuestion == 6) {
-			document.getElementById("quiz").value += txtOrdering + "\n\n";
+		var samples = [txtMultipleChoice, txtMultipleAnswer, txtTrueFalse, txtEssay, txtShort, txtMatching, txtOrdering];
+		if (samples[selectedQuestion]) {
+			document.getElementById("quiz").value += samples[selectedQuestion] + "\n\n";
 		}
 
-		// remove old textareas if they exists
-		for (i = 0; i < numQuestions; i++) {
-			var element = document.getElementById("question" + i);
-			if (typeof (element) != 'undefined' && element != null) {
-				element.remove();
-			}
-		}
-		numQuestions = 0;
+		removeQuestionBoxes();
 
 		document.getElementById("panelDownload").style.display = "none";
 		document.getElementById("lblError").style.display = "none";				// remove error alert
@@ -208,14 +195,7 @@
 		document.getElementById("lblError").style.display = "none";				// remove error alert
 		questionsArray = [];	// remove old questions
 
-		// remove old textareas if they exists
-		for (i = 0; i < numQuestions; i++) {
-			var element = document.getElementById("question" + i);
-			if (typeof (element) != 'undefined' && element != null) {
-				element.remove();
-			}
-		}
-		numQuestions = 0;
+		removeQuestionBoxes();
 	}
 
 	// check questions and create quiz file to download
@@ -252,16 +232,18 @@
 			}
 
 			// create individual textarea for each question
-			document.getElementById("panelQuiz").innerHTML += "<textarea name='question" + qIndex + "' " +
-				"rows='2' cols='20' id='question" + qIndex +
-				"' title='Valid question.' style='background-color:#C8FFC8;height:100px;width:100%;'>" +
-				questionsArray[qIndex] + "</textarea>";
+			var box = document.createElement("textarea");
+			box.id = box.name = "question" + qIndex;
+			box.className = "field field--full q-box";
+			box.title = "Valid question.";
+			box.value = questionsArray[qIndex];
+			document.getElementById("panelQuiz").appendChild(box);
 		}
 
 		if (error) {	// update question textareas if they have errors
 			document.getElementById("lblError").style.display = "block";			// error alert
-			for (m = 0; m < errorIndexes.length; m++) {
-				document.getElementById("question" + errorIndexes[m]).style.backgroundColor = "#FFC8C8";
+			for (var m = 0; m < errorIndexes.length; m++) {
+				document.getElementById("question" + errorIndexes[m]).classList.add("q-box--error");
 				document.getElementById("question" + errorIndexes[m]).title = errorList[m];		// error to show on mouse hover
 			}
 		} else {		// no errors
@@ -278,7 +260,7 @@
 		var lines = question.split("\n");		// get each line of the question
 		var numLines = lines.length;
 
-		for (h = 0; h < numLines; h++) {	// remove white space from start and end of each line
+		for (var h = 0; h < numLines; h++) {	// remove white space from start and end of each line
 			lines[h] = lines[h].trim();
 			allQuestions += lines[h] + "\n"; // reassemble questions string for quiz form
 		}
@@ -287,8 +269,6 @@
 		var questionREGEX = /^[0-9]{1,3}\.(?=.*[a-zA-Z]).+/;	// check for question formatting, i.e. "1. what is next?" is correct
 
 		var isQuestion = questionREGEX.test(lines[0]);
-
-		var isKeyword = questionREGEX.test(lines[0].substring(6, lines[0].length)) // check for question formatting, i.e. "short 1. what is next ___" is correct
 
 		if (isQuestion) {	// standard question valid
 			if (numLines == 1) {															// essay question
@@ -303,7 +283,7 @@
 				var answer1REGEX = /^[a-zA-Z]\)[a-zA-Z0-9\s]/;	// starts with "a)"
 				var answer2REGEX = /^\*[a-zA-Z]\)[a-zA-Z0-9\s]/;	// starts with "*a)"
 
-				for (y = 1; y < numLines; y++) {
+				for (var y = 1; y < numLines; y++) {
 					var test1 = answer1REGEX.test(lines[y]);
 					var test2 = answer2REGEX.test(lines[y]);
 
@@ -315,7 +295,7 @@
 
 				// check if one right answer or multiple right answers
 				var count = 0;
-				for (z = 1; z < numLines; z++) {	// start at second line
+				for (var z = 1; z < numLines; z++) {	// start at second line
 					var a = lines[z].indexOf("*");
 					if (a == 0) {
 						count++;
@@ -339,7 +319,7 @@
 				ordering(question);
 			} else if (numLines > 1) {
 				if (keyword == "short") {											// Short answer
-					for (j = 1; j < numLines; j++) {
+					for (var j = 1; j < numLines; j++) {
 						if (!shortREGEX.test(lines[j])) {		// check answer starts with "a."
 							recordError("This question has an invalid answer: " + lines[j], qIndex);
 							return;		// exit checkQuestion() function on error
@@ -347,7 +327,7 @@
 					}
 					shortAnswer(question);	 // write to csv file
 				} else if (keyword == "match") {									// matching
-					for (n = 1; n < numLines; n++) {
+					for (var n = 1; n < numLines; n++) {
 						if (!matchREGEX.test(lines[n])) {		// check answer starts with "a." and contains "/"
 							recordError("This question has an invalid answer: " + lines[n], qIndex);
 							return;		// exit checkQuestion() function on error
@@ -370,7 +350,7 @@
 					} else {
 						// check if atleast one right answer
 						var count2 = 0;
-						for (k = 2; k < numLines; k++) {	// start at 3rd
+						for (var k = 2; k < numLines; k++) {	// start at 3rd
 							var w = lines[k].indexOf("*");
 							if (w == 0) {
 								count2++;
@@ -400,7 +380,6 @@
 
 	// keep track of questions with errors
 	function recordError(errorText, errorIndex) {
-		//errorQuestions.push(errorQuestion);
 		errorList.push(errorText);
 		errorIndexes.push(errorIndex);
 		error = true;
@@ -458,7 +437,7 @@
 		var oCSV = "NewQuestion,O,\n" +
 			"QuestionText,\"" + oQ + "\",\n";
 
-		for (x = 1; x < numOLines; x++) {		// add items to order
+		for (var x = 1; x < numOLines; x++) {		// add items to order
 			oCSV += "Item,\"" + oLines[x] + "\",\n";
 		}
 		oCSV += "\n"
@@ -473,7 +452,7 @@
 		var mcCSV = "NewQuestion,MC,\n" +
 			"QuestionText,\"" + mcQ + "\",\n";
 
-		for (w = 1; w < numMCLines; w++) {
+		for (var w = 1; w < numMCLines; w++) {
 			var mcA = mcLines[w].substring((mcLines[w].indexOf(")") + 1), mcLines[w].length).trim();
 			if (mcLines[w].indexOf("*") == 0) {
 				mcCSV += "Option,100,\"" + mcA + "\",\n";	// correct answer
@@ -493,7 +472,7 @@
 		var mcaCSV = "NewQuestion,MC,\n" +
 			"QuestionText,\"" + mcaQ + "\",\n";
 
-		for (r = 2; r < numMCALines; r++) {
+		for (var r = 2; r < numMCALines; r++) {
 			var mcaA = mcaLines[r].substring((mcaLines[r].indexOf("*") + 1), mcaLines[r].length).trim();
 			if (mcaLines[r].indexOf("*") == 0) {
 				mcaCSV += "Option,100,\"" + mcaA + "\",\n";	// correct answer
@@ -513,7 +492,7 @@
 		var maCSV = "NewQuestion,MS,\n" +
 			"QuestionText,\"" + maQ + "\",\n";
 
-		for (u = 1; u < numMALines; u++) {
+		for (var u = 1; u < numMALines; u++) {
 			var maA = maLines[u].substring((maLines[u].indexOf(")") + 1), maLines[u].length).trim();
 			if (maLines[u].indexOf("*") == 0) {
 				maCSV += "Option,1,\"" + maA + "\",\n";	// correct answer
@@ -533,7 +512,7 @@
 		var maaCSV = "NewQuestion,MS,\n" +
 			"QuestionText,\"" + maaQ + "\",\n";
 
-		for (g = 2; g < numMAALines; g++) {
+		for (var g = 2; g < numMAALines; g++) {
 			var maaA = maaLines[g].substring((maaLines[g].indexOf("*") + 1), maaLines[g].length).trim();
 			if (maaLines[g].indexOf("*") == 0) {
 				maaCSV += "Option,1,\"" + maaA + "\",\n";	// correct answer
@@ -553,7 +532,7 @@
 		var mCSV = "NewQuestion,M,\n" +
 			"QuestionText,\"" + mQ + "\",\n";
 
-		for (v = 1; v < numMLines; v++) {
+		for (var v = 1; v < numMLines; v++) {
 			var choice = mLines[v].substring((mLines[v].indexOf(".") + 1), mLines[v].indexOf("/")).trim();
 			var match = mLines[v].substring((mLines[v].indexOf("/") + 1), mLines[v].length).trim();
 			if (choice != "") {
@@ -572,7 +551,7 @@
 		var bQ = bLines[0].substring((bLines[0].indexOf(".") + 1), bLines[0].length).trim();
 		var bCSV = "NewQuestion,SA,\n" +
 			"QuestionText,\"" + bQ + "\",\n";
-		for (t = 1; t < numBLines; t++) {
+		for (var t = 1; t < numBLines; t++) {
 			var bAnswer = bLines[t].substring((bLines[t].indexOf(".") + 1), bLines[t].length).trim();
 			bCSV += "Answer,100,\"" + bAnswer + "\",\n";
 		}
@@ -587,7 +566,7 @@
 		var baQ = baLines[1].trim();
 		var baCSV = "NewQuestion,SA,\n" +
 			"QuestionText,\"" + baQ + "\",\n";
-		for (s = 2; s < numBALines; s++) {
+		for (var s = 2; s < numBALines; s++) {
 			var baAnswer = baLines[s].substring((baLines[s].indexOf(".") + 1), baLines[s].length).trim();
 			baCSV += "Answer,100,\"" + baAnswer + "\",\n";
 		}
@@ -599,7 +578,7 @@
 	function downloadQuestions() {
 		document.getElementById("panelDownload").style.display = "none";
 
-		filename = document.getElementById("txtQuizName").value;
+		var filename = document.getElementById("txtQuizName").value;
 		if (filename == "") {
 			filename = "brightspaceQuiz.csv";
 		} else {

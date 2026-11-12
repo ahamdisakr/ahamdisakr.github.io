@@ -1,0 +1,52 @@
+/* ==========================================================================
+   Interactive demos (shared by demos/*.html)
+   Dark control panels and plot cards, on top of the site styles in /styles.css
+   ========================================================================== */
+
+:root {
+  --muted: #94a3b8;     /* secondary text */
+  --axis: #223356;
+  --grid: #15223e;
+  --xcolor: #f59e0b;    /* original signal line */
+  --ycolor: #60a5fa;    /* output / filtered line */
+  --hcolor: #22c55e;    /* filter */
+  --reccolor: #34d399;  /* Fourier-series reconstruction (green) */
+  --errcolor: #ef4444;  /* error line */
+  --card: #111827;      /* panel background */
+  --fg: #0f172a;        /* input text */
+}
+/* Controls and plots: one column on phones, two from 768px up (same breakpoint as the site) */
+.controls { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; margin-bottom: 10px; }
+.plot-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; }
+@media (min-width: 768px) {
+  .controls, .plot-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+.control { background: var(--card); padding: 12px; border-radius: 12px; border: 1px solid #0f172a; }
+label { font-weight: 600; display: block; margin-bottom: 6px; color: #cbd5e1; }
+select, input[type="number"], input[type="range"] { width: 100%; padding: 8px 10px; border-radius: 8px; background: #cbd5e1; color: var(--fg); border: 1px solid #1f2a44; }
+/* The compact select the page has always had: padding is set on number/range inputs only */
+select { padding: 0; color: inherit; }
+input[type="range"] { padding: 0; height: 28px; }
+.small{font-size:12px;color:#9fb1d1}
+.canvas-row { display: grid; grid-template-columns: 1fr; gap: 12px; }
+.card { background: var(--card); border: 1px solid #0f172a; border-radius: 12px; padding: 10px 12px; box-shadow: 0 8px 24px rgba(0, 0, 0, .06); }
+.card h2 { font-size: 16px; margin: 0 0 6px; color: #cbd5e1; }
+canvas { width: 100%; height: 260px; display: block; background: #0a1326; border-radius: 8px; }
+.axis-label{ text-align:right; color:#94a3b8; font-size:13px; padding:2px 12px 0 0; min-height:1.6em; }
+.control .katex, .chip .katex, .small .katex{ font-size:1.05em; }
+.math-block{ color:#e2e8f0; overflow-x:auto; padding:2px 0; }
+.math-block .katex-display{ margin:0.5em 0; }
+.math-block.live{ color:#cbd5e1; }
+.card h2 .katex{ font-size:1.1em; }
+.plot-grid .card h2{ min-height:3em; display:flex; align-items:center; margin-bottom:6px; }
+.dot { width:10px; height:10px; border-radius:50%; display:inline-block; }
+.dot.x{background: var(--xcolor)}
+.dot.y { background: var(--ycolor); }
+.dot.h{background: var(--hcolor)}
+.actions{display:flex;gap:8px;margin-top:8px}
+button:disabled{opacity:0.6}
+.row{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;margin-top:6px}
+.dot.e { background: var(--errcolor); }
+
+/* The Fourier-series demo draws the reconstruction in green */
+[data-demo="series"] .dot.y { background: var(--reccolor); }

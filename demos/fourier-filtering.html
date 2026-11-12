@@ -7,106 +7,28 @@
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
 <title>Interactive Fourier Transform Filtering Demo</title>
 <meta name="description" content="Interactive demo of Fourier transform filtering: apply low-pass, high-pass, band-pass and notch filters to test signals or your own audio and compare the time and frequency domains." />
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/feather-icons@4.29.2/dist/feather.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/feather-icons@4.29.2/dist/feather.min.js"></script>
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css" />
     <script defer src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
 
     <link href="/styles.css" rel="stylesheet" />
+    <link href="/demos/demo.css" rel="stylesheet" />
     <link rel="icon" type="image/x-icon" href="/images/icon.ico" />
-    <script defer="True" src="/app.js"></script>
+    <script defer src="/app.js"></script>
 
-<style>
-:root{
-  --muted:#94a3b8; 
-  --axis:#223356; 
-  --grid:#15223e; 
-  --xcolor:#f59e0b; 
-  --ycolor:#60a5fa; 
-  --hcolor:#22c55e;
-  --card:#111827;
-  --fg:#0f172a;
-}
-@media (max-width: 768px){
-  .controls { grid-template-columns: 1fr !important; }
-  .plot-grid { grid-template-columns: 1fr !important; }
-}
-  .controls { display: grid; grid-template-columns: 1.2fr 1fr 1fr 1fr; gap: 12px; margin-bottom: 10px; }
-  .control { background: var(--card); padding: 12px; border-radius: 12px; border: 1px solid #0f172a; }
-  label { font-weight: 600; display: block; margin-bottom: 6px; color: #cbd5e1; }
-  select, input[type="number"], input[type="range"] { width: 100%; padding: 8px 10px; border-radius: 8px; background: #cbd5e1; color: var(--fg); border: 1px solid #1f2a44; }
-  input[type="range"] { padding: 0; height: 28px; }
-  .plot-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
-  .wrap{max-width:none;margin:0 auto}
-  .small{font-size:12px;color:#9fb1d1}
-  .canvas-row { display: grid; grid-template-columns: 1fr; gap: 12px; }
-  .card { background: var(--card); border: 1px solid #0f172a; border-radius: 12px; padding: 10px 12px; }
-  .card h2 { font-size: 16px; margin: 0 0 6px; color: #cbd5e1; }
-  canvas { width: 100%; height: 260px; display: block; background: #0a1326; border-radius: 8px; }
-  .axis-label{ text-align:right; color:#94a3b8; font-size:13px; padding:2px 12px 0 0; min-height:1.6em; }
-  .control .katex, .chip .katex, .small .katex{ font-size:1.05em; }
-  .math-block{ color:#e2e8f0; overflow-x:auto; padding:2px 0; }
-  .math-block .katex-display{ margin:0.5em 0; }
-  .math-block.live{ color:#cbd5e1; }
-  .card h2 .katex{ font-size:1.1em; }
-  .plot-grid .card h2{ min-height:3em; display:flex; align-items:center; margin-bottom:6px; }
-  .dot { width:10px; height:10px; border-radius:50%; display:inline-block; }
-  .dot.x{background: var(--xcolor)}
- .dot.y{background: var(--ycolor)}
- .dot.h{background: var(--hcolor)}
-.actions{display:flex;gap:8px;margin-top:8px}
-button:disabled{opacity:0.6}
-.row{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;margin-top:6px}
-</style>
 </head>
 
-<body class="font-sans gradient-bg min-h-screen" data-page="teaching">
-  <header class="fixed inset-x-0 top-0 z-[9999] bg-white/70 backdrop-blur border-b border-gray-200">
-        <div class="max-w-6xl mx-auto px-4">
-            <div class="flex items-center justify-between h-16">
-                <a class="flex items-center gap-2 font-semibold text-gray-900 hover:text-blue-600" href="/index.html">
-                    <i aria-hidden="true" data-feather="layers"></i>
-                    <span>Ahmed Hamdi Sakr, PhD</span>
-                </a>
-                <button aria-controls="mobile-nav" aria-expanded="false" aria-label="Open menu"
-                    class="md:hidden p-2 rounded hover:bg-gray-100" id="menuBtn" type="button">
-                    <i data-feather="menu"></i>
-                </button>
-                <nav class="hidden md:block" id="primary-nav">
-                    <ul class="flex items-center gap-6">
-                        <li><a class="hover:text-blue-600" data-nav="index" href="/index.html">Home</a></li>
-                        <li><a class="hover:text-blue-600" data-nav="research" href="/research.html">Research</a></li>
-                        <li><a class="hover:text-blue-600" data-nav="publications" href="/publications.html">Publications</a></li>
-                        <li><a class="hover:text-blue-600" data-nav="teaching" href="/teaching.html">Teaching</a></li>
-                        <li><a class="hover:text-blue-600" data-nav="team" href="/team.html">Team</a></li>
-                        <li><a class="hover:text-blue-600" data-nav="join" href="/join.html">Join</a></li>
-                    </ul>
-                </nav>
-            </div>
-            <nav aria-hidden="true" aria-label="Mobile" class="md:hidden hidden pb-4" id="mobile-nav">
-                <ul class="grid gap-2">
-                    <li><a class="block px-3 py-2 rounded hover:bg-gray-100" data-nav="index" href="/index.html">Home</a></li>
-                    <li><a class="block px-3 py-2 rounded hover:bg-gray-100" data-nav="research" href="/research.html">Research</a></li>
-                    <li><a class="block px-3 py-2 rounded hover:bg-gray-100" data-nav="publications" href="/publications.html">Publications</a></li>
-                    <li><a class="block px-3 py-2 rounded hover:bg-gray-100" data-nav="teaching" href="/teaching.html">Teaching</a></li>
-                    <li><a class="block px-3 py-2 rounded hover:bg-gray-100" data-nav="team" href="/team.html">Team</a></li>
-                    <li><a class="block px-3 py-2 rounded hover:bg-gray-100" data-nav="join" href="/join.html">Join</a></li>
-                </ul>
-            </nav>
-        </div>
-    </header>
+<body data-page="teaching">
+    <div id="site-nav"></div>
 
-        <div class="container mx-auto px-4 py-8 max-w-5xl">
-        <!-- Navigation -->
-        <main class="fade-in py-8 px-4 max-w-6xl mx-auto pt-20" id="main">
-            <h1 class="sr-only">Interactive Fourier Transform Filtering Demo</h1>
-
-  <div class="bg-white rounded-xl shadow-lg p-6">
-  <h2 class="mb-4">Interactive Fourier Transform Filtering Demo</h2>
+        <div class="site-container">
+        <main class="page fade-in" id="main">
+  <div class="panel panel--static">
+  <h1 class="title-lg mb-4">Interactive Fourier Transform Filtering Demo</h1>
     <p>Pick a signal and filter. For BPF/Notch, <span class="m" data-tex="Q=f_c/\mathrm{BW}">Q = f<sub>c</sub>/BW</span>. Upload/record audio and A/B play.</p>
 
-<div class="controls" style="grid-template-columns: repeat(2, minmax(0, 1fr));">
+<div class="controls">
         <div class="control">
       <label for="signalSel">Signal</label>
       <select id="signalSel">
@@ -207,8 +129,8 @@ button:disabled{opacity:0.6}
 </div>
 
         </main>
-        <footer class="mt-12 text-center text-gray-600 fade-in">
-            <p>&copy; 2021 Ahmed Hamdi Sakr. All rights reserved.</p>
+        <footer class="site-footer fade-in">
+            <p>&copy; 2021&ndash;2026 Ahmed Hamdi Sakr. All rights reserved.</p>
         </footer>
 
 

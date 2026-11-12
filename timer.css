@@ -1,0 +1,59 @@
+/* timer.css : styles for timer.html only (shared styles live in /styles.css) */
+
+/* In fullscreen keep only the name in the top bar (no links / menu, and the name is not clickable) */
+html:fullscreen #primary-nav, html:fullscreen #menuBtn, html:fullscreen #mobile-nav { display: none !important; }
+html:fullscreen header a { pointer-events: none; }
+html:-webkit-full-screen #primary-nav, html:-webkit-full-screen #menuBtn, html:-webkit-full-screen #mobile-nav { display: none !important; }
+html:-webkit-full-screen header a { pointer-events: none; }
+
+
+/* ---- Clock / Timer switch ---- */
+.switch { position: relative; width: 3rem; height: 1.75rem; border-radius: 9999px; background: #cbd5e1; border: 0; padding: 0; cursor: pointer; transition: background-color .2s ease; flex-shrink: 0; }
+.switch .knob { position: absolute; top: .25rem; left: .25rem; width: 1.25rem; height: 1.25rem; border-radius: 9999px; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,.3); transition: transform .2s ease; }
+.switch[aria-checked="true"] { background: #2563eb; }
+.switch[aria-checked="true"] .knob { transform: translateX(1.25rem); }
+.mode-label { font-size: .95rem; color: #6b7280; transition: color .2s ease; }
+.mode-label[data-active="true"] { color: #1d4ed8; font-weight: 600; }
+
+/* ---- Clock and timer views share one cell: the card keeps the same size in both modes ---- */
+.viewstack { display: grid; }
+.viewstack > .view { grid-area: 1 / 1; min-width: 0; align-self: center; }
+.viewstack > .view.is-off { visibility: hidden; pointer-events: none; }
+
+
+/* ---- Local clock (big text; same digit size as the timer; colon = two dots centred on the digits) ---- */
+.bigclock { text-align: center; color: #333; padding: .5rem 0; }
+.bc-label { font-size: .95rem; color: #374151; }
+.bc-time { display: flex; align-items: center; justify-content: center; font-size: clamp(3.5rem, 15.4vw, 11.2rem); font-weight: 700; line-height: 1.15; font-variant-numeric: tabular-nums; letter-spacing: -.02em; margin: .25rem 0; }
+.bc-colon { display: flex; flex-direction: column; gap: .2em; margin: 0 .2em; position: relative; top: .055em; animation: bccolon 1s steps(1) infinite; }
+.bc-colon i { display: block; width: .13em; height: .13em; border-radius: 9999px; background: #6b6b6b; }
+@keyframes bccolon { 50% { opacity: .25; } }
+.bc-time small { font-size: .3em; align-self: flex-start; margin: .2em 0 0 .15em; letter-spacing: 0; }
+.bc-date { font-weight: 700; font-size: 1.05rem; }
+.bc-zone { font-size: .8rem; color: #6b7280; margin-top: .35rem; }
+@media (prefers-reduced-motion: reduce) { .bc-colon { animation: none; } }
+
+/* ---- Countdown display ---- */
+.tdisp { display: grid; grid-template-columns: auto auto auto auto auto; justify-content: center; align-items: center; column-gap: clamp(.4rem, 2vw, 1.5rem); row-gap: .5rem; margin: 1rem 0 .75rem; }
+.tile { position: relative; display: flex; align-items: center; justify-content: center; width: clamp(4rem, 19vw, 15rem); aspect-ratio: 4 / 3; background: #f8fafc; border: 1px solid #e5e7eb; border-radius: 1.25rem; box-shadow: inset 0 2px 6px rgba(15,23,42,.06), 0 4px 12px rgba(15,23,42,.06); overflow: hidden; }
+.tile span { font-size: clamp(2.5rem, 11vw, 8rem); font-weight: 700; line-height: 1; font-variant-numeric: tabular-nums; color: #1f2937; transition: color .3s ease; }
+.tlabel { text-align: center; font-size: .75rem; letter-spacing: .08em; text-transform: uppercase; color: #6b7280; }
+.colon { display: flex; flex-direction: column; gap: clamp(.6rem, 2.5vw, 1.6rem); }
+.colon i { display: block; width: clamp(.5rem, 1.6vw, 1rem); height: clamp(.5rem, 1.6vw, 1rem); border-radius: 9999px; background: #9ca3af; }
+.tdisp[data-state="warn"] .tile span { color: #d97706; }
+.tdisp[data-state="danger"] .tile span, .tdisp[data-state="done"] .tile span { color: #dc2626; }
+.tdisp[data-state="done"] .tile { animation: tblink 1s ease-in-out infinite; }
+@keyframes tblink { 50% { opacity: .45; } }
+@media (prefers-reduced-motion: reduce) { .tdisp[data-state="done"] .tile { animation: none; } }
+
+/* ---- Presets, manual inputs, buttons ---- */
+.preset { cursor: pointer; border: 1px solid transparent; font-weight: 600; padding: .35rem .9rem; transition: background-color .15s ease, color .15s ease; }
+.preset:hover { background: #bfdbfe; }
+.preset[aria-pressed="true"] { background: #2563eb; color: #fff; }
+.preset:disabled { opacity: .5; cursor: not-allowed; }
+.btn:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+.minput { width: 4.5rem; text-align: center; font-size: 1.25rem; font-variant-numeric: tabular-nums; padding: .4rem .25rem; border: 1px solid #d1d5db; border-radius: .5rem; background: #fff; }
+.minput:focus { outline: none; box-shadow: 0 0 0 2px #2563eb; }
+.minput:disabled { background: #f3f4f6; color: #9ca3af; }
+.mlab { display: flex; flex-direction: column; align-items: center; gap: .25rem; font-size: .75rem; letter-spacing: .08em; text-transform: uppercase; color: #6b7280; }
+

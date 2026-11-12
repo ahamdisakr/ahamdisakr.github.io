@@ -1,57 +1,48 @@
-// app.js — shared behavior for nav + icons
+// app.js — shared behavior: loads the nav (nav.html), highlights the current page, mobile menu, icons
 document.addEventListener('DOMContentLoaded', function () {
-  var current = document.body && document.body.dataset ? document.body.dataset.page : "";
+  var current = document.body.dataset.page || '';
 
   function initNav() {
     var menuBtn = document.getElementById('menuBtn');
     var mobile = document.getElementById('mobile-nav');
 
-    // Highlight current page in both navs
     if (current) {
       document.querySelectorAll('[data-nav="' + current + '"]').forEach(function (a) {
         a.classList.add('nav-active');
+        a.setAttribute('aria-current', 'page');
       });
     }
 
-    // Burger toggle
     if (menuBtn && mobile) {
-      if (!mobile.classList.contains('hidden')) {
-        mobile.classList.add('hidden');
-      }
-      mobile.setAttribute('aria-hidden', 'true');
-
-      menuBtn.addEventListener('click', function (e) {
-        e.preventDefault();
-        var isOpen = menuBtn.getAttribute('aria-expanded') === 'true';
-        menuBtn.setAttribute('aria-expanded', String(!isOpen));
-        menuBtn.setAttribute('aria-label', isOpen ? 'Open menu' : 'Close menu');
-
-        if (mobile.classList.contains('hidden')) {
-          mobile.classList.remove('hidden');
-          mobile.setAttribute('aria-hidden', 'false');
-        } else {
-          mobile.classList.add('hidden');
-          mobile.setAttribute('aria-hidden', 'true');
+      var setOpen = function (open) {
+        menuBtn.setAttribute('aria-expanded', String(open));
+        menuBtn.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+        mobile.classList.toggle('hidden', !open);
+        mobile.setAttribute('aria-hidden', String(!open));
+      };
+      setOpen(false);
+      menuBtn.addEventListener('click', function () {
+        setOpen(menuBtn.getAttribute('aria-expanded') !== 'true');
+      });
+      mobile.addEventListener('click', function (e) {
+        if (e.target.closest('a')) setOpen(false);
+      });
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && menuBtn.getAttribute('aria-expanded') === 'true') {
+          setOpen(false);
+          menuBtn.focus();
         }
-      }, { passive: true });
+      });
     }
 
-    // Render Feather icons if available
-    if (window.feather && typeof window.feather.replace === 'function') {
-      window.feather.replace();
-    }
+    if (window.feather) window.feather.replace();
   }
 
   var placeholder = document.getElementById('site-nav');
-  if (placeholder) {
-    fetch('/nav.html')
-      .then(function (r) { return r.text(); })
-      .then(function (html) {
-        placeholder.outerHTML = html;
-        initNav();
-      })
-      .catch(function () { initNav(); });
-  } else {
-    initNav();
-  }
+  if (!placeholder) return initNav();
+  fetch('/nav.html')
+    .then(function (r) { if (!r.ok) throw new Error(r.status); return r.text(); })
+    .then(function (html) { placeholder.outerHTML = html; })
+    .catch(function () {})
+    .then(initNav);
 });

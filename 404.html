@@ -6,41 +6,39 @@
 	<meta content="width=device-width, initial-scale=1.0" name="viewport" />
 	<title>Error 404 - Page Not Found | Ahmed Hamdi Sakr</title>
 
-	<!-- Match the rest of your site -->
-	<script src="https://cdn.tailwindcss.com"></script>
-	<script src="https://cdn.jsdelivr.net/npm/feather-icons@4.29.2/dist/feather.min.js"></script>
+	<script defer src="https://cdn.jsdelivr.net/npm/feather-icons@4.29.2/dist/feather.min.js"></script>
 	<link href="/styles.css" rel="stylesheet" />
-	<link rel="shortcut icon" type="image/x-icon" href="/images/icon.ico" />
+	<link rel="icon" type="image/x-icon" href="/images/icon.ico" />
 	<script defer src="/app.js"></script>
 </head>
 
-<body class="font-sans gradient-bg min-h-screen" data-page="404">
+<body data-page="404">
     <div id="site-nav"></div>
-	<div class="container mx-auto px-4 py-8 max-w-5xl">
+	<div class="site-container">
 
 
 		<!-- Main -->
-		<main id="main" class="max-w-6xl mx-auto px-4 py-12 pt-20">
-			<section class="min-h-[60vh] flex items-center justify-center">
+		<main id="main" class="page page--tall">
+			<section class="center-stage">
 				<div class="text-center">
 					<div
-						class="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-blue-50 text-blue-600 mb-6">
-						<i data-feather="alert-triangle" class="w-10 h-10"></i>
+						class="icon-badge">
+						<i data-feather="alert-triangle" class="icon-lg"></i>
 					</div>
 
-					<h1 class="text-4xl font-extrabold tracking-tight text-gray-900 mb-2">Error 404</h1>
-					<p class="text-gray-700 mb-6">The page you're looking for doesn't exist or has been moved.</p>
+					<h1 class="error-title">Error 404</h1>
+					<p class="lead">The page you're looking for doesn't exist or has been moved.</p>
 
-					<div class="flex flex-wrap items-center justify-center gap-3">
+					<div class="button-row">
 						<a href="/index.html" class="btn btn-primary">
-							<i data-feather="home" class="w-4 h-4"></i>
+							<i data-feather="home" class="icon-4"></i>
 							<span>Go to Home</span>
 						</a>
 						<a href="/research.html" class="btn btn-secondary">
 							<i data-feather="cpu" class="icon-4"></i><span>Research</span>
 						</a>
 						<a href="/join.html" class="btn btn-secondary">
-							<i data-feather="user-plus" class="w-4 h-4"></i>
+							<i data-feather="user-plus" class="icon-4"></i>
 							<span>Join</span>
 						</a>
 					</div>
@@ -49,8 +47,8 @@
 				</div>
 			</section>
 		</main>
-		<footer class="mt-12 text-center text-gray-600 fade-in">
-			<p>&copy; 2021 Ahmed Hamdi Sakr. All rights reserved.</p>
+		<footer class="site-footer fade-in">
+			<p>&copy; 2021&ndash;2026 Ahmed Hamdi Sakr. All rights reserved.</p>
 		</footer>
 	</div>
 </body>

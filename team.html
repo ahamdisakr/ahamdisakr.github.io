@@ -7,231 +7,241 @@
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <title>Team | Ahmed Hamdi Sakr</title>
     <meta name="description" content="Graduate students, Outstanding Scholars and interns in the research group of Ahmed Hamdi Sakr." />
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/feather-icons@4.29.2/dist/feather.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/feather-icons@4.29.2/dist/feather.min.js"></script>
 
-    <link href="styles.css" rel="stylesheet" />
+    <link href="/styles.css" rel="stylesheet" />
     <link rel="icon" type="image/x-icon" href="/images/icon.ico" />
-    <script defer="True" src="app.js"></script>
+    <script defer src="/app.js"></script>
 </head>
 
-<body class="font-sans gradient-bg min-h-screen" data-page="team">
+<body data-page="team">
     <div id="site-nav"></div>
-    <div class="container mx-auto px-4 py-8 max-w-5xl">
-        <!-- Navigation -->
-        <main class="gap-8 fade-in py-8 grid-cols-1 grid max-w-6xl px-4 mx-auto pt-20" id="main">
+    <div class="site-container">
+        <main class="page page--stack fade-in" id="main">
             <h1 class="sr-only">Team</h1>
             <!-- Opportunities -->
-            <div class="bg-blue-50 rounded-xl shadow-lg p-6 hover-scale">
-                <div class="flex items-center mb-4">
-                    <i class="text-blue-500 mr-2" data-feather="briefcase"></i>
+            <div class="panel panel--info">
+                <div class="panel-title">
+                    <i data-feather="briefcase"></i>
                     <h2>Opportunities</h2>
                 </div>
                 <p>
                     We are always looking for motivated students interested in working on cutting-edge research
                     in connected and autonomous systems, wireless networks, and edge computing.
                 </p>
-                <a class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+                <a class="btn btn-primary"
                     href="join.html">
                     More Details
-                    <i class="ml-2" data-feather="arrow-right"></i>
+                    <i data-feather="arrow-right"></i>
                 </a>
             </div>
 
-            <!-- Current Students -->
+            <div class="panel">
+                <div class="panel-title">
+                    <i data-feather="award"></i>
+                    <h2>Postdoctoral Researchers</h2>
+                </div>
+                <ul class="stack-3">
+                    <li>
+                        <h3 class="item-title item-title--name">Majid Khoshafa</h3>
+                        <p>Sept. 2026 - Current</p>
+                    </li>
+                </ul>
+            </div>
 
-            <div class="bg-white rounded-xl shadow-lg p-6 hover-scale">
-                <div class="flex items-center mb-4">
-                    <i class="text-blue-500 mr-2" data-feather="users"></i>
+            <!-- Graduate Students -->
+            <div class="panel">
+                <div class="panel-title">
+                    <i data-feather="users"></i>
                     <h2>Grad Students</h2>
                 </div>
-                <ul class="space-y-3">
+                <ul class="stack-3">
                     <li>
-                        <h4 class="no-mb">Ashab Uddin</h4>
+                        <h3 class="item-title item-title--name">Ashab Uddin</h3>
                         <p class="no-mb">PhD Candidate · Co-supervised</p>
                         <p class="text-sm">Research: Task Offloading and Deep Reinforcement Learning for Vehicular Edge Computing</p>
                     </li>
                     <li>
-                        <h4 class="no-mb">Mina Zamanirafe</h4>
+                        <h3 class="item-title item-title--name">Mina Zamanirafe</h3>
                         <p class="no-mb">PhD Candidate · Co-supervised</p>
                         <p class="text-sm">Research: Blockchain and Federated Learning for the Internet of Vehicles</p>
                     </li>
                     <li>
-                        <h4 class="no-mb">Manroop Mader</h4>
+                        <h3 class="item-title item-title--name">Manroop Mader</h3>
                         <p class="no-mb">MASc Candidate</p>
-                        <p class="text-sm">Research: Distributed MPC (DMPC) for Vehicle Platooning with Packet Loss and Delays in Mixed Traffic Environments</p>
+                        <p class="text-sm">Research: Distributed MPC for Vehicle Platooning with Packet Loss and Delays</p>
                     </li>
                     <li>
-                        <h4 class="no-mb">Mohamad Elkorek</h4>
-                        <p class="no-mb">MASc Candidate</p>
-                        <p class="text-sm">Research: Redundancy Mitigation for Cooperative Perception</p>
-                    </li>
-                    <li>
-                        <h4 class="no-mb">Ahmad Ghanem</h4>
+                        <h3 class="item-title item-title--name">Mohamad Elkorek</h3>
                         <p class="no-mb">MASc Candidate</p>
                         <p class="text-sm">Research: Redundancy Mitigation for Cooperative Perception</p>
                     </li>
                     <li>
-                        <h4 class="no-mb">Ahmed Daoud</h4>
-                        <p class="no-mb">MASc Candidate · Co-supervised</p>
+                        <h3 class="item-title item-title--name">Ahmad Ghanem</h3>
+                        <p class="no-mb">MASc Candidate</p>
+                        <p class="text-sm">Research: Redundancy Mitigation for Cooperative Perception</p>
+                    </li>
+                    <li>
+                        <h3 class="item-title item-title--name">Ahmed Daoud</h3>
+                        <p class="no-mb">MASc (2026) · Co-supervised</p>
                         <p class="text-sm">Research: Deep Learning for Solar PV Power Nowcasting</p>
                     </li>
                     <li>
-                        <h4 class="no-mb">Jakir Ansari</h4>
-                        <p class="no-mb">MASc Candidate</p>
+                        <h3 class="item-title item-title--name">Jakir Ansari</h3>
+                        <p class="no-mb">MASc (2026)</p>
                         <p class="text-sm">Research: Experimental Validation of Reinforcement Learning for Cooperative Adaptive Cruise Control with Intent Sharing</p>
                     </li>
                     <li>
-                        <h4 class="no-mb">Banu Balasubramanian</h4>
-                        <p class="no-mb">MASc Candidate · Co-supervised</p>
+                        <h3 class="item-title item-title--name">Banu Balasubramanian</h3>
+                        <p class="no-mb">MASc (2025) · Co-supervised</p>
                         <p class="text-sm">Research: Battery Impedance Spectroscopy</p>
                     </li>
                     <li>
-                        <h4 class="no-mb">Abdullah Abrar Faiyaz</h4>
+                        <h3 class="item-title item-title--name">Abdullah Abrar Faiyaz</h3>
                         <p class="no-mb">MASc (2025)</p>
                         <p class="text-sm">Research: Intent Sharing and Cooperative Perception for Connected and Automated Driving</p>
                     </li>
                     <li>
-                        <h4 class="no-mb">Xueyu Wang</h4>
+                        <h3 class="item-title item-title--name">Xueyu Wang</h3>
                         <p class="no-mb">MASc (2025) · Co-supervised</p>
                         <p class="text-sm">Research: Path Planning for Medical Disinfection Robots</p>
                     </li>
                     <li>
-                        <h4 class="no-mb">Tahmina Khanom Tandra</h4>
+                        <h3 class="item-title item-title--name">Tahmina Khanom Tandra</h3>
                         <p class="no-mb">MASc (2025)</p>
                         <p class="text-sm">Research: Cooperative Adaptive Cruise Control and Platooning with Multi-Agent Reinforcement Learning</p>
                     </li>
                     <li>
-                        <h4 class="no-mb">Arjit Malik</h4>
+                        <h3 class="item-title item-title--name">Arjit Malik</h3>
                         <p class="no-mb">MASc (2024) · Co-supervised</p>
                         <p class="text-sm">Research: Redundancy Mitigation for Collective Perception in Vehicular Networks</p>
                     </li>
                     <li>
-                        <h4 class="no-mb">Lahiri Kanipakam</h4>
+                        <h3 class="item-title item-title--name">Lahiri Kanipakam</h3>
                         <p class="no-mb">MASc (2024)</p>
                         <p class="text-sm">Research: Cooperative Adaptive Cruise Control with Intent Sharing and Reinforcement Learning</p>
                     </li>
                     <li>
-                        <h4 class="no-mb">Shishir Manjunatha</h4>
+                        <h3 class="item-title item-title--name">Shishir Manjunatha</h3>
                         <p class="no-mb">MASc (2024)</p>
                         <p class="text-sm">Research: Intent Sharing for Infrastructure-Assisted Cooperative Perception</p>
                     </li>
                 </ul>
             </div>
 
-            <!-- Alumni -->
-            <div class="bg-white rounded-xl shadow-lg p-6 hover-scale">
-                <div class="flex items-center mb-4">
-                    <i class="text-blue-500 mr-2" data-feather="award"></i>
+            <!-- Research Assistants -->
+            <div class="panel">
+                <div class="panel-title">
+                    <i data-feather="award"></i>
                     <h2>Research Assistants</h2>
                 </div>
-                <ul class="space-y-3">
+                <ul class="stack-3">
                     <li>
-                        <h4 class="no-mb">Sarah Khalid</h4>
-                        <p>Summer 2026</p>
+                        <h3 class="item-title item-title--name">Sarah Khalid</h3>
+                        <p>May 2026 - Aug. 2026</p>
                     </li>
                     <li>
-                        <h4 class="no-mb">Abdullah Abrar Faiyaz</h4>
-                        <p>Fall 2025, Winter 2026</p>
+                        <h3 class="item-title item-title--name">Abdullah Abrar Faiyaz</h3>
+                        <p>Nov. 2025 - Apr. 2026</p>
                     </li>
                 </ul>
             </div>
 
-            <!-- Alumni -->
-            <div class="bg-white rounded-xl shadow-lg p-6 hover-scale">
-                <div class="flex items-center mb-4">
-                    <i class="text-blue-500 mr-2" data-feather="award"></i>
+            <!-- Outstanding Scholars -->
+            <div class="panel">
+                <div class="panel-title">
+                    <i data-feather="award"></i>
                     <h2>Outstanding Scholars</h2>
                 </div>
-                <ul class="space-y-3">
+                <ul class="stack-3">
                     <li>
-                        <h4 class="no-mb">Bashar Al-Khayyat</h4>
+                        <h3 class="item-title item-title--name">Bashar Al-Khayyat</h3>
                         <p>Fall 2026</p>
                     </li>
                     <li>
-                        <h4 class="no-mb">Mohamed Hamzeh</h4>
+                        <h3 class="item-title item-title--name">Mohamed Hamzeh</h3>
                         <p>Winter 2026, Fall 2026</p>
                     </li>
                     <li>
-                        <h4 class="no-mb">Kareem Aghbari</h4>
+                        <h3 class="item-title item-title--name">Kareem Aghbari</h3>
                         <p>Fall 2025, Winter 2026</p>
                     </li>
                     <li>
-                        <h4 class="no-mb">Qais El Baser</h4>
+                        <h3 class="item-title item-title--name">Qais El Baser</h3>
                         <p>Fall 2024</p>
                     </li>
                     <li>
-                        <h4 class="no-mb">Jad Nizam</h4>
+                        <h3 class="item-title item-title--name">Jad Nizam</h3>
                         <p>Fall 2024, Winter 2025, Fall 2025</p>
                     </li>
                     <li>
-                        <h4 class="no-mb">Gurjot Singh</h4>
+                        <h3 class="item-title item-title--name">Gurjot Singh</h3>
                         <p>Fall 2024</p>
                     </li>
                     <li>
-                        <h4 class="no-mb">Steven Fung</h4>
+                        <h3 class="item-title item-title--name">Steven Fung</h3>
                         <p>Fall 2024, Winter 2025, Summer 2025</p>
                     </li>
                     <li>
-                        <h4 class="no-mb">Gavin Feher</h4>
+                        <h3 class="item-title item-title--name">Gavin Feher</h3>
                         <p>Summer 2024</p>
                     </li>
                 </ul>
             </div>
 
             <!-- Interns -->
-            <div class="bg-white rounded-xl shadow-lg p-6 hover-scale">
-                <div class="flex items-center mb-4">
-                    <i class="text-blue-500 mr-2" data-feather="briefcase"></i>
+            <div class="panel">
+                <div class="panel-title">
+                    <i data-feather="briefcase"></i>
                     <h2>Interns</h2>
                 </div>
-                <ul class="space-y-3">
+                <ul class="stack-3">
                     <li>
-                        <h4 class="no-mb">Bashar Al-Khayyat</h4>
+                        <h3 class="item-title item-title--name">Bashar Al-Khayyat</h3>
                         <p>Elevate Internship · Summer 2026</p>
                     </li>
                     <li>
-                        <h4 class="no-mb">Maryam Kolachi</h4>
+                        <h3 class="item-title item-title--name">Maryam Kolachi</h3>
                         <p>Elevate Internship · Summer 2025</p>
                     </li>
                     <li>
-                        <h4 class="no-mb">Rohan Buch</h4>
+                        <h3 class="item-title item-title--name">Rohan Buch</h3>
                         <p>Volunteer · Summer 2025</p>
                     </li>
                     <li>
-                        <h4 class="no-mb">Saumya Buch</h4>
+                        <h3 class="item-title item-title--name">Saumya Buch</h3>
                         <p>Volunteer · Summer 2025</p>
                     </li>
                     <li>
-                        <h4 class="no-mb">Onkar Rai</h4>
+                        <h3 class="item-title item-title--name">Onkar Rai</h3>
                         <p>Mitacs Globalink Research Internship · Summer 2024</p>
                     </li>
                     <li>
-                        <h4 class="no-mb">Vansh Agrawal</h4>
+                        <h3 class="item-title item-title--name">Vansh Agrawal</h3>
                         <p>Mitacs Globalink Research Internship · Summer 2023</p>
                     </li>
                     <li>
-                        <h4 class="no-mb">Aman Kumar Singh</h4>
+                        <h3 class="item-title item-title--name">Aman Kumar Singh</h3>
                         <p>Mitacs Globalink Research Internship · Summer 2023</p>
                     </li>
                     <li>
-                        <h4 class="no-mb">Hareekrishna Vellore Shanmugam</h4>
+                        <h3 class="item-title item-title--name">Hareekrishna Vellore Shanmugam</h3>
                         <p>Mitacs Globalink Research Internship · Summer 2022</p>
                     </li>
                     <li>
-                        <h4 class="no-mb">Darpan Khanna</h4>
+                        <h3 class="item-title item-title--name">Darpan Khanna</h3>
                         <p>Mitacs Globalink Research Internship · Summer 2022</p>
                     </li>
                     <li>
-                        <h4 class="no-mb">Anirudh Kanchi</h4>
+                        <h3 class="item-title item-title--name">Anirudh Kanchi</h3>
                         <p>Mitacs Globalink Research Internship · Summer 2022</p>
                     </li>
                 </ul>
             </div>
 
         </main>
-        <footer class="mt-12 text-center text-gray-600 fade-in">
-            <p>&copy; 2021 Ahmed Hamdi Sakr. All rights reserved.</p>
+        <footer class="site-footer fade-in">
+            <p>&copy; 2021&ndash;2026 Ahmed Hamdi Sakr. All rights reserved.</p>
         </footer>
     </div>
 </body>

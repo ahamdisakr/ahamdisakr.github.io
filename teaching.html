@@ -7,75 +7,69 @@
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <title>Teaching | Ahmed Hamdi Sakr</title>
     <meta name="description" content="Courses taught by Ahmed Hamdi Sakr at the University of Windsor, plus guidance on emailing your course instructor." />
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/feather-icons@4.29.2/dist/feather.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/feather-icons@4.29.2/dist/feather.min.js"></script>
 
-    <link href="styles.css" rel="stylesheet" />
+    <link href="/styles.css" rel="stylesheet" />
     <link rel="icon" type="image/x-icon" href="/images/icon.ico" />
-    <script defer="True" src="app.js"></script>
+    <script defer src="/app.js"></script>
 </head>
 
-<body class="font-sans gradient-bg min-h-screen" data-page="teaching">
+<body data-page="teaching">
     <div id="site-nav"></div>
-    <div class="container mx-auto px-4 py-8 max-w-5xl">
-        <!-- Navigation -->
-        <main class="gap-8 fade-in py-8 grid-cols-1 grid max-w-6xl px-4 mx-auto pt-20" id="main">
+    <div class="site-container">
+        <main class="page page--stack fade-in" id="main">
             <h1 class="sr-only">Teaching</h1>
             <!-- Tools for Instructors -->
-            <div class="bg-white rounded-xl shadow-lg p-6 hover-scale">
-                <div class="flex items-center mb-4">
-                    <i class="text-blue-500 mr-2" data-feather="book-open"></i>
+            <div class="panel">
+                <div class="panel-title">
+                    <i data-feather="book-open"></i>
                     <h2>Tools for Instructors</h2>
                 </div>
-                <ul class="list-disc pl-5 space-y-1">
+                <ul class="bullets stack-1">
                     <li>
-                        <h4>Exam Timer <a class="text-blue-600 hover:underline" href="timer.html">[Here]</a></h4>
+                        <h3 class="item-title"><a class="link" href="timer.html">Exam Timer</a></h3>
                     </li>
                     <li>
-                        <h4>Brightspace Quiz Generator <a class="text-blue-600 hover:underline"
-                                href="brightspace.html">[Here]</a></h4>
+                        <h3 class="item-title"><a class="link" href="brightspace.html">Brightspace Quiz Generator</a></h3>
                     </li>
                 </ul>
             </div>
 
             <!-- Interactive Demos -->
-            <div class="bg-white rounded-xl shadow-lg p-6 hover-scale">
-                <div class="flex items-center mb-4">
-                    <i class="text-blue-500 mr-2" data-feather="activity"></i>
+            <div class="panel">
+                <div class="panel-title">
+                    <i data-feather="activity"></i>
                     <h2>Interactive Demos</h2>
                 </div>
-                <ul class="list-disc pl-5 space-y-1">
+                <ul class="bullets stack-1">
                     <li>
-                        <h4>Fourier Series Coefficients <a class="text-blue-600 hover:underline"
-                                href="demos/fourier-series.html">[Here]</a></h4>
+                        <h3 class="item-title"><a class="link" href="demos/fourier-series.html">Fourier Series Coefficients</a></h3>
                     </li>
                     <li>
-                        <h4>Fourier Transform <a class="text-blue-600 hover:underline"
-                                href="demos/fourier-transform.html">[Here]</a></h4>
+                        <h3 class="item-title"><a class="link" href="demos/fourier-transform.html">Fourier Transform</a></h3>
                     </li>
                     <li>
-                        <h4>Fourier Transform Filtering <a class="text-blue-600 hover:underline"
-                                href="demos/fourier-filtering.html">[Here]</a></h4>
+                        <h3 class="item-title"><a class="link" href="demos/fourier-filtering.html">Fourier Transform Filtering</a></h3>
                     </li>
                 </ul>
             </div>
 
-            <!-- Current Courses -->
-            <div class="bg-white rounded-xl shadow-lg p-6 hover-scale">
-                <div class="flex items-center mb-4">
-                    <i class="text-blue-500 mr-2" data-feather="book-open"></i>
+            <!-- Undergraduate Courses -->
+            <div class="panel">
+                <div class="panel-title">
+                    <i data-feather="book-open"></i>
                     <h2>Undergraduate Courses</h2>
                 </div>
-                <ul class="space-y-4">
+                <ul class="stack-4">
                     <li>
-                        <h4>ELEC 2110 - Computer Aided Analysis</h4>
-                        <div class="mt-2 flex flex-wrap gap-2">
+                        <h3 class="item-title">ELEC 2110 - Computer Aided Analysis</h3>
+                        <div class="chip-row">
                             <span class="chip">Fall 2023</span>
                         </div>
                     </li>
                     <li>
-                        <h4>ELEC 2240 - Signals and Systems</h4>
-                        <div class="mt-2 flex flex-wrap gap-2">
+                        <h3 class="item-title">ELEC 2240 - Signals and Systems</h3>
+                        <div class="chip-row">
                             <span class="chip">Winter 2022</span>
                             <span class="chip">Winter 2023</span>
                             <span class="chip">Winter 2024</span>
@@ -85,15 +79,15 @@
                         </div>
                     </li>
                     <li>
-                        <h4>ELEC 3290 - Analog Communications</h4>
-                        <div class="mt-2 flex flex-wrap gap-2">
+                        <h3 class="item-title">ELEC 3290 - Analog Communications</h3>
+                        <div class="chip-row">
                             <span class="chip">Summer 2021</span>
                             <span class="chip">Summer 2022</span>
                         </div>
                     </li>
                     <li>
-                        <h4>ELEC 4190 - Digital Communications</h4>
-                        <div class="mt-2 flex flex-wrap gap-2">
+                        <h3 class="item-title">ELEC 4190 - Digital Communications</h3>
+                        <div class="chip-row">
                             <span class="chip">Winter 2023</span>
                             <span class="chip">Winter 2024</span>
                             <span class="chip">Winter 2025</span>
@@ -101,24 +95,24 @@
                         </div>
                     </li>
                     <li>
-                        <h4>ELEC 4400 - Wireless Communications</h4>
-                        <div class="mt-2 flex flex-wrap gap-2">
+                        <h3 class="item-title">ELEC 4400 - Wireless Communications</h3>
+                        <div class="chip-row">
                             <span class="chip">Summer 2021</span>
                             <span class="chip">Summer 2022</span>
                         </div>
                     </li>
                 </ul>
             </div>
-            <!-- Past Courses -->
-            <div class="bg-white rounded-xl shadow-lg p-6 hover-scale">
-                <div class="flex items-center mb-4">
-                    <i class="text-blue-500 mr-2" data-feather="book-open"></i>
+            <!-- Graduate Courses -->
+            <div class="panel">
+                <div class="panel-title">
+                    <i data-feather="book-open"></i>
                     <h2>Graduate Courses</h2>
                 </div>
-                <ul class="space-y-4">
+                <ul class="stack-4">
                     <li>
-                        <h4>ELEC 8560 - Computer Networks</h4>
-                        <div class="mt-2 flex flex-wrap gap-2">
+                        <h3 class="item-title">ELEC 8560 - Computer Networks</h3>
+                        <div class="chip-row">
                             <span class="chip">Fall 2022</span>
                             <span class="chip">Fall 2023</span>
                             <span class="chip">Fall 2024</span>
@@ -126,15 +120,15 @@
                         </div>
                     </li>
                     <li>
-                        <h4>ELEC 8630 - Wireless Communication Systems</h4>
-                        <div class="mt-2 flex flex-wrap gap-2">
+                        <h3 class="item-title">ELEC 8630 - Wireless Communication Systems</h3>
+                        <div class="chip-row">
                             <span class="chip">Summer 2021</span>
                             <span class="chip">Summer 2022</span>
                         </div>
                     </li>
                     <li>
-                        <h4>ELEC 8900 - Special Topics in Digital Communications</h4>
-                        <div class="mt-2 flex flex-wrap gap-2">
+                        <h3 class="item-title">ELEC 8900 - Special Topics in Digital Communications</h3>
+                        <div class="chip-row">
                             <span class="chip">Winter 2023</span>
                             <span class="chip">Winter 2024</span>
                             <span class="chip">Winter 2025</span>
@@ -145,72 +139,72 @@
             </div>
 
             <!-- Card: How to Email Your Course Instructor -->
-            <div class="bg-white rounded-xl shadow-lg p-6 hover-scale">
-                <div class="flex items-center mb-4">
-                    <i data-feather="mail" class="text-blue-500 mr-2"></i>
-                    <h2 class="text-2xl font-semibold text-gray-800">How to Email Your Course Instructor</h2>
+            <div class="panel">
+                <div class="panel-title">
+                    <i data-feather="mail"></i>
+                    <h2 class="title-lg">How to Email Your Course Instructor</h2>
                 </div>
 
-                <p class="text-gray-700 mb-4">
+                <p class="text-soft mb-4">
                     Use this template when contacting your instructor. Replace anything in <strong>[square
                         brackets]</strong> with your own details.
                 </p>
 
-                <div class="bg-blue-50 rounded-lg p-4">
-                    <h3 class="text-xl font-semibold text-gray-800 mb-2">Email Template</h3>
+                <div class="callout">
+                    <h3 class="title-md mb-2">Email Template</h3>
 
-                    <p class="text-gray-700 mb-4"><strong>Subject:</strong> [Clear, specific topic, e.g., <em>ELEC 2240
+                    <p class="text-soft mb-4"><strong>Subject:</strong> [Clear, specific topic, e.g., <em>ELEC 2240
                             - Question about Assignment 2</em> or <em>ELEC 4400 - Request for Office Hour
                             Appointment</em> or <em>ELEC 8560 - Clarification on Lecture 5</em>]</p>
 
-                    <p class="text-gray-700 mb-4">Dear Dr. [Last Name],<br />
-                        <span class="text-sm text-gray-600">(Use the correct title: Professor, Dr., etc. Never call a
+                    <p class="text-soft mb-4">Dear Dr. [Last Name],<br />
+                        <span class="text-sm text-faint">(Use the correct title: Professor, Dr., etc. Never call a
                             professor Mrs., Miss, or Mr.)</span>
                     </p>
 
-                    <p class="text-gray-700 mb-4">
+                    <p class="text-soft mb-4">
                         My name is [Your Full Name], and I am a student in your [Course Code - e.g., <em>ELEC-2240
                             Signals and Systems</em>] class, Section [Number, if applicable].
                         [If needed, include the meeting time, e.g., <em>T/Th 1:00-2:20 PM</em>.]
                     </p>
 
-                    <p class="text-gray-700 mb-4">
+                    <p class="text-soft mb-4">
                         [State clearly and politely the reason for your email. Example: <em>I am writing to ask for
                             clarification on Question 3 of Assignment 2, specifically the expected format for the
                             solution.</em>]
                     </p>
 
-                    <p class="text-gray-700 mb-4">
+                    <p class="text-soft mb-4">
                         [Provide brief context so the instructor understands the issue. Example: <em>I reviewed the
                             lecture notes and the course site, but I could not find a detailed explanation.</em>]
                     </p>
 
-                    <p class="text-gray-700 mb-4">
+                    <p class="text-soft mb-4">
                         [Ask your question or make your request directly, using polite language. Example: <em>Could you
                             please confirm whether we should include derivation steps in our submission?</em>
                         or <em>Would it be possible to schedule a short meeting during your office hours?</em>]
                     </p>
 
-                    <p class="text-gray-700 mb-4">
+                    <p class="text-soft mb-4">
                         [If applicable, mention attachments and responsibility. Example: <em>I am attaching my draft and
                             will revise it after your guidance. Thank you for your time.</em>]
                     </p>
 
-                    <p class="text-gray-700 mb-4">Thank you for your time and help.</p>
+                    <p class="text-soft mb-4">Thank you for your time and help.</p>
 
-                    <p class="text-gray-700">
+                    <p class="text-soft">
                         Sincerely,<br />
                         [Your Full Name]<br />
                         [Student ID]
                     </p>
                 </div>
                 <!-- Card: Quick Tips -->
-                <div class="bg-white rounded-xl shadow-lg p-6">
-                    <div class="flex items-center mb-4">
-                        <i data-feather="info" class="text-blue-500 mr-2"></i>
-                        <h3 class="text-xl font-semibold text-gray-800">Quick Tips</h3>
+                <div class="panel panel--static">
+                    <div class="panel-title">
+                        <i data-feather="info"></i>
+                        <h3 class="title-md">Quick Tips</h3>
                     </div>
-                    <ul class="list-disc pl-5 text-gray-700 space-y-2">
+                    <ul class="bullets text-soft stack-2">
                         <li>Use your <strong>university email address</strong> and a <strong>specific subject
                                 line</strong>.</li>
                         <li>Be <strong>polite and concise</strong> (8-10 sentences max). Proofread before sending.</li>
@@ -220,11 +214,9 @@
                     </ul>
                 </div>
             </div>
-
-
         </main>
-        <footer class="mt-12 text-center text-gray-600 fade-in">
-            <p>&copy; 2021 Ahmed Hamdi Sakr. All rights reserved.</p>
+        <footer class="site-footer fade-in">
+            <p>&copy; 2021&ndash;2026 Ahmed Hamdi Sakr. All rights reserved.</p>
         </footer>
     </div>
 </body>

@@ -7,36 +7,21 @@
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <title>Publications | Ahmed Hamdi Sakr</title>
     <meta name="description" content="Patents, journal articles, conference papers and book chapters by Ahmed Hamdi Sakr." />
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/feather-icons@4.29.2/dist/feather.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/feather-icons@4.29.2/dist/feather.min.js"></script>
 
-    <link href="styles.css" rel="stylesheet" />
+    <link href="/styles.css" rel="stylesheet" />
+    <link href="/publications.css" rel="stylesheet" />
     <link rel="icon" type="image/x-icon" href="/images/icon.ico" />
-    <script defer="True" src="app.js"></script>
+    <script defer src="/app.js"></script>
     <script>document.documentElement.classList.add('js');</script>
-    <style>
-        .acc-h { margin: 0; scroll-margin-top: 5.5rem; }
-        .acc-btn { display: flex; width: 100%; align-items: center; justify-content: space-between; gap: .75rem; background: none; border: 0; padding: 0; margin: 0; text-align: left; font: inherit; color: inherit; cursor: pointer; }
-        .acc-title { display: inline-flex; align-items: center; gap: .6rem; flex-wrap: wrap; }
-        .acc-chev { flex-shrink: 0; color: #6b7280; transition: transform .25s ease; }
-        .acc-btn:hover .acc-chev { color: #2563eb; }
-        .acc-btn[aria-expanded="true"] .acc-chev { transform: rotate(180deg); }
-        .acc-panel { display: grid; grid-template-rows: 1fr; }
-        .acc-inner { min-height: 0; overflow: hidden; }
-        .acc-inner > ul { margin-top: 1rem; }
-        .js .acc-panel { grid-template-rows: 0fr; transition: grid-template-rows .3s ease; }
-        .js .acc-panel.open { grid-template-rows: 1fr; }
-        @media (prefers-reduced-motion: reduce) { .js .acc-panel, .acc-chev { transition: none; } }
-    </style>
 </head>
 
-<body class="font-sans gradient-bg min-h-screen" data-page="publications">
+<body data-page="publications">
     <div id="site-nav"></div>
-    <div class="container mx-auto px-4 py-8 max-w-5xl">
-        <!-- Navigation -->
-        <main class="fade-in py-8 px-4 max-w-6xl mx-auto pt-20" id="main">
+    <div class="site-container">
+        <main class="page fade-in" id="main">
             <h1 class="sr-only">Publications</h1>
-            <div class="bg-white rounded-xl shadow-lg p-6 hover-scale mb-8">
+            <div class="panel panel--stacked">
                 <h2 class="acc-h" id="patents">
                     <button type="button" class="acc-btn" id="acc-patents" aria-expanded="false" aria-controls="pub-patents">
                         <span class="acc-title">Patents</span>
@@ -45,184 +30,184 @@
                 </h2>
                 <div class="acc-panel" id="pub-patents" role="region" aria-labelledby="acc-patents">
                 <div class="acc-inner">
-                <ul class="space-y-4">
-                    <li class="border-b pb-4">
+                <ul class="stack-4">
+                    <li class="entry">
                         <p>
                             S. Avedisov and A. H. Sakr, "Methods and Systems for Managing Connected Vehicles in Mixed
                             Traffic," U.S. Patent No. 11,995,990, issued May 28, 2024.
                         </p>
-                        <div class="mt-2 flex flex-wrap gap-2">
+                        <div class="chip-row">
                             <span class="chip"><a
                                     href="https://patentimages.storage.googleapis.com/70/cb/0f/a28b3fc97e0c2b/US11995990.pdf"
                                     target="_blank" rel="noopener noreferrer">US Patent</a></span>
                         </div>
                     </li>
 
-                    <li class="border-b pb-4">
+                    <li class="entry">
                         <p>
                             S. Avedisov, Z. Wang, A. H. Sakr, K. Han, R. Guo, and O. Altintas, "Cooperative Driving
                             System and Method," U.S. Patent No. 11,904,855, issued Feb. 20, 2024.
                         </p>
-                        <div class="mt-2 flex flex-wrap gap-2">
+                        <div class="chip-row">
                             <span class="chip"><a
                                     href="https://patentimages.storage.googleapis.com/9b/dc/c1/b587bbad09eae6/US11904855.pdf"
                                     target="_blank" rel="noopener noreferrer">US Patent</a></span>
                         </div>
                     </li>
 
-                    <li class="border-b pb-4">
+                    <li class="entry">
                         <p>
                             S. Avedisov, A. H. Sakr, T. Higuchi, S. Ucar, O. Altintas, and A. Yamamuro, "Message
                             Management for Cooperative Driving Among Connected Vehicles," U.S. Patent No. 11,792,687,
                             issued Oct. 17, 2023.
                         </p>
-                        <div class="mt-2 flex flex-wrap gap-2">
+                        <div class="chip-row">
                             <span class="chip"><a
                                     href="https://patentimages.storage.googleapis.com/c2/12/9a/ff16e1f6a404f6/US11792687.pdf"
                                     target="_blank" rel="noopener noreferrer">US Patent</a></span>
                         </div>
                     </li>
 
-                    <li class="border-b pb-4">
+                    <li class="entry">
                         <p>
                             A. H. Sakr, "Machine Learning System for Roadway Feature Extraction from Wireless Vehicle
                             Data," U.S. Patent No. 11,776,390, issued Oct. 3, 2023.
                         </p>
-                        <div class="mt-2 flex flex-wrap gap-2">
+                        <div class="chip-row">
                             <span class="chip"><a
                                     href="https://patentimages.storage.googleapis.com/57/a3/45/d836e1aeb99345/US11776390.pdf"
                                     target="_blank" rel="noopener noreferrer">US Patent</a></span>
                         </div>
                     </li>
 
-                    <li class="border-b pb-4">
+                    <li class="entry">
                         <p>
                             R. Guo, M. Ashour, A. H. Sakr, B. Chen, H. Lu, and P. Tiwari, "Location Data Correction
                             Service For Connected Vehicles," U.S. Patent No. 11,709,258, issued July 25, 2023.
                         </p>
-                        <div class="mt-2 flex flex-wrap gap-2">
+                        <div class="chip-row">
                             <span class="chip"><a
                                     href="https://patentimages.storage.googleapis.com/79/9b/ec/97de7a4ff20523/US11709258.pdf"
                                     target="_blank" rel="noopener noreferrer">US Patent</a></span>
                         </div>
                     </li>
 
-                    <li class="border-b pb-4">
+                    <li class="entry">
                         <p>
                             M. Ashour, R. Guo, A. H. Sakr, and P. Tiwari, "Systems and Methods for Distributed
                             Cooperative Localization in a Connected Vehicular Platform," U.S. Patent No. 11,670,169,
                             issued June 6, 2023.
                         </p>
-                        <div class="mt-2 flex flex-wrap gap-2">
+                        <div class="chip-row">
                             <span class="chip"><a
                                     href="https://patentimages.storage.googleapis.com/a7/59/86/f926a35636a8d4/US11670169.pdf"
                                     target="_blank" rel="noopener noreferrer">US Patent</a></span>
                         </div>
                     </li>
 
-                    <li class="border-b pb-4">
+                    <li class="entry">
                         <p>
                             R. Guo, H. Lu, A. H. Sakr, and P. Tiwari, "Systems and Methods for A Traffic Flow Monitoring
                             And Graph Completion System," U.S. Patent No. 11,594,126, issued Mar. 3, 2023.
                         </p>
-                        <div class="mt-2 flex flex-wrap gap-2">
+                        <div class="chip-row">
                             <span class="chip"><a
                                     href="https://patentimages.storage.googleapis.com/39/e9/8d/301aab2c42d6a5/US11594126B2.pdf"
                                     target="_blank" rel="noopener noreferrer">US Patent</a></span>
                         </div>
                     </li>
 
-                    <li class="border-b pb-4">
+                    <li class="entry">
                         <p>
                             A. H. Sakr, "Partial Sensor Data Sharing for Connected Vehicles," U.S. Patent No.
                             11,335,132, issued May 17, 2022.
                         </p>
-                        <div class="mt-2 flex flex-wrap gap-2">
+                        <div class="chip-row">
                             <span class="chip"><a
                                     href="https://patentimages.storage.googleapis.com/68/9d/eb/09bda1406ff1b1/US11335132.pdf"
                                     target="_blank" rel="noopener noreferrer">US Patent</a></span>
                         </div>
                     </li>
 
-                    <li class="border-b pb-4">
+                    <li class="entry">
                         <p>
                             X. Kan, A. Ganlath, A. H. Sakr, and P. Tiwari, "Edge-Assisted Alert System," U.S. Patent No.
                             11,282,388, issued Mar. 22, 2022.
                         </p>
-                        <div class="mt-2 flex flex-wrap gap-2">
+                        <div class="chip-row">
                             <span class="chip"><a
                                     href="https://patentimages.storage.googleapis.com/39/c4/01/65e490adef3526/US20210241624A1.pdf"
                                     target="_blank" rel="noopener noreferrer">US Patent</a></span>
                         </div>
                     </li>
 
-                    <li class="border-b pb-4">
+                    <li class="entry">
                         <p>
                             K. Han and A. H. Sakr, "Cloud-assisted Virtual V2V Communication," U.S. Patent No.
                             11,284,234, issued Mar. 22, 2022.
                         </p>
-                        <div class="mt-2 flex flex-wrap gap-2">
+                        <div class="chip-row">
                             <span class="chip"><a
                                     href="https://patentimages.storage.googleapis.com/49/c5/42/7505492efc9e54/US11284234.pdf"
                                     target="_blank" rel="noopener noreferrer">US Patent</a></span>
                         </div>
                     </li>
 
-                    <li class="border-b pb-4">
+                    <li class="entry">
                         <p>
                             R. Guo, H. Lu, A. H. Sakr, and P. Tiwari, "Systems and Methods for Traffic Flow Prediction,"
                             U.S. Patent No. 11,238,729, issued Feb. 1, 2022.
                         </p>
-                        <div class="mt-2 flex flex-wrap gap-2">
+                        <div class="chip-row">
                             <span class="chip"><a
                                     href="https://patentimages.storage.googleapis.com/9c/ce/db/b3dec4c8fe6cca/US11238729.pdf"
                                     target="_blank" rel="noopener noreferrer">US Patent</a></span>
                         </div>
                     </li>
 
-                    <li class="border-b pb-4">
+                    <li class="entry">
                         <p>
                             K. Han and A. H. Sakr, "Digital Twin Simulation-Based Vehicular Communication Planning,"
                             U.S.
                             Patent No. 11,234,160, issued Jan. 25, 2022.
                         </p>
-                        <div class="mt-2 flex flex-wrap gap-2">
+                        <div class="chip-row">
                             <span class="chip"><a
                                     href="https://patentimages.storage.googleapis.com/23/fc/30/4c29a60a0a0926/US11234160.pdf"
                                     target="_blank" rel="noopener noreferrer">US Patent</a></span>
                         </div>
                     </li>
 
-                    <li class="border-b pb-4">
+                    <li class="entry">
                         <p>
                             A. H. Sakr and G. Bansal, "Generating Real-time High Definition (HD) Maps Using Wireless
                             Vehicle Data of a Remote Vehicle," U.S. Patent No. 11,041,736, issued June 22, 2021.
                         </p>
-                        <div class="mt-2 flex flex-wrap gap-2">
+                        <div class="chip-row">
                             <span class="chip"><a
                                     href="https://patentimages.storage.googleapis.com/ac/58/cd/d9f9841873bb2e/US11041736.pdf"
                                     target="_blank" rel="noopener noreferrer">US Patent</a></span>
                         </div>
                     </li>
 
-                    <li class="border-b pb-4">
+                    <li class="entry">
                         <p>
                             V. Vladimerou, M. Johnson, G. Bansal, and A. H. Sakr, "System and Method for Determining a
                             Lane Change of a Preceding Vehicle," U.S. Patent No. 11,023,753, issued June 1, 2021.
                         </p>
-                        <div class="mt-2 flex flex-wrap gap-2">
+                        <div class="chip-row">
                             <span class="chip"><a
                                     href="https://patentimages.storage.googleapis.com/aa/78/8d/37938764f3b407/US11023753.pdf"
                                     target="_blank" rel="noopener noreferrer">US Patent</a></span>
                         </div>
                     </li>
 
-                    <li class="border-b pb-4">
+                    <li class="entry">
                         <p>
                             V. Vladimerou, M. Johnson, G. Bansal, and A. H. Sakr, "Determination of Roadway Features,"
                             U.S. Patent No. 10,782,704, issued Sept. 22, 2020.
                         </p>
-                        <div class="mt-2 flex flex-wrap gap-2">
+                        <div class="chip-row">
                             <span class="chip"><a
                                     href="https://patentimages.storage.googleapis.com/c1/cb/41/3201a7251e7666/US20180217612A1.pdf"
                                     target="_blank" rel="noopener noreferrer">US Patent</a></span>
@@ -234,7 +219,7 @@
                             A. H. Sakr and G. Bansal, "Estimate of Geographical Position of a Vehicle Using Wireless
                             Vehicle Data," U.S. Patent No. 10,281,925, issued May 7, 2019.
                         </p>
-                        <div class="mt-2 flex flex-wrap gap-2">
+                        <div class="chip-row">
                             <span class="chip"><a
                                     href="https://patentimages.storage.googleapis.com/a1/8a/32/b1956a0d304279/US10281925.pdf"
                                     target="_blank" rel="noopener noreferrer">US Patent</a></span>
@@ -245,7 +230,7 @@
                 </div>
             </div>
 
-            <div class="bg-white rounded-xl shadow-lg p-6 hover-scale mb-8">
+            <div class="panel panel--stacked">
                 <h2 class="acc-h" id="journal-articles">
                     <button type="button" class="acc-btn" id="acc-journal-articles" aria-expanded="false" aria-controls="pub-journal-articles">
                         <span class="acc-title">Journal Articles</span>
@@ -254,210 +239,210 @@
                 </h2>
                 <div class="acc-panel" id="pub-journal-articles" role="region" aria-labelledby="acc-journal-articles">
                 <div class="acc-inner">
-                <ul class="space-y-4">
-                    <li class="border-b pb-4">
+                <ul class="stack-4">
+                    <li class="entry">
                         <p>
                             R. S. Gul, A. H. Sakr, and M. A. Kishk, "QoS-Aware Network Slicing for Integrated 5G Terrestrial and LEO Non-Terrestrial Networks in Vehicular Communication," in <em>IEEE Open Journal of the Communications Society</em>, vol. 7, pp. 13015-13027, 2026.
                         </p>
-                        <div class="mt-2 flex flex-wrap gap-2">
+                        <div class="chip-row">
                             <span class="chip"><a href="https://ieeexplore.ieee.org/document/11719644"
                                     target="_blank" rel="noopener noreferrer">IEEE
                                     Xplore</a></span>
                         </div>
                     </li>
 
-                    <li class="border-b pb-4">
+                    <li class="entry">
                         <p>
                             A. Uddin, N. Zhang, A. H. Sakr, M. S. A. Shohag, and Q. M. J. Wu, "Enhanced Deep Q-Learning through Adaptive Experience Clustering for Vehicular Task Offloading," in <em>IEEE Transactions on Cognitive Communications and Networking</em>, vol. 12, pp. 8186-8197, 2026.
                         </p>
-                        <div class="mt-2 flex flex-wrap gap-2">
+                        <div class="chip-row">
                             <span class="chip"><a href="https://ieeexplore.ieee.org/document/11513382"
                                     target="_blank" rel="noopener noreferrer">IEEE
                                     Xplore</a></span>
                         </div>
                     </li>
 
-                    <li class="border-b pb-4">
+                    <li class="entry">
                         <p>
                             M. Zamanirafe, N. Zhang, and A. H. Sakr, "Decentralized Intelligence for Internet of Vehicles: A Hierarchical Blockchain Federated Learning Approach," in <em>Vehicular Communications</em>, vol. 61, Art. no. 101070, Oct. 2026.
                         </p>
-                        <div class="mt-2 flex flex-wrap gap-2">
+                        <div class="chip-row">
                             <span class="chip"><a href="https://www.sciencedirect.com/science/article/abs/pii/S2214209626000719"
                                     target="_blank" rel="noopener noreferrer">ScienceDirect</a></span>
                         </div>
                     </li>
 
-                    <li class="border-b pb-4">
+                    <li class="entry">
                         <p>
                             S. Manjunatha, S. Avedisov, O. Altintas, and A. H. Sakr, "Experimental Insights into Intent Sharing for Enhanced Infrastructure-Assisted Cooperative Perception," in <em>IEEE Intelligent Transportation Systems Magazine</em>, vol. 18, no. 5, pp. 74-84, Sept.-Oct. 2026.
                         </p>
-                        <div class="mt-2 flex flex-wrap gap-2">
+                        <div class="chip-row">
                             <span class="chip"><a href="https://ieeexplore.ieee.org/document/11429152"
                                     target="_blank" rel="noopener noreferrer">IEEE
                                     Xplore</a></span>
                         </div>
                     </li>
 
-                    <li class="border-b pb-4">
+                    <li class="entry">
                         <p>
                             B. Balasubramanian, P. Pillai, A. H. Sakr, and B. Balasingam, "Quantification of Drift in Battery Impedance Spectroscopy Due to State of Charge, Current Amplitude, and Rest Time," in <em>IEEE Transactions on Transportation Electrification</em>, vol. 12, no. 3, pp. 4513-4527, June 2026.
                         </p>
-                        <div class="mt-2 flex flex-wrap gap-2">
+                        <div class="chip-row">
                             <span class="chip"><a href="https://ieeexplore.ieee.org/document/11421558"
                                     target="_blank" rel="noopener noreferrer">IEEE
                                     Xplore</a></span>
                         </div>
                     </li>
 
-                    <li class="border-b pb-4">
+                    <li class="entry">
                         <p>
                             A. Uddin, A. H. Sakr, and N. Zhang, "Counterfactual Multi-Agent DRL for Efficient Task Offloading in Vehicular Edge Computing," in <em>IEEE Transactions on Vehicular Technology</em>, vol. 75, no. 6, pp. 9270-9281, June 2026.
                         </p>
-                        <div class="mt-2 flex flex-wrap gap-2">
+                        <div class="chip-row">
                             <span class="chip"><a href="https://ieeexplore.ieee.org/document/11297019"
                                     target="_blank" rel="noopener noreferrer">IEEE
                                     Xplore</a></span>
                         </div>
                     </li>
 
-                    <li class="border-b pb-4">
+                    <li class="entry">
                         <p>
                             A. Uddin, A. H. Sakr, and N. Zhang, "Adaptive Prioritization and Task Offloading in
                             Vehicular Edge Computing Through Deep Reinforcement Learning," in <em>IEEE Transactions on
                                 Vehicular Technology</em>, vol. 74, no. 3, pp. 5038-5052, Mar. 2025.
                         </p>
-                        <div class="mt-2 flex flex-wrap gap-2">
+                        <div class="chip-row">
                             <span class="chip"><a href="https://ieeexplore.ieee.org/document/10755183"
                                     target="_blank" rel="noopener noreferrer">IEEE
                                     Xplore</a></span>
                         </div>
                     </li>
 
-                    <li class="border-b pb-4">
+                    <li class="entry">
                         <p>
                             A. H. Sakr, "Evaluation of Redundancy Mitigation Rules in V2X Networks for Enhanced
                             Collective Perception Services," in <em>IEEE Access</em>, vol. 12, pp. 137696-137711, Sept.
                             2024.
                         </p>
-                        <div class="mt-2 flex flex-wrap gap-2">
+                        <div class="chip-row">
                             <span class="chip"><a href="https://ieeexplore.ieee.org/document/10684611"
                                     target="_blank" rel="noopener noreferrer">IEEE
                                     Xplore</a></span>
                         </div>
                     </li>
 
-                    <li class="border-b pb-4">
+                    <li class="entry">
                         <p>
                             B. Gabr, A. H. Sakr, H. ElSawy, K. G. Seddik, and W. Mesbah, "Hybrid k-preemptive
                             Transmission Scheme for Minimal Age of Information in IoT Networks," in <em>IEEE Wireless
                                 Communication Letters</em>, vol. 13, no. 9, pp. 2342-2346, Sept. 2024.
                         </p>
-                        <div class="mt-2 flex flex-wrap gap-2">
+                        <div class="chip-row">
                             <span class="chip"><a href="https://ieeexplore.ieee.org/document/10550927"
                                     target="_blank" rel="noopener noreferrer">IEEE
                                     Xplore</a></span>
                         </div>
                     </li>
 
-                    <li class="border-b pb-4">
+                    <li class="entry">
                         <p>
                             H. M. Wang, S. Avedisov, T. Molnar, A. H. Sakr, O. Altintas, and G. Orsoz, "Conflict
                             Analysis for Cooperative Maneuvering with Status and Intent Sharing via V2X Communication,"
                             in <em>IEEE Transactions on Intelligent Vehicles</em>, vol. 8, no. 2, pp. 1105-1118, Feb.
                             2023.
                         </p>
-                        <div class="mt-2 flex flex-wrap gap-2">
+                        <div class="chip-row">
                             <span class="chip"><a href="https://ieeexplore.ieee.org/document/9709116"
                                     target="_blank" rel="noopener noreferrer">IEEE
                                     Xplore</a></span>
                         </div>
                     </li>
 
-                    <li class="border-b pb-4">
+                    <li class="entry">
                         <p>
                             J. P. Pradha Jeyaraj, M. Haenggi, A. H. Sakr, and H. Lu, "The Transdimensional Poisson
                             Process for Vehicular Network Analysis," in <em>IEEE Transactions on Wireless
                                 Communications</em>, vol. 20, no. 12, pp. 8023-8038, Dec. 2021.
                         </p>
-                        <div class="mt-2 flex flex-wrap gap-2">
+                        <div class="chip-row">
                             <span class="chip"><a href="https://ieeexplore.ieee.org/document/9462466"
                                     target="_blank" rel="noopener noreferrer">IEEE
                                     Xplore</a></span>
                         </div>
                     </li>
 
-                    <li class="border-b pb-4">
+                    <li class="entry">
                         <p>
                             S. Avedisov, A. H. Sakr, T. Higuchi, H. Akihiko, and O. Altintas, "Awareness Assessment of
                             Connected Vehicles in Highway Driving: A Perceived Safety Approach," in <em>IEEE Vehicular
                                 Technology Magazine</em>, vol. 16, no. 3, pp. 129-136, Sept. 2021.
                         </p>
-                        <div class="mt-2 flex flex-wrap gap-2">
+                        <div class="chip-row">
                             <span class="chip"><a href="https://ieeexplore.ieee.org/document/9440961"
                                     target="_blank" rel="noopener noreferrer">IEEE
                                     Xplore</a></span>
                         </div>
                     </li>
 
-                    <li class="border-b pb-4">
+                    <li class="entry">
                         <p>
                             A. H. Sakr and E. Hossain, "On User Association in Multi-Tier Full-Duplex Cellular
                             Networks," in <em>IEEE Transactions on Communications</em>, vol. 65, no. 9, pp. 4080-4095,
                             Sept. 2017.
                         </p>
-                        <div class="mt-2 flex flex-wrap gap-2">
+                        <div class="chip-row">
                             <span class="chip"><a href="https://ieeexplore.ieee.org/document/7950967"
                                     target="_blank" rel="noopener noreferrer">IEEE
                                     Xplore</a></span>
                         </div>
                     </li>
 
-                    <li class="border-b pb-4">
+                    <li class="entry">
                         <p>
                             H. Tabassum, A. H. Sakr, and E. Hossain, "Analysis of Massive MIMO-Enabled Downlink Wireless
                             Backhauling for Full-Duplex Small Cells," in <em>IEEE Transactions on Communications</em>,
                             vol. 64, no. 6, pp. 2354-2369, June 2016.
                         </p>
-                        <div class="mt-2 flex flex-wrap gap-2">
+                        <div class="chip-row">
                             <span class="chip"><a href="https://ieeexplore.ieee.org/document/7456247"
                                     target="_blank" rel="noopener noreferrer">IEEE
                                     Xplore</a></span>
                         </div>
                     </li>
 
-                    <li class="border-b pb-4">
+                    <li class="entry">
                         <p>
                             A. H. Sakr and E. Hossain, "Analysis of K-tier Uplink Cellular Networks with Ambient RF
                             Energy Harvesting," in <em>IEEE Journal on Selected Areas in Communications</em>, vol. 33,
                             no. 10, pp. 2226-2238, Oct. 2015.
                         </p>
-                        <div class="mt-2 flex flex-wrap gap-2">
+                        <div class="chip-row">
                             <span class="chip"><a href="https://ieeexplore.ieee.org/document/7110493"
                                     target="_blank" rel="noopener noreferrer">IEEE
                                     Xplore</a></span>
                         </div>
                     </li>
 
-                    <li class="border-b pb-4">
+                    <li class="entry">
                         <p>
                             A. H. Sakr, H. Tabassum, E. Hossain, and D. I. Kim, "Cognitive Spectrum Access in
                             Device-to-Device (D2D)-Enabled Cellular Networks," in <em>IEEE Communications Magazine</em>,
                             vol. 53, no. 7, pp. 126-133, July 2015.
                         </p>
-                        <div class="mt-2 flex flex-wrap gap-2">
+                        <div class="chip-row">
                             <span class="chip"><a href="https://ieeexplore.ieee.org/document/7158275"
                                     target="_blank" rel="noopener noreferrer">IEEE
                                     Xplore</a></span>
                         </div>
                     </li>
 
-                    <li class="border-b pb-4">
+                    <li class="entry">
                         <p>
                             A. H. Sakr and E. Hossain, "Cognitive and Energy Harvesting-Based D2D Communication in
                             Cellular Networks: Stochastic Geometry Modeling and Analysis," in <em>IEEE Transactions on
                                 Communications</em>, vol. 63, no. 5, pp. 1867-1880, May 2015.
                         </p>
-                        <div class="mt-2 flex flex-wrap gap-2">
+                        <div class="chip-row">
                             <span class="chip"><a href="https://ieeexplore.ieee.org/document/7056528"
                                     target="_blank" rel="noopener noreferrer">IEEE
                                     Xplore</a></span>
@@ -479,7 +464,7 @@
                             Two-Tier Cellular Networks," in <em>IEEE Transactions on Wireless Communications</em>, vol.
                             13, no. 11, pp. 6311-6325, Nov. 2014.
                         </p>
-                        <div class="mt-2 flex flex-wrap gap-2">
+                        <div class="chip-row">
                             <span class="chip"><a href="https://ieeexplore.ieee.org/document/6879305"
                                     target="_blank" rel="noopener noreferrer">IEEE
                                     Xplore</a></span>
@@ -490,7 +475,7 @@
                 </div>
             </div>
 
-            <div class="bg-white rounded-xl shadow-lg p-6 hover-scale mb-8">
+            <div class="panel panel--stacked">
                 <h2 class="acc-h" id="conference-papers">
                     <button type="button" class="acc-btn" id="acc-conference-papers" aria-expanded="false" aria-controls="pub-conference-papers">
                         <span class="acc-title">Conference Papers</span>
@@ -499,115 +484,115 @@
                 </h2>
                 <div class="acc-panel" id="pub-conference-papers" role="region" aria-labelledby="acc-conference-papers">
                 <div class="acc-inner">
-                <ul class="space-y-4">
-                    <li class="border-b pb-4">
+                <ul class="stack-4">
+                    <li class="entry">
                         <p>
                             A. A. Faiyaz, S. S. Avedisov, and A. H. Sakr, "Safety Gains of Intent Sharing in Infrastructure-Assisted Cooperative Maneuver Coordination," in <em>Proc. of IEEE Vehicular Technology Conference (VTC-Fall) 2026</em>, Boston, MA, USA, 6-9 Sept. 2026.
                         </p>
                     </li>
 
-                    <li class="border-b pb-4">
+                    <li class="entry">
                         <p>
                             A. A. Faiyaz, S. S. Avedisov, and A. H. Sakr, "Intent Sharing and Cooperative Perception for Scalable Maneuver Coordination in Connected and Automated Driving," in <em>Proc. of IEEE Intelligent Vehicles Symposium (IV) 2026</em>, Plymouth, MI, USA, 22-25 June 2026.
                         </p>
-                        <div class="mt-2 flex flex-wrap gap-2">
+                        <div class="chip-row">
                             <span class="chip"><a href="https://ieeexplore.ieee.org/document/11623889"
                                     target="_blank" rel="noopener noreferrer">IEEE
                                     Xplore</a></span>
                         </div>
                     </li>
 
-                    <li class="border-b pb-4">
+                    <li class="entry">
                         <p>
                             A. A. Daoud, M. Hassanzadeh, and A. H. Sakr, "Multimodal CNN-BiLSTM Fusion Architecture for Intra-Hour PV Power Nowcasting," in <em>Proc. of IEEE Canadian Conference on Electrical and Computer Engineering (CCECE) 2026</em>, Montreal, QC, Canada, 18-20 May 2026, pp. 1152-1157.
                         </p>
-                        <div class="mt-2 flex flex-wrap gap-2">
+                        <div class="chip-row">
                             <span class="chip"><a href="https://ieeexplore.ieee.org/document/11610198"
                                     target="_blank" rel="noopener noreferrer">IEEE
                                     Xplore</a></span>
                         </div>
                     </li>
 
-                    <li class="border-b pb-4">
+                    <li class="entry">
                         <p>
                             A. Uddin, M. S. A. Shohag, A. H. Sakr, N. Zhang, and Q. M. J. Wu, "Adaptive Reward Clustering for Efficient Deep Reinforcement Learning in Vehicular Offloading," in <em>Proc. of IEEE Global Communications Conference (GLOBECOM) Workshops 2025</em>, Taipei, Taiwan, 8-12 Dec. 2025.
                         </p>
-                        <div class="mt-2 flex flex-wrap gap-2">
+                        <div class="chip-row">
                             <span class="chip"><a href="https://ieeexplore.ieee.org/document/11591068"
                                     target="_blank" rel="noopener noreferrer">IEEE
                                     Xplore</a></span>
                         </div>
                     </li>
 
-                    <li class="border-b pb-4">
+                    <li class="entry">
                         <p>
                             T. K. Tandra, S. Avedisov, A. Moradipari, and A. H. Sakr, "Enhancing Cooperative Adaptive Cruise Control in Vehicle Platooning Through Intent Sharing and Multi-Agent Reinforcement Learning," in <em>Proc. of IEEE Vehicular Technology Conference (VTC-Fall) 2025</em>, Chengdu, China, 19-22 Oct. 2025.
                         </p>
-                        <div class="mt-2 flex flex-wrap gap-2">
+                        <div class="chip-row">
                             <span class="chip"><a href="https://ieeexplore.ieee.org/document/11310111"
                                     target="_blank" rel="noopener noreferrer">IEEE
                                     Xplore</a></span>
                         </div>
                     </li>
 
-                    <li class="border-b pb-4">
+                    <li class="entry">
                         <p>
                             A. Uddin, A. H. Sakr, and N. Zhang, "Multi-Agent Task Prioritization and Offloading in Vehicular Edge Computing Environments," in <em>Proc. of IEEE Vehicular Technology Conference (VTC-Fall) 2025</em>, Chengdu, China, 19-22 Oct. 2025.
                         </p>
-                        <div class="mt-2 flex flex-wrap gap-2">
+                        <div class="chip-row">
                             <span class="chip"><a href="https://ieeexplore.ieee.org/document/11310497"
                                     target="_blank" rel="noopener noreferrer">IEEE
                                     Xplore</a></span>
                         </div>
                     </li>
 
-                    <li class="border-b pb-4">
+                    <li class="entry">
                         <p>
                             C.-H. Wang, A. H. Sakr, T. Shimizu, and S. Avedisov, "Partial Sensor Data Sharing for Collective Perception Applications," in <em>Proc. of ITS World Congress 2025</em>, Atlanta, GA, USA, 24-28 Aug. 2025.
                         </p>
                     </li>
 
-                    <li class="border-b pb-4">
+                    <li class="entry">
                         <p>
                             T. K. Tandra, S. Avedisov, A. Moradipari, and A. H. Sakr, "Multi-Agent Platooning with Intent Sharing," in <em>Proc. of ITS World Congress 2025</em>, Atlanta, GA, USA, 24-28 Aug. 2025.
                         </p>
                     </li>
 
-                    <li class="border-b pb-4">
+                    <li class="entry">
                         <p>
                             J. Ansari and A. H. Sakr, "Federated Learning for Accurate Speed and Time Headway Prediction
                             in Mixed Traffic Environments," in <em>IEEE Canadian Conference on Electrical and Computer
                                 Engineering (CCECE) 2025</em>, Vancouver, BC, Canada, 26-29 May 2025.
                         </p>
-                        <div class="mt-2 flex flex-wrap gap-2">
+                        <div class="chip-row">
                             <span class="chip"><a href="https://ieeexplore.ieee.org/document/11364396"
                                     target="_blank" rel="noopener noreferrer">IEEE
                                     Xplore</a></span>
                         </div>
                     </li>
 
-                    <li class="border-b pb-4">
+                    <li class="entry">
                         <p>
                             A. H. Sakr and A. Malik, "Hybrid Distance-Based Redundancy Mitigation Mechanisms for
                             Collective Perception in Connected and Automated Driving," in <em>Proc. of IEEE
                                 Vehicular Technology Conference (VTC-Fall) 2024</em>, Washington, D.C., USA, 7-10
                             Oct. 2024.
                         </p>
-                        <div class="mt-2 flex flex-wrap gap-2">
+                        <div class="chip-row">
                             <span class="chip"><a href="https://ieeexplore.ieee.org/document/10757767"
                                     target="_blank" rel="noopener noreferrer">IEEE
                                     Xplore</a></span>
                         </div>
                     </li>
 
-                    <li class="border-b pb-4">
+                    <li class="entry">
                         <p>
                             A. Malik and A. H. Sakr, "A Distance-Based Redundancy Mitigation Mechanism for
                             Collective Perception in Vehicular Networks," in <em>Proc. of IEEE Canadian Conference
                                 on Electrical and Computer Engineering (CCECE) 2024</em>, Kingston, ON, Canada, 6-9
                             Aug. 2024.
                         </p>
-                        <div class="mt-2 flex flex-wrap gap-2">
+                        <div class="chip-row">
                             <span class="chip"><a href="https://ieeexplore.ieee.org/document/10667281"
                                     target="_blank" rel="noopener noreferrer">IEEE
                                     Xplore</a></span>
@@ -616,60 +601,60 @@
                         </div>
                     </li>
 
-                    <li class="border-b pb-4">
+                    <li class="entry">
                         <p>
                             A. Uddin, A. H. Sakr, and N. Zhang, "Prioritized Task Offloading in Vehicular Edge
                             Computing Using Deep Reinforcement Learning," in <em>Proc. of IEEE Vehicular Technology
                                 Conference (VTC-Spring) 2024</em>, Singapore, 24-27 June 2024.
                         </p>
-                        <div class="mt-2 flex flex-wrap gap-2">
+                        <div class="chip-row">
                             <span class="chip"><a href="https://ieeexplore.ieee.org/document/10683050"
                                     target="_blank" rel="noopener noreferrer">IEEE
                                     Xplore</a></span>
                         </div>
                     </li>
 
-                    <li class="border-b pb-4">
+                    <li class="entry">
                         <p>
                             L. Kanipakam, A. H. Sakr, S. Avedisov, and A. Moradipari, "Cooperative Adaptive Cruise
                             Control Based on Intent Sharing Messages and Reinforcement Learning," in <em>Proc. of
                                 IEEE Vehicular Networking Conference (VNC) 2024</em>, Kobe, Japan, 29-31 May 2024.
                         </p>
-                        <div class="mt-2 flex flex-wrap gap-2">
+                        <div class="chip-row">
                             <span class="chip"><a href="https://ieeexplore.ieee.org/document/10575987"
                                     target="_blank" rel="noopener noreferrer">IEEE
                                     Xplore</a></span>
                         </div>
                     </li>
 
-                    <li class="border-b pb-4">
+                    <li class="entry">
                         <p>
                             A. H. Sakr, S. Avedisov, S. Manjunatha, and O. Altintas, "Performance Assessment of
                             Intent Sharing in Infrastructure-assisted Cooperative Perception Services," in <em>Proc.
                                 of International Conference on Computing, Networking and Communications (ICNC)
                                 2024</em>, Big Island, Hawaii, USA, 19-22 Feb. 2024.
                         </p>
-                        <div class="mt-2 flex flex-wrap gap-2">
+                        <div class="chip-row">
                             <span class="chip"><a href="https://ieeexplore.ieee.org/document/10555980"
                                     target="_blank" rel="noopener noreferrer">IEEE
                                     Xplore</a></span>
                         </div>
                     </li>
 
-                    <li class="border-b pb-4">
+                    <li class="entry">
                         <p>
                             S. Avedisov, A. H. Sakr, T. Higuchi, and O. Altintas, "Cooperative Perception Based on
                             Intent Sharing Messages," in <em>Proc. of IEEE Vehicular Networking Conference (VNC)
                                 2023</em>, Istanbul, Turky, 26-28 Apr. 2023.
                         </p>
-                        <div class="mt-2 flex flex-wrap gap-2">
+                        <div class="chip-row">
                             <span class="chip"><a href="https://ieeexplore.ieee.org/document/10136270"
                                     target="_blank" rel="noopener noreferrer">IEEE
                                     Xplore</a></span>
                         </div>
                     </li>
 
-                    <li class="border-b pb-4">
+                    <li class="entry">
                         <p>
                             H. M. Wang, S. Avedisov, A. H. Sakr, O. Altintas, and G. Orsoz, "Conflict Charts:
                             Effective Design Tools for Cooperative Driving Strategies," in <em>Proc. of ITS World
@@ -677,7 +662,7 @@
                         </p>
                     </li>
 
-                    <li class="border-b pb-4">
+                    <li class="entry">
                         <p>
                             S. Avedisov, A. H. Sakr, T. Higuchi, and O. Altintas, "Sensor Data Sharing for Connected
                             Vehicles in Realistic Traffic Environments," in <em>Proc. of ITS World Congress
@@ -685,61 +670,61 @@
                         </p>
                     </li>
 
-                    <li class="border-b pb-4">
+                    <li class="entry">
                         <p>
                             S. Avedisov, T. Higuchi, A. H. Sakr, and O. Altintas, "On the Awareness of Connected
                             Vehicles at Unsignalized Intersections," in <em>Proc. of IEEE Vehicular Technology
                                 Conference (VTC-Spring) 2022</em>, Helsinki, Finland, 19-22 June 2022.
                         </p>
-                        <div class="mt-2 flex flex-wrap gap-2">
+                        <div class="chip-row">
                             <span class="chip"><a href="https://ieeexplore.ieee.org/document/9860973"
                                     target="_blank" rel="noopener noreferrer">IEEE
                                     Xplore</a></span>
                         </div>
                     </li>
 
-                    <li class="border-b pb-4">
+                    <li class="entry">
                         <p>
                             Z. Mu, Z. Chen, A. H. Sakr, S. Ryu, T. Wang, S. Avedisov, R. Guo, and B. B. Park
                             "Assessment of Cooperative Adaptive Cruise Control in Mixed Traffic on Arterial Roads,"
                             in <em>Proc. of IEEE Intelligent Transportation Systems Conference (ITSC) 2021</em>,
                             Virtual, Indianapolis, IN, USA, 19-22 Sept. 2021.
                         </p>
-                        <div class="mt-2 flex flex-wrap gap-2">
+                        <div class="chip-row">
                             <span class="chip"><a href="https://ieeexplore.ieee.org/document/9565099"
                                     target="_blank" rel="noopener noreferrer">IEEE
                                     Xplore</a></span>
                         </div>
                     </li>
 
-                    <li class="border-b pb-4">
+                    <li class="entry">
                         <p>
                             H. M. Wang, S. Avedisov, A. H. Sakr, O. Altintas, and G. Orsoz, "Opportunistic Strategy
                             for Cooperative Maneuvering Using Conflict Analysis," in <em> Proc. of IEEE Intelligent
                                 Vehicles Symposium (IV) 2021</em>, Virtual, Nagoya, Japan, 11-15 July 2021.
                         </p>
-                        <div class="mt-2 flex flex-wrap gap-2">
+                        <div class="chip-row">
                             <span class="chip"><a href="https://ieeexplore.ieee.org/document/9575586"
                                     target="_blank" rel="noopener noreferrer">IEEE
                                     Xplore</a></span>
                         </div>
                     </li>
 
-                    <li class="border-b pb-4">
+                    <li class="entry">
                         <p>
                             A. Correa, S. Avedisov, M. Sepulcre, A. H. Sakr, R. Molina-Masegosa, O. Altintas, J.
                             Gozalvez, "On the Impact of V2X-based Maneuver Coordination on the Traffic," in
                             <em>Proc. of IEEE Vehicular Technology Conference (VTC-Spring) 2021</em>, Virtual,
                             Helsinki, Finland, 25-28 Apr. 2021.
                         </p>
-                        <div class="mt-2 flex flex-wrap gap-2">
+                        <div class="chip-row">
                             <span class="chip"><a href="https://ieeexplore.ieee.org/document/9448700"
                                     target="_blank" rel="noopener noreferrer">IEEE
                                     Xplore</a></span>
                         </div>
                     </li>
 
-                    <li class="border-b pb-4">
+                    <li class="entry">
                         <p>
                             Z. Chen, B. B. Park, and A. H. Sakr, "Handling Unconnected Vehicles in Cooperative
                             Automated Driving: Adaptive Model Predictive Control Approach," Presented at the
@@ -747,145 +732,145 @@
                         </p>
                     </li>
 
-                    <li class="border-b pb-4">
+                    <li class="entry">
                         <p>
                             S. Avedisov, C. Lin, T. Molnar, O. Altintas, A. H. Sakr, and G. Orsoz, "Perceived
                             Safety: A New Metric for Evaluating Safety Benefits of Collective Perception for
                             Connected Road Users," in <em>Proc. of IEEE Vehicular Networking Conference (VNC)
                                 2020</em>, Virtual, 16-18 Dec. 2020.
                         </p>
-                        <div class="mt-2 flex flex-wrap gap-2">
+                        <div class="chip-row">
                             <span class="chip"><a href="https://ieeexplore.ieee.org/document/9318360"
                                     target="_blank" rel="noopener noreferrer">IEEE
                                     Xplore</a></span>
                         </div>
                     </li>
 
-                    <li class="border-b pb-4">
+                    <li class="entry">
                         <p>
                             A. H. Sakr, "Cooperative Road Geometry Estimation via Sharing Processed Camera Data," in
                             <em>Proc. of IEEE Connected and Automated Vehicles Symposium (CAVS) 2020</em>, Virtual,
                             18 Nov.-16 Dec. 2020.
                         </p>
-                        <div class="mt-2 flex flex-wrap gap-2">
+                        <div class="chip-row">
                             <span class="chip"><a href="https://ieeexplore.ieee.org/document/9334579"
                                     target="_blank" rel="noopener noreferrer">IEEE
                                     Xplore</a></span>
                         </div>
                     </li>
 
-                    <li class="border-b pb-4">
+                    <li class="entry">
                         <p>
                             M. Ashour, A. H. Sakr, and R. Guo, "Distributed Cooperative Localization Framework via
                             Consensus Optimization," in <em>Proc. of IEEE Vehicular Technology Conference (VTC-Fall)
                                 2020</em>, Virtual, 18 Nov.-16 Dec. 2020.
                         </p>
-                        <div class="mt-2 flex flex-wrap gap-2">
+                        <div class="chip-row">
                             <span class="chip"><a href="https://ieeexplore.ieee.org/document/9348508"
                                     target="_blank" rel="noopener noreferrer">IEEE
                                     Xplore</a></span>
                         </div>
                     </li>
 
-                    <li class="border-b pb-4">
+                    <li class="entry">
                         <p>
                             H. M. Wang, T. Molnar, S. Avedisov, A. H. Sakr, O. Altintas, and G. Orsoz, "Conflict
                             Analysis for Cooperative Merging Using V2X Communication," in <em>Proc. of IEEE
                                 Intelligent Vehicles Symposium (IV) 2020</em>, Virtual, 19 Oct.-12 Nov. 2020.
                         </p>
-                        <div class="mt-2 flex flex-wrap gap-2">
+                        <div class="chip-row">
                             <span class="chip"><a href="https://ieeexplore.ieee.org/document/9304725"
                                     target="_blank" rel="noopener noreferrer">IEEE
                                     Xplore</a></span>
                         </div>
                     </li>
 
-                    <li class="border-b pb-4">
+                    <li class="entry">
                         <p>
                             A. H. Sakr, V. Vladimerou, and M. Johnson, "Preceding Vehicle State Prediction Using V2V
                             Safety Messages," in <em>Proc. of IEEE Vehicular Networking Conference (VNC) 2019</em>,
                             Los Angeles, CA, USA, 4-6 Dec. 2019.
                         </p>
-                        <div class="mt-2 flex flex-wrap gap-2">
+                        <div class="chip-row">
                             <span class="chip"><a href="https://ieeexplore.ieee.org/document/9062805"
                                     target="_blank" rel="noopener noreferrer">IEEE
                                     Xplore</a></span>
                         </div>
                     </li>
 
-                    <li class="border-b pb-4">
+                    <li class="entry">
                         <p>
                             A. H. Sakr, G. Bansal, V. Vladimerou, and M. Johnson, "Lane Change Detection Using V2V
                             Safety Messages," in <em>Proc. of IEEE Intelligent Transportation Systems Conference
                                 (ITSC) 2018</em>, Maui, Hawaii, USA, 4-7 Nov. 2018.
                         </p>
-                        <div class="mt-2 flex flex-wrap gap-2">
+                        <div class="chip-row">
                             <span class="chip"><a href="https://ieeexplore.ieee.org/document/8569690"
                                     target="_blank" rel="noopener noreferrer">IEEE
                                     Xplore</a></span>
                         </div>
                     </li>
 
-                    <li class="border-b pb-4">
+                    <li class="entry">
                         <p>
                             A. H. Sakr, G. Bansal, V. Vladimerou, K. Kusano, and M. Johnson, "V2V and On-Board
                             Sensor Fusion for Road Geometry Estimation," in <em>Proc. of IEEE Intelligent
                                 Transportation Systems Conference (ITSC) 2017</em>, Yokohama, Japan, 15-19 Oct.
                             2017.
                         </p>
-                        <div class="mt-2 flex flex-wrap gap-2">
+                        <div class="chip-row">
                             <span class="chip"><a href="https://ieeexplore.ieee.org/document/8569690"
                                     target="_blank" rel="noopener noreferrer">IEEE
                                     Xplore</a></span>
                         </div>
                     </li>
 
-                    <li class="border-b pb-4">
+                    <li class="entry">
                         <p>
                             A. H. Sakr and G. Bansal, "Cooperative Localization via DSRC and Multi-Sensor
                             Multi-Target Track Association," in <em>Proc. of IEEE Intelligent Transportation Systems
                                 Conference (ITSC) 2016</em>, Rio de Janeiro, Brazil, 1-4 Nov. 2016, pp. 66-71.
                         </p>
-                        <div class="mt-2 flex flex-wrap gap-2">
+                        <div class="chip-row">
                             <span class="chip"><a href="https://ieeexplore.ieee.org/document/7795533"
                                     target="_blank" rel="noopener noreferrer">IEEE
                                     Xplore</a></span>
                         </div>
                     </li>
 
-                    <li class="border-b pb-4">
+                    <li class="entry">
                         <p>
                             H. Tabassum, A. H. Sakr, and E. Hossain, "Massive MIMO-enabled Wireless Backhauls for
                             Full-duplex Small Cells," in <em>Proc. of IEEE Global Communications Conference
                                 (GLOBECOM) 2015</em>, San Diego, CA, USA, 6-10 Dec. 2015.
                         </p>
-                        <div class="mt-2 flex flex-wrap gap-2">
+                        <div class="chip-row">
                             <span class="chip"><a href="https://ieeexplore.ieee.org/document/7417670"
                                     target="_blank" rel="noopener noreferrer">IEEE
                                     Xplore</a></span>
                         </div>
                     </li>
 
-                    <li class="border-b pb-4">
+                    <li class="entry">
                         <p>
                             A. H. Sakr, and E. Hossain, "Analysis of Multi-tier Uplink Cellular Networks with Energy
                             Harvesting and Flexible Cell Association," in <em>Proc. of IEEE Global Communications
                                 Conference (GLOBECOM) 2014</em>, Austin, TX, USA, 8-12 Dec. 2014.
                         </p>
-                        <div class="mt-2 flex flex-wrap gap-2">
+                        <div class="chip-row">
                             <span class="chip"><a href="https://ieeexplore.ieee.org/document/7037521"
                                     target="_blank" rel="noopener noreferrer">IEEE
                                     Xplore</a></span>
                         </div>
                     </li>
 
-                    <li class="border-b pb-4">
+                    <li class="entry">
                         <p>
                             A. H. Sakr, H. ElSawy, and E. Hossain, "Location-Aware Coordinated Multipoint
                             Transmission in OFDMA Networks," in <em>Proc. of IEEE International Conference on
                                 Communications (ICC) 2014</em>, Sydney, Australia, 10-14 June 2014.
                         </p>
-                        <div class="mt-2 flex flex-wrap gap-2">
+                        <div class="chip-row">
                             <span class="chip"><a href="https://ieeexplore.ieee.org/document/6884141"
                                     target="_blank" rel="noopener noreferrer">IEEE
                                     Xplore</a></span>
@@ -898,7 +883,7 @@
                             MIMO OFDMA Networks," in <em>Proc. of IEEE International Conference on Communications
                                 (ICC) 2014</em>, Sydney, Australia, 10-14 June 2014.
                         </p>
-                        <div class="mt-2 flex flex-wrap gap-2">
+                        <div class="chip-row">
                             <span class="chip"><a href="https://ieeexplore.ieee.org/document/6883889"
                                     target="_blank" rel="noopener noreferrer">IEEE
                                     Xplore</a></span>
@@ -908,7 +893,7 @@
                 </div>
                 </div>
             </div>
-            <div class="bg-white rounded-xl shadow-lg p-6 hover-scale mb-8">
+            <div class="panel panel--stacked">
                 <h2 class="acc-h" id="book-chapters">
                     <button type="button" class="acc-btn" id="acc-book-chapters" aria-expanded="false" aria-controls="pub-book-chapters">
                         <span class="acc-title">Book Chapters</span>
@@ -917,14 +902,14 @@
                 </h2>
                 <div class="acc-panel" id="pub-book-chapters" role="region" aria-labelledby="acc-book-chapters">
                 <div class="acc-inner">
-                <ul class="space-y-4">
-                    <li class="border-b pb-4">
+                <ul class="stack-4">
+                    <li class="entry">
                         <p>
                             A. H. Sakr, G. Bansal, V. Vladimerou, K. Kusano, and M. Johnson, "Applications of
                             Connectivity in Automated Driving," book chapter in Connected Vehicles, (Ed. R. Miucic),
                             <em>Springer Nature Publishing</em>, 2019.
                         </p>
-                        <div class="mt-2 flex flex-wrap gap-2">
+                        <div class="chip-row">
                             <span class="chip"><a href="https://link.springer.com/book/10.1007/978-3-319-94785-3"
                                     target="_blank" rel="noopener noreferrer">Springer Nature</a></span>
                         </div>
@@ -937,7 +922,7 @@
                             Networks: Architectures, Protocols, and Applications, (Eds. D. Niyato, E. Hossain, D. I.
                             Kim, V. Bhargava, and L. Shafai), <em>Cambridge University Press</em>, 2017.
                         </p>
-                        <div class="mt-2 flex flex-wrap gap-2">
+                        <div class="chip-row">
                             <span class="chip"><a
                                     href="https://www.cambridge.org/sg/universitypress/subjects/engineering/wireless-communications/wireless-powered-communication-networks-architectures-protocols-and-applications"
                                     target="_blank" rel="noopener noreferrer">Cambridge University Press</a></span>
@@ -948,8 +933,8 @@
                 </div>
             </div>
         </main>
-        <footer class="mt-12 text-center text-gray-600 fade-in">
-            <p>© 2021 Ahmed Hamdi Sakr. All rights reserved.</p>
+        <footer class="site-footer fade-in">
+            <p>&copy; 2021&ndash;2026 Ahmed Hamdi Sakr. All rights reserved.</p>
         </footer>
     </div>
 
