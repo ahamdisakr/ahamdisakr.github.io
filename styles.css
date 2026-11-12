@@ -43,8 +43,6 @@ html::before {
   /* never block clicks */
   will-change: transform;
   /* hint for smooth scrolling */
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
 }
 
 main p {
@@ -196,9 +194,6 @@ img[loading="lazy"] {
   background: #f3f4f6;
 }
 
-.gradient-bg {
-  background: linear-gradient(135deg, var(--bg-grad-start) 0%, var(--bg-grad-end) 100%);
-}
 
 .sr-only {
   position: absolute;
@@ -207,6 +202,7 @@ img[loading="lazy"] {
   padding: 0;
   margin: -1px;
   clip: rect(0, 0, 0, 0);
+  overflow: hidden;
   white-space: nowrap;
   border: 0;
 }

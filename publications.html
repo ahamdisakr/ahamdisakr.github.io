@@ -6,12 +6,28 @@
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <title>Publications | Ahmed Hamdi Sakr</title>
+    <meta name="description" content="Patents, journal articles, conference papers and book chapters by Ahmed Hamdi Sakr." />
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/feather-icons"></script>
-    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons@4.29.2/dist/feather.min.js"></script>
 
     <link href="styles.css" rel="stylesheet" />
+    <link rel="icon" type="image/x-icon" href="/images/icon.ico" />
     <script defer="True" src="app.js"></script>
+    <script>document.documentElement.classList.add('js');</script>
+    <style>
+        .acc-h { margin: 0; scroll-margin-top: 5.5rem; }
+        .acc-btn { display: flex; width: 100%; align-items: center; justify-content: space-between; gap: .75rem; background: none; border: 0; padding: 0; margin: 0; text-align: left; font: inherit; color: inherit; cursor: pointer; }
+        .acc-title { display: inline-flex; align-items: center; gap: .6rem; flex-wrap: wrap; }
+        .acc-chev { flex-shrink: 0; color: #6b7280; transition: transform .25s ease; }
+        .acc-btn:hover .acc-chev { color: #2563eb; }
+        .acc-btn[aria-expanded="true"] .acc-chev { transform: rotate(180deg); }
+        .acc-panel { display: grid; grid-template-rows: 1fr; }
+        .acc-inner { min-height: 0; overflow: hidden; }
+        .acc-inner > ul { margin-top: 1rem; }
+        .js .acc-panel { grid-template-rows: 0fr; transition: grid-template-rows .3s ease; }
+        .js .acc-panel.open { grid-template-rows: 1fr; }
+        @media (prefers-reduced-motion: reduce) { .js .acc-panel, .acc-chev { transition: none; } }
+    </style>
 </head>
 
 <body class="font-sans gradient-bg min-h-screen" data-page="publications">
@@ -19,8 +35,16 @@
     <div class="container mx-auto px-4 py-8 max-w-5xl">
         <!-- Navigation -->
         <main class="fade-in py-8 px-4 max-w-6xl mx-auto pt-20" id="main">
+            <h1 class="sr-only">Publications</h1>
             <div class="bg-white rounded-xl shadow-lg p-6 hover-scale mb-8">
-                <h2 class="mb-4">Patents</h2>
+                <h2 class="acc-h" id="patents">
+                    <button type="button" class="acc-btn" id="acc-patents" aria-expanded="false" aria-controls="pub-patents">
+                        <span class="acc-title">Patents</span>
+                        <svg class="acc-chev" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                    </button>
+                </h2>
+                <div class="acc-panel" id="pub-patents" role="region" aria-labelledby="acc-patents">
+                <div class="acc-inner">
                 <ul class="space-y-4">
                     <li class="border-b pb-4">
                         <p>
@@ -30,7 +54,7 @@
                         <div class="mt-2 flex flex-wrap gap-2">
                             <span class="chip"><a
                                     href="https://patentimages.storage.googleapis.com/70/cb/0f/a28b3fc97e0c2b/US11995990.pdf"
-                                    target="_blank">US Patent</a></span>
+                                    target="_blank" rel="noopener noreferrer">US Patent</a></span>
                         </div>
                     </li>
 
@@ -42,7 +66,7 @@
                         <div class="mt-2 flex flex-wrap gap-2">
                             <span class="chip"><a
                                     href="https://patentimages.storage.googleapis.com/9b/dc/c1/b587bbad09eae6/US11904855.pdf"
-                                    target="_blank">US Patent</a></span>
+                                    target="_blank" rel="noopener noreferrer">US Patent</a></span>
                         </div>
                     </li>
 
@@ -55,7 +79,7 @@
                         <div class="mt-2 flex flex-wrap gap-2">
                             <span class="chip"><a
                                     href="https://patentimages.storage.googleapis.com/c2/12/9a/ff16e1f6a404f6/US11792687.pdf"
-                                    target="_blank">US Patent</a></span>
+                                    target="_blank" rel="noopener noreferrer">US Patent</a></span>
                         </div>
                     </li>
 
@@ -67,7 +91,7 @@
                         <div class="mt-2 flex flex-wrap gap-2">
                             <span class="chip"><a
                                     href="https://patentimages.storage.googleapis.com/57/a3/45/d836e1aeb99345/US11776390.pdf"
-                                    target="_blank">US Patent</a></span>
+                                    target="_blank" rel="noopener noreferrer">US Patent</a></span>
                         </div>
                     </li>
 
@@ -79,7 +103,7 @@
                         <div class="mt-2 flex flex-wrap gap-2">
                             <span class="chip"><a
                                     href="https://patentimages.storage.googleapis.com/79/9b/ec/97de7a4ff20523/US11709258.pdf"
-                                    target="_blank">US Patent</a></span>
+                                    target="_blank" rel="noopener noreferrer">US Patent</a></span>
                         </div>
                     </li>
 
@@ -92,7 +116,7 @@
                         <div class="mt-2 flex flex-wrap gap-2">
                             <span class="chip"><a
                                     href="https://patentimages.storage.googleapis.com/a7/59/86/f926a35636a8d4/US11670169.pdf"
-                                    target="_blank">US Patent</a></span>
+                                    target="_blank" rel="noopener noreferrer">US Patent</a></span>
                         </div>
                     </li>
 
@@ -104,7 +128,7 @@
                         <div class="mt-2 flex flex-wrap gap-2">
                             <span class="chip"><a
                                     href="https://patentimages.storage.googleapis.com/39/e9/8d/301aab2c42d6a5/US11594126B2.pdf"
-                                    target="_blank">US Patent</a></span>
+                                    target="_blank" rel="noopener noreferrer">US Patent</a></span>
                         </div>
                     </li>
 
@@ -116,7 +140,7 @@
                         <div class="mt-2 flex flex-wrap gap-2">
                             <span class="chip"><a
                                     href="https://patentimages.storage.googleapis.com/68/9d/eb/09bda1406ff1b1/US11335132.pdf"
-                                    target="_blank">US Patent</a></span>
+                                    target="_blank" rel="noopener noreferrer">US Patent</a></span>
                         </div>
                     </li>
 
@@ -128,7 +152,7 @@
                         <div class="mt-2 flex flex-wrap gap-2">
                             <span class="chip"><a
                                     href="https://patentimages.storage.googleapis.com/39/c4/01/65e490adef3526/US20210241624A1.pdf"
-                                    target="_blank">US Patent</a></span>
+                                    target="_blank" rel="noopener noreferrer">US Patent</a></span>
                         </div>
                     </li>
 
@@ -140,7 +164,7 @@
                         <div class="mt-2 flex flex-wrap gap-2">
                             <span class="chip"><a
                                     href="https://patentimages.storage.googleapis.com/49/c5/42/7505492efc9e54/US11284234.pdf"
-                                    target="_blank">US Patent</a></span>
+                                    target="_blank" rel="noopener noreferrer">US Patent</a></span>
                         </div>
                     </li>
 
@@ -152,7 +176,7 @@
                         <div class="mt-2 flex flex-wrap gap-2">
                             <span class="chip"><a
                                     href="https://patentimages.storage.googleapis.com/9c/ce/db/b3dec4c8fe6cca/US11238729.pdf"
-                                    target="_blank">US Patent</a></span>
+                                    target="_blank" rel="noopener noreferrer">US Patent</a></span>
                         </div>
                     </li>
 
@@ -165,7 +189,7 @@
                         <div class="mt-2 flex flex-wrap gap-2">
                             <span class="chip"><a
                                     href="https://patentimages.storage.googleapis.com/23/fc/30/4c29a60a0a0926/US11234160.pdf"
-                                    target="_blank">US Patent</a></span>
+                                    target="_blank" rel="noopener noreferrer">US Patent</a></span>
                         </div>
                     </li>
 
@@ -177,7 +201,7 @@
                         <div class="mt-2 flex flex-wrap gap-2">
                             <span class="chip"><a
                                     href="https://patentimages.storage.googleapis.com/ac/58/cd/d9f9841873bb2e/US11041736.pdf"
-                                    target="_blank">US Patent</a></span>
+                                    target="_blank" rel="noopener noreferrer">US Patent</a></span>
                         </div>
                     </li>
 
@@ -189,7 +213,7 @@
                         <div class="mt-2 flex flex-wrap gap-2">
                             <span class="chip"><a
                                     href="https://patentimages.storage.googleapis.com/aa/78/8d/37938764f3b407/US11023753.pdf"
-                                    target="_blank">US Patent</a></span>
+                                    target="_blank" rel="noopener noreferrer">US Patent</a></span>
                         </div>
                     </li>
 
@@ -201,7 +225,7 @@
                         <div class="mt-2 flex flex-wrap gap-2">
                             <span class="chip"><a
                                     href="https://patentimages.storage.googleapis.com/c1/cb/41/3201a7251e7666/US20180217612A1.pdf"
-                                    target="_blank">US Patent</a></span>
+                                    target="_blank" rel="noopener noreferrer">US Patent</a></span>
                         </div>
                     </li>
 
@@ -213,15 +237,89 @@
                         <div class="mt-2 flex flex-wrap gap-2">
                             <span class="chip"><a
                                     href="https://patentimages.storage.googleapis.com/a1/8a/32/b1956a0d304279/US10281925.pdf"
-                                    target="_blank">US Patent</a></span>
+                                    target="_blank" rel="noopener noreferrer">US Patent</a></span>
                         </div>
                     </li>
                 </ul>
+                </div>
+                </div>
             </div>
 
             <div class="bg-white rounded-xl shadow-lg p-6 hover-scale mb-8">
-                <h2 class="mb-4">Journal Articles</h2>
+                <h2 class="acc-h" id="journal-articles">
+                    <button type="button" class="acc-btn" id="acc-journal-articles" aria-expanded="false" aria-controls="pub-journal-articles">
+                        <span class="acc-title">Journal Articles</span>
+                        <svg class="acc-chev" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                    </button>
+                </h2>
+                <div class="acc-panel" id="pub-journal-articles" role="region" aria-labelledby="acc-journal-articles">
+                <div class="acc-inner">
                 <ul class="space-y-4">
+                    <li class="border-b pb-4">
+                        <p>
+                            M. Zamanirafe, N. Zhang, and A. H. Sakr, "Decentralized Intelligence for Internet of Vehicles: A Hierarchical Blockchain Federated Learning Approach," in <em>Vehicular Communications</em>, vol. 61, Art. no. 101070, Oct. 2026.
+                        </p>
+                        <div class="mt-2 flex flex-wrap gap-2">
+                            <span class="chip"><a href="https://www.sciencedirect.com/science/article/abs/pii/S2214209626000719"
+                                    target="_blank" rel="noopener noreferrer">ScienceDirect</a></span>
+                        </div>
+                    </li>
+
+                    <li class="border-b pb-4">
+                        <p>
+                            R. S. Gul, A. H. Sakr, and M. A. Kishk, "QoS-Aware Network Slicing for Integrated 5G Terrestrial and LEO Non-Terrestrial Networks in Vehicular Communication," in <em>IEEE Open Journal of the Communications Society</em>, vol. 7, pp. 13015-13027, 2026.
+                        </p>
+                        <div class="mt-2 flex flex-wrap gap-2">
+                            <span class="chip"><a href="https://ieeexplore.ieee.org/document/11719644"
+                                    target="_blank" rel="noopener noreferrer">IEEE
+                                    Xplore</a></span>
+                        </div>
+                    </li>
+
+                    <li class="border-b pb-4">
+                        <p>
+                            A. Uddin, N. Zhang, A. H. Sakr, M. S. A. Shohag, and Q. M. J. Wu, "Enhanced Deep Q-Learning through Adaptive Experience Clustering for Vehicular Task Offloading," in <em>IEEE Transactions on Cognitive Communications and Networking</em>, vol. 12, pp. 8186-8197, 2026.
+                        </p>
+                        <div class="mt-2 flex flex-wrap gap-2">
+                            <span class="chip"><a href="https://ieeexplore.ieee.org/document/11513382"
+                                    target="_blank" rel="noopener noreferrer">IEEE
+                                    Xplore</a></span>
+                        </div>
+                    </li>
+
+                    <li class="border-b pb-4">
+                        <p>
+                            S. Manjunatha, S. Avedisov, O. Altintas, and A. H. Sakr, "Experimental Insights into Intent Sharing for Enhanced Infrastructure-Assisted Cooperative Perception," in <em>IEEE Intelligent Transportation Systems Magazine</em>, vol. 18, no. 5, pp. 74-84, Sept.-Oct. 2026.
+                        </p>
+                        <div class="mt-2 flex flex-wrap gap-2">
+                            <span class="chip"><a href="https://ieeexplore.ieee.org/document/11429152"
+                                    target="_blank" rel="noopener noreferrer">IEEE
+                                    Xplore</a></span>
+                        </div>
+                    </li>
+
+                    <li class="border-b pb-4">
+                        <p>
+                            B. Balasubramanian, P. Pillai, A. H. Sakr, and B. Balasingam, "Quantification of Drift in Battery Impedance Spectroscopy Due to State of Charge, Current Amplitude, and Rest Time," in <em>IEEE Transactions on Transportation Electrification</em>, vol. 12, no. 3, pp. 4513-4527, June 2026.
+                        </p>
+                        <div class="mt-2 flex flex-wrap gap-2">
+                            <span class="chip"><a href="https://ieeexplore.ieee.org/document/11421558"
+                                    target="_blank" rel="noopener noreferrer">IEEE
+                                    Xplore</a></span>
+                        </div>
+                    </li>
+
+                    <li class="border-b pb-4">
+                        <p>
+                            A. Uddin, A. H. Sakr, and N. Zhang, "Counterfactual Multi-Agent DRL for Efficient Task Offloading in Vehicular Edge Computing," in <em>IEEE Transactions on Vehicular Technology</em>, vol. 75, no. 6, pp. 9270-9281, June 2026.
+                        </p>
+                        <div class="mt-2 flex flex-wrap gap-2">
+                            <span class="chip"><a href="https://ieeexplore.ieee.org/document/11297019"
+                                    target="_blank" rel="noopener noreferrer">IEEE
+                                    Xplore</a></span>
+                        </div>
+                    </li>
+
                     <li class="border-b pb-4">
                         <p>
                             A. Uddin, A. H. Sakr, and N. Zhang, "Adaptive Prioritization and Task Offloading in
@@ -230,7 +328,7 @@
                         </p>
                         <div class="mt-2 flex flex-wrap gap-2">
                             <span class="chip"><a href="https://ieeexplore.ieee.org/document/10755183"
-                                    target="_blank">IEEE
+                                    target="_blank" rel="noopener noreferrer">IEEE
                                     Xplore</a></span>
                         </div>
                     </li>
@@ -243,7 +341,7 @@
                         </p>
                         <div class="mt-2 flex flex-wrap gap-2">
                             <span class="chip"><a href="https://ieeexplore.ieee.org/document/10684611"
-                                    target="_blank">IEEE
+                                    target="_blank" rel="noopener noreferrer">IEEE
                                     Xplore</a></span>
                         </div>
                     </li>
@@ -256,7 +354,7 @@
                         </p>
                         <div class="mt-2 flex flex-wrap gap-2">
                             <span class="chip"><a href="https://ieeexplore.ieee.org/document/10550927"
-                                    target="_blank">IEEE
+                                    target="_blank" rel="noopener noreferrer">IEEE
                                     Xplore</a></span>
                         </div>
                     </li>
@@ -270,7 +368,7 @@
                         </p>
                         <div class="mt-2 flex flex-wrap gap-2">
                             <span class="chip"><a href="https://ieeexplore.ieee.org/document/9709116"
-                                    target="_blank">IEEE
+                                    target="_blank" rel="noopener noreferrer">IEEE
                                     Xplore</a></span>
                         </div>
                     </li>
@@ -283,7 +381,7 @@
                         </p>
                         <div class="mt-2 flex flex-wrap gap-2">
                             <span class="chip"><a href="https://ieeexplore.ieee.org/document/9462466"
-                                    target="_blank">IEEE
+                                    target="_blank" rel="noopener noreferrer">IEEE
                                     Xplore</a></span>
                         </div>
                     </li>
@@ -296,7 +394,7 @@
                         </p>
                         <div class="mt-2 flex flex-wrap gap-2">
                             <span class="chip"><a href="https://ieeexplore.ieee.org/document/9440961"
-                                    target="_blank">IEEE
+                                    target="_blank" rel="noopener noreferrer">IEEE
                                     Xplore</a></span>
                         </div>
                     </li>
@@ -309,7 +407,7 @@
                         </p>
                         <div class="mt-2 flex flex-wrap gap-2">
                             <span class="chip"><a href="https://ieeexplore.ieee.org/document/7950967"
-                                    target="_blank">IEEE
+                                    target="_blank" rel="noopener noreferrer">IEEE
                                     Xplore</a></span>
                         </div>
                     </li>
@@ -322,7 +420,7 @@
                         </p>
                         <div class="mt-2 flex flex-wrap gap-2">
                             <span class="chip"><a href="https://ieeexplore.ieee.org/document/7456247"
-                                    target="_blank">IEEE
+                                    target="_blank" rel="noopener noreferrer">IEEE
                                     Xplore</a></span>
                         </div>
                     </li>
@@ -335,7 +433,7 @@
                         </p>
                         <div class="mt-2 flex flex-wrap gap-2">
                             <span class="chip"><a href="https://ieeexplore.ieee.org/document/7110493"
-                                    target="_blank">IEEE
+                                    target="_blank" rel="noopener noreferrer">IEEE
                                     Xplore</a></span>
                         </div>
                     </li>
@@ -348,7 +446,7 @@
                         </p>
                         <div class="mt-2 flex flex-wrap gap-2">
                             <span class="chip"><a href="https://ieeexplore.ieee.org/document/7158275"
-                                    target="_blank">IEEE
+                                    target="_blank" rel="noopener noreferrer">IEEE
                                     Xplore</a></span>
                         </div>
                     </li>
@@ -361,17 +459,17 @@
                         </p>
                         <div class="mt-2 flex flex-wrap gap-2">
                             <span class="chip"><a href="https://ieeexplore.ieee.org/document/7056528"
-                                    target="_blank">IEEE
+                                    target="_blank" rel="noopener noreferrer">IEEE
                                     Xplore</a></span>
                             <span class="chip"><a
-                                    href="https://www.comsoc.org/about/awards/paper-awards/ieee-communications-society-young-author-best-paper-award"
-                                    target="_blank">IEEE ComSoC Young Author Best Paper Award</a></span>
+                                    href="https://www.comsoc.org/engagement-community/awards/paper/ieee-communications-society-katherine-johnson-young-author-best-paper-award"
+                                    target="_blank" rel="noopener noreferrer">IEEE ComSoC Young Author Best Paper Award</a></span>
                             <span class="chip"><a
                                     href="https://www.comsoc.org/publications/best-readings/device-device-communications"
-                                    target="_blank">IEEE ComSoC Best Readings in D2D Communications</a></span>
+                                    target="_blank" rel="noopener noreferrer">IEEE ComSoC Best Readings in D2D Communications</a></span>
                             <span class="chip"><a
                                     href="https://www.comsoc.org/publications/best-readings/green-communications"
-                                    target="_blank">IEEE ComSoC in Best Readings in Green Communications</a></span>
+                                    target="_blank" rel="noopener noreferrer">IEEE ComSoC in Best Readings in Green Communications</a></span>
                         </div>
                     </li>
 
@@ -383,15 +481,24 @@
                         </p>
                         <div class="mt-2 flex flex-wrap gap-2">
                             <span class="chip"><a href="https://ieeexplore.ieee.org/document/6879305"
-                                    target="_blank">IEEE
+                                    target="_blank" rel="noopener noreferrer">IEEE
                                     Xplore</a></span>
                         </div>
                     </li>
                 </ul>
+                </div>
+                </div>
             </div>
 
             <div class="bg-white rounded-xl shadow-lg p-6 hover-scale mb-8">
-                <h2 class="mb-4">Conference Papers</h2>
+                <h2 class="acc-h" id="conference-papers">
+                    <button type="button" class="acc-btn" id="acc-conference-papers" aria-expanded="false" aria-controls="pub-conference-papers">
+                        <span class="acc-title">Conference Papers</span>
+                        <svg class="acc-chev" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                    </button>
+                </h2>
+                <div class="acc-panel" id="pub-conference-papers" role="region" aria-labelledby="acc-conference-papers">
+                <div class="acc-inner">
                 <ul class="space-y-4">
                     <li class="border-b pb-4">
                         <p>
@@ -410,7 +517,7 @@
                         </p>
                         <div class="mt-2 flex flex-wrap gap-2">
                             <span class="chip"><a href="https://ieeexplore.ieee.org/document/10757767"
-                                    target="_blank">IEEE
+                                    target="_blank" rel="noopener noreferrer">IEEE
                                     Xplore</a></span>
                         </div>
                     </li>
@@ -424,7 +531,7 @@
                         </p>
                         <div class="mt-2 flex flex-wrap gap-2">
                             <span class="chip"><a href="https://ieeexplore.ieee.org/document/10667281"
-                                    target="_blank">IEEE
+                                    target="_blank" rel="noopener noreferrer">IEEE
                                     Xplore</a></span>
                             <span class="chip">IEEE
                                 CCECE Best Poster Award</span>
@@ -439,7 +546,7 @@
                         </p>
                         <div class="mt-2 flex flex-wrap gap-2">
                             <span class="chip"><a href="https://ieeexplore.ieee.org/document/10683050"
-                                    target="_blank">IEEE
+                                    target="_blank" rel="noopener noreferrer">IEEE
                                     Xplore</a></span>
                         </div>
                     </li>
@@ -452,7 +559,7 @@
                         </p>
                         <div class="mt-2 flex flex-wrap gap-2">
                             <span class="chip"><a href="https://ieeexplore.ieee.org/document/10575987"
-                                    target="_blank">IEEE
+                                    target="_blank" rel="noopener noreferrer">IEEE
                                     Xplore</a></span>
                         </div>
                     </li>
@@ -466,7 +573,7 @@
                         </p>
                         <div class="mt-2 flex flex-wrap gap-2">
                             <span class="chip"><a href="https://ieeexplore.ieee.org/document/10555980"
-                                    target="_blank">IEEE
+                                    target="_blank" rel="noopener noreferrer">IEEE
                                     Xplore</a></span>
                         </div>
                     </li>
@@ -479,7 +586,7 @@
                         </p>
                         <div class="mt-2 flex flex-wrap gap-2">
                             <span class="chip"><a href="https://ieeexplore.ieee.org/document/10136270"
-                                    target="_blank">IEEE
+                                    target="_blank" rel="noopener noreferrer">IEEE
                                     Xplore</a></span>
                         </div>
                     </li>
@@ -508,7 +615,7 @@
                         </p>
                         <div class="mt-2 flex flex-wrap gap-2">
                             <span class="chip"><a href="https://ieeexplore.ieee.org/document/9860973"
-                                    target="_blank">IEEE
+                                    target="_blank" rel="noopener noreferrer">IEEE
                                     Xplore</a></span>
                         </div>
                     </li>
@@ -522,7 +629,7 @@
                         </p>
                         <div class="mt-2 flex flex-wrap gap-2">
                             <span class="chip"><a href="https://ieeexplore.ieee.org/document/9565099"
-                                    target="_blank">IEEE
+                                    target="_blank" rel="noopener noreferrer">IEEE
                                     Xplore</a></span>
                         </div>
                     </li>
@@ -535,7 +642,7 @@
                         </p>
                         <div class="mt-2 flex flex-wrap gap-2">
                             <span class="chip"><a href="https://ieeexplore.ieee.org/document/9575586"
-                                    target="_blank">IEEE
+                                    target="_blank" rel="noopener noreferrer">IEEE
                                     Xplore</a></span>
                         </div>
                     </li>
@@ -549,7 +656,7 @@
                         </p>
                         <div class="mt-2 flex flex-wrap gap-2">
                             <span class="chip"><a href="https://ieeexplore.ieee.org/document/9448700"
-                                    target="_blank">IEEE
+                                    target="_blank" rel="noopener noreferrer">IEEE
                                     Xplore</a></span>
                         </div>
                     </li>
@@ -570,7 +677,7 @@
                         </p>
                         <div class="mt-2 flex flex-wrap gap-2">
                             <span class="chip"><a href="https://ieeexplore.ieee.org/document/9318360"
-                                    target="_blank">IEEE
+                                    target="_blank" rel="noopener noreferrer">IEEE
                                     Xplore</a></span>
                         </div>
                     </li>
@@ -583,7 +690,7 @@
                         </p>
                         <div class="mt-2 flex flex-wrap gap-2">
                             <span class="chip"><a href="https://ieeexplore.ieee.org/document/9334579"
-                                    target="_blank">IEEE
+                                    target="_blank" rel="noopener noreferrer">IEEE
                                     Xplore</a></span>
                         </div>
                     </li>
@@ -596,7 +703,7 @@
                         </p>
                         <div class="mt-2 flex flex-wrap gap-2">
                             <span class="chip"><a href="https://ieeexplore.ieee.org/document/9348508"
-                                    target="_blank">IEEE
+                                    target="_blank" rel="noopener noreferrer">IEEE
                                     Xplore</a></span>
                         </div>
                     </li>
@@ -609,7 +716,7 @@
                         </p>
                         <div class="mt-2 flex flex-wrap gap-2">
                             <span class="chip"><a href="https://ieeexplore.ieee.org/document/9304725"
-                                    target="_blank">IEEE
+                                    target="_blank" rel="noopener noreferrer">IEEE
                                     Xplore</a></span>
                         </div>
                     </li>
@@ -622,7 +729,7 @@
                         </p>
                         <div class="mt-2 flex flex-wrap gap-2">
                             <span class="chip"><a href="https://ieeexplore.ieee.org/document/9062805"
-                                    target="_blank">IEEE
+                                    target="_blank" rel="noopener noreferrer">IEEE
                                     Xplore</a></span>
                         </div>
                     </li>
@@ -635,7 +742,7 @@
                         </p>
                         <div class="mt-2 flex flex-wrap gap-2">
                             <span class="chip"><a href="https://ieeexplore.ieee.org/document/8569690"
-                                    target="_blank">IEEE
+                                    target="_blank" rel="noopener noreferrer">IEEE
                                     Xplore</a></span>
                         </div>
                     </li>
@@ -649,7 +756,7 @@
                         </p>
                         <div class="mt-2 flex flex-wrap gap-2">
                             <span class="chip"><a href="https://ieeexplore.ieee.org/document/8569690"
-                                    target="_blank">IEEE
+                                    target="_blank" rel="noopener noreferrer">IEEE
                                     Xplore</a></span>
                         </div>
                     </li>
@@ -662,7 +769,7 @@
                         </p>
                         <div class="mt-2 flex flex-wrap gap-2">
                             <span class="chip"><a href="https://ieeexplore.ieee.org/document/7795533"
-                                    target="_blank">IEEE
+                                    target="_blank" rel="noopener noreferrer">IEEE
                                     Xplore</a></span>
                         </div>
                     </li>
@@ -675,7 +782,7 @@
                         </p>
                         <div class="mt-2 flex flex-wrap gap-2">
                             <span class="chip"><a href="https://ieeexplore.ieee.org/document/7417670"
-                                    target="_blank">IEEE
+                                    target="_blank" rel="noopener noreferrer">IEEE
                                     Xplore</a></span>
                         </div>
                     </li>
@@ -688,7 +795,7 @@
                         </p>
                         <div class="mt-2 flex flex-wrap gap-2">
                             <span class="chip"><a href="https://ieeexplore.ieee.org/document/7037521"
-                                    target="_blank">IEEE
+                                    target="_blank" rel="noopener noreferrer">IEEE
                                     Xplore</a></span>
                         </div>
                     </li>
@@ -701,7 +808,7 @@
                         </p>
                         <div class="mt-2 flex flex-wrap gap-2">
                             <span class="chip"><a href="https://ieeexplore.ieee.org/document/6884141"
-                                    target="_blank">IEEE
+                                    target="_blank" rel="noopener noreferrer">IEEE
                                     Xplore</a></span>
                         </div>
                     </li>
@@ -714,14 +821,23 @@
                         </p>
                         <div class="mt-2 flex flex-wrap gap-2">
                             <span class="chip"><a href="https://ieeexplore.ieee.org/document/6883889"
-                                    target="_blank">IEEE
+                                    target="_blank" rel="noopener noreferrer">IEEE
                                     Xplore</a></span>
                         </div>
                     </li>
                 </ul>
+                </div>
+                </div>
             </div>
             <div class="bg-white rounded-xl shadow-lg p-6 hover-scale mb-8">
-                <h2 class="mb-4">Book Chapters</h2>
+                <h2 class="acc-h" id="book-chapters">
+                    <button type="button" class="acc-btn" id="acc-book-chapters" aria-expanded="false" aria-controls="pub-book-chapters">
+                        <span class="acc-title">Book Chapters</span>
+                        <svg class="acc-chev" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                    </button>
+                </h2>
+                <div class="acc-panel" id="pub-book-chapters" role="region" aria-labelledby="acc-book-chapters">
+                <div class="acc-inner">
                 <ul class="space-y-4">
                     <li class="border-b pb-4">
                         <p>
@@ -730,8 +846,8 @@
                             <em>Springer Nature Publishing</em>, 2019.
                         </p>
                         <div class="mt-2 flex flex-wrap gap-2">
-                            <span class="chip"><a href="https://www.springer.com/us/book/9783319947846"
-                                    target="_blank">Springer Nature</a></span>
+                            <span class="chip"><a href="https://link.springer.com/book/10.1007/978-3-319-94785-3"
+                                    target="_blank" rel="noopener noreferrer">Springer Nature</a></span>
                         </div>
                     </li>
 
@@ -744,17 +860,53 @@
                         </p>
                         <div class="mt-2 flex flex-wrap gap-2">
                             <span class="chip"><a
-                                    href="http://www.cambridge.org/sg/academic/subjects/engineering/wireless-communications/wireless-powered-communication-networks-architectures-protocols-and-applications"
-                                    target="_blank">Cambridge University Press</a></span>
+                                    href="https://www.cambridge.org/sg/universitypress/subjects/engineering/wireless-communications/wireless-powered-communication-networks-architectures-protocols-and-applications"
+                                    target="_blank" rel="noopener noreferrer">Cambridge University Press</a></span>
                         </div>
                     </li>
                 </ul>
+                </div>
+                </div>
             </div>
         </main>
         <footer class="mt-12 text-center text-gray-600 fade-in">
             <p>© 2021 Ahmed Hamdi Sakr. All rights reserved.</p>
         </footer>
     </div>
+
+    <script>
+        /* Publications accordion: opening a section closes the others; clicking the open one collapses it */
+        (function () {
+            var btns = Array.prototype.slice.call(document.querySelectorAll('.acc-btn'));
+            if (!btns.length) return;
+            var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            function panelOf(b) { return document.getElementById(b.getAttribute('aria-controls')); }
+            function setOpen(b, open) {
+                var p = panelOf(b);
+                b.setAttribute('aria-expanded', open ? 'true' : 'false');
+                p.classList.toggle('open', open);
+                p.setAttribute('aria-hidden', open ? 'false' : 'true');
+                if (open) p.removeAttribute('inert'); else p.setAttribute('inert', '');   // collapsed content is not focusable
+            }
+            btns.forEach(function (b) {
+                b.addEventListener('click', function () {
+                    var willOpen = b.getAttribute('aria-expanded') !== 'true';
+                    btns.forEach(function (o) { setOpen(o, o === b && willOpen); });
+                    if (willOpen) {                                  // closing a section above can push this header off-screen
+                        var h = b.parentNode;
+                        setTimeout(function () {
+                            var top = h.getBoundingClientRect().top;
+                            if (top < 70 || top > window.innerHeight * 0.6) h.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
+                        }, reduce ? 0 : 320);
+                    }
+                });
+            });
+            // start with every section closed, unless the URL names one (e.g. #journal-articles)
+            var wanted = (location.hash || '').replace('#', '');
+            var start = btns.filter(function (b) { return b.id === 'acc-' + wanted; })[0] || null;
+            btns.forEach(function (b) { setOpen(b, b === start); });
+        })();
+    </script>
 </body>
 
 </html>

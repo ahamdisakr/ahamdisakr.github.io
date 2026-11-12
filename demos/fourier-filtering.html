@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+<meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+<title>Interactive Fourier Transform Filtering Demo</title>
+<meta name="description" content="Interactive demo of Fourier transform filtering: apply low-pass, high-pass, band-pass and notch filters to test signals or your own audio and compare the time and frequency domains." />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons@4.29.2/dist/feather.min.js"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css" />
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+
+    <link href="/styles.css" rel="stylesheet" />
+    <link rel="icon" type="image/x-icon" href="/images/icon.ico" />
+    <script defer="True" src="/app.js"></script>
+
+<style>
+:root{
+  --muted:#94a3b8; 
+  --axis:#223356; 
+  --grid:#15223e; 
+  --xcolor:#f59e0b; 
+  --ycolor:#60a5fa; 
+  --hcolor:#22c55e;
+  --card:#111827;
+  --fg:#0f172a;
+}
+@media (max-width: 768px){
+  .controls { grid-template-columns: 1fr !important; }
+  .plot-grid { grid-template-columns: 1fr !important; }
+}
+  .controls { display: grid; grid-template-columns: 1.2fr 1fr 1fr 1fr; gap: 12px; margin-bottom: 10px; }
+  .control { background: var(--card); padding: 12px; border-radius: 12px; border: 1px solid #0f172a; }
+  label { font-weight: 600; display: block; margin-bottom: 6px; color: #cbd5e1; }
+  select, input[type="number"], input[type="range"] { width: 100%; padding: 8px 10px; border-radius: 8px; background: #cbd5e1; color: var(--fg); border: 1px solid #1f2a44; }
+  input[type="range"] { padding: 0; height: 28px; }
+  .plot-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+  .wrap{max-width:none;margin:0 auto}
+  .small{font-size:12px;color:#9fb1d1}
+  .canvas-row { display: grid; grid-template-columns: 1fr; gap: 12px; }
+  .card { background: var(--card); border: 1px solid #0f172a; border-radius: 12px; padding: 10px 12px; }
+  .card h2 { font-size: 16px; margin: 0 0 6px; color: #cbd5e1; }
+  canvas { width: 100%; height: 260px; display: block; background: #0a1326; border-radius: 8px; }
+  .axis-label{ text-align:right; color:#94a3b8; font-size:13px; padding:2px 12px 0 0; min-height:1.6em; }
+  .control .katex, .chip .katex, .small .katex{ font-size:1.05em; }
+  .math-block{ color:#e2e8f0; overflow-x:auto; padding:2px 0; }
+  .math-block .katex-display{ margin:0.5em 0; }
+  .math-block.live{ color:#cbd5e1; }
+  .card h2 .katex{ font-size:1.1em; }
+  .plot-grid .card h2{ min-height:3em; display:flex; align-items:center; margin-bottom:6px; }
+  .dot { width:10px; height:10px; border-radius:50%; display:inline-block; }
+  .dot.x{background: var(--xcolor)}
+ .dot.y{background: var(--ycolor)}
+ .dot.h{background: var(--hcolor)}
+.actions{display:flex;gap:8px;margin-top:8px}
+button:disabled{opacity:0.6}
+.row{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;margin-top:6px}
+</style>
+</head>
+
+<body class="font-sans gradient-bg min-h-screen" data-page="teaching">
+  <header class="fixed inset-x-0 top-0 z-[9999] bg-white/70 backdrop-blur border-b border-gray-200">
+        <div class="max-w-6xl mx-auto px-4">
+            <div class="flex items-center justify-between h-16">
+                <a class="flex items-center gap-2 font-semibold text-gray-900 hover:text-blue-600" href="/index.html">
+                    <i aria-hidden="true" data-feather="layers"></i>
+                    <span>Ahmed Hamdi Sakr, PhD</span>
+                </a>
+                <button aria-controls="mobile-nav" aria-expanded="false" aria-label="Open menu"
+                    class="md:hidden p-2 rounded hover:bg-gray-100" id="menuBtn" type="button">
+                    <i data-feather="menu"></i>
+                </button>
+                <nav class="hidden md:block" id="primary-nav">
+                    <ul class="flex items-center gap-6">
+                        <li><a class="hover:text-blue-600" data-nav="index" href="/index.html">Home</a></li>
+                        <li><a class="hover:text-blue-600" data-nav="research" href="/research.html">Research</a></li>
+                        <li><a class="hover:text-blue-600" data-nav="publications" href="/publications.html">Publications</a></li>
+                        <li><a class="hover:text-blue-600" data-nav="teaching" href="/teaching.html">Teaching</a></li>
+                        <li><a class="hover:text-blue-600" data-nav="team" href="/team.html">Team</a></li>
+                        <li><a class="hover:text-blue-600" data-nav="join" href="/join.html">Join</a></li>
+                    </ul>
+                </nav>
+            </div>
+            <nav aria-hidden="true" aria-label="Mobile" class="md:hidden hidden pb-4" id="mobile-nav">
+                <ul class="grid gap-2">
+                    <li><a class="block px-3 py-2 rounded hover:bg-gray-100" data-nav="index" href="/index.html">Home</a></li>
+                    <li><a class="block px-3 py-2 rounded hover:bg-gray-100" data-nav="research" href="/research.html">Research</a></li>
+                    <li><a class="block px-3 py-2 rounded hover:bg-gray-100" data-nav="publications" href="/publications.html">Publications</a></li>
+                    <li><a class="block px-3 py-2 rounded hover:bg-gray-100" data-nav="teaching" href="/teaching.html">Teaching</a></li>
+                    <li><a class="block px-3 py-2 rounded hover:bg-gray-100" data-nav="team" href="/team.html">Team</a></li>
+                    <li><a class="block px-3 py-2 rounded hover:bg-gray-100" data-nav="join" href="/join.html">Join</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+        <div class="container mx-auto px-4 py-8 max-w-5xl">
+        <!-- Navigation -->
+        <main class="fade-in py-8 px-4 max-w-6xl mx-auto pt-20" id="main">
+            <h1 class="sr-only">Interactive Fourier Transform Filtering Demo</h1>
+
+  <div class="bg-white rounded-xl shadow-lg p-6">
+  <h2 class="mb-4">Interactive Fourier Transform Filtering Demo</h2>
+    <p>Pick a signal and filter. For BPF/Notch, <span class="m" data-tex="Q=f_c/\mathrm{BW}">Q = f<sub>c</sub>/BW</span>. Upload/record audio and A/B play.</p>
+
+<div class="controls" style="grid-template-columns: repeat(2, minmax(0, 1fr));">
+        <div class="control">
+      <label for="signalSel">Signal</label>
+      <select id="signalSel">
+        <option value="cosine">Cosine</option>
+        <option value="sumcos">Sum of Cosines</option>
+        <option value="square">Square</option>
+        <option value="triangle">Triangle</option>
+        <option value="saw">Sawtooth</option>
+        <option value="chirp">Chirp (linear)</option>
+        <option value="noise">White Noise</option>
+        <option value="demo">Demo Tones (440 + 880 Hz)</option>
+        <option value="upload">Upload Audio…</option>
+        <option value="record">Record Audio…</option>
+      </select>
+
+      <div id="signalExtra" class="row" style="display:grid">
+        <div class="small"><strong><span id="f0val">f₀ = 200 Hz</span></strong></div>
+        <input id="f0" type="range" min="20" max="8000" step="1" value="200"/>
+      </div>
+
+      <input id="fileInput" type="file" accept="audio/*" style="display:none;margin-top:8px"/>
+      <div id="recordRow" class="actions" style="display:none">
+        <button  class="chip" id="btnRec">● Record</button>
+        <button  class="chip" id="btnStop" disabled>■ Stop</button>
+      </div>
+      <div id="statusMsg" class="small" role="status" aria-live="polite"></div>
+      <div class="actions">
+        <button  class="chip" id="btnPlayX" disabled>▶ Play Original</button>
+        <button  class="chip" id="btnPlayY" disabled>▶ Play Filtered</button>
+      </div>
+    </div>
+
+    <div class="control">
+      <label for="filterSel">Filter</label>
+      <select id="filterSel">
+        <option value="lpf">Low-pass (biquad)</option>
+        <option value="hpf">High-pass (biquad)</option>
+        <option value="bpf">Band-pass (biquad)</option>
+        <option value="notch">Notch (biquad)</option>
+      </select>
+
+      <div id="rowFc" class="row">
+        <div class="small"><strong><span id="fcval">f<sub>c</sub> = 1000 Hz</span></strong></div>
+        <input id="fc" type="range" min="20" max="20000" step="1" value="1000"/>
+      </div>
+
+      <div id="rowBW" class="row" style="display:none">
+        <div class="small"><strong><span id="bwval">BW = 1000 Hz</span></strong></div>
+        <input id="bw" type="range" min="10" max="12000" step="1" value="1000"/>
+      </div>
+
+      <div class="small" style="margin-top:8px">
+        <strong><span id="qBadge">Q = 1.000</span></strong>
+      </div>
+    </div>
+
+    <div class="control">
+      <label>Sampling & Window</label>
+      <div class="small"><span id="fsBadge"></span></div>
+      <div class="small"><span id="TBadge"></span></div>
+      <div class="small"><span id="NBadge"></span> (Hann window, averaged)</div>
+      <div class="small" style="margin-top:6px">Plots: scroll to zoom, drag to pan, double-click to reset.</div>
+    </div>
+
+    <div class="control">
+      <label>Legend</label>
+      <div class="legend">
+        <span class="chip"><span class="dot x"></span>Input <span class="m" data-tex="x(t)">x</span></span>
+        <span class="chip"><span class="dot h"></span>Filter <span class="m" data-tex="h(t),\,H(f)">h/H</span></span>
+        <span class="chip"><span class="dot y"></span>Output <span class="m" data-tex="y(t)">y</span></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Model card (disabled): remove this comment to show it again
+  <div class="card" style="margin-bottom:12px">
+    <h2>Model</h2>
+    <div class="math-block" data-display data-tex="\begin{gathered}H(z)=\frac{b_0+b_1z^{-1}+b_2z^{-2}}{1+a_1z^{-1}+a_2z^{-2}}\\[4pt] y[n]=b_0x[n]+b_1x[n-1]+b_2x[n-2]-a_1y[n-1]-a_2y[n-2]\\[4pt] \omega_0=\frac{2\pi f_c}{F_s},\qquad \alpha=\frac{\sin\omega_0}{2Q}\end{gathered}">H(z) = (b<sub>0</sub> + b<sub>1</sub>z<sup>-1</sup> + b<sub>2</sub>z<sup>-2</sup>) / (1 + a<sub>1</sub>z<sup>-1</sup> + a<sub>2</sub>z<sup>-2</sup>); &omega;<sub>0</sub> = 2&pi;f<sub>c</sub>/F<sub>s</sub>, &alpha; = sin&omega;<sub>0</sub>/(2Q)</div>
+    <div class="math-block live" id="liveMath1" aria-live="polite"></div>
+    <div class="math-block live" id="liveMath2" aria-live="polite"></div>
+  </div>
+  -->
+
+  <div class="plot-grid">
+    <div class="card"><h2 data-tex="\text{Input }x(t)">Input x(t)</h2><canvas id="cx" role="img" aria-label="Input signal"></canvas>
+      <div class="axis-label" data-tex="t\ (\mathrm{s})">t (s)</div></div>
+    <div class="card"><h2 data-tex="|X(f)|">|X(f)|</h2><canvas id="cX" role="img" aria-label="Input magnitude spectrum"></canvas>
+      <div class="axis-label" data-tex="f\ (\mathrm{Hz})">f (Hz)</div></div>
+    <div class="card"><h2 data-tex="\text{Impulse response }h(t)">Impulse response h(t)</h2><canvas id="ch" role="img" aria-label="Filter impulse response"></canvas>
+      <div class="axis-label" data-tex="t\ (\mathrm{ms})">t (ms)</div></div>
+    <div class="card"><h2 data-tex="|H(f)|=\left|H\!\left(e^{j2\pi f/F_s}\right)\right|">|H(f)|</h2><canvas id="cH" role="img" aria-label="Filter magnitude response"></canvas>
+      <div class="axis-label" data-tex="f\ (\mathrm{Hz})">f (Hz)</div></div>
+    <div class="card"><h2 data-tex="\text{Output }y(t)=(x*h)(t)">Output y(t)</h2><canvas id="cy" role="img" aria-label="Output signal"></canvas>
+      <div class="axis-label" data-tex="t\ (\mathrm{s})">t (s)</div></div>
+    <div class="card"><h2 data-tex="|Y(f)|=|H(f)|\,|X(f)|">|Y(f)|</h2><canvas id="cY" role="img" aria-label="Output magnitude spectrum"></canvas>
+      <div class="axis-label" data-tex="f\ (\mathrm{Hz})">f (Hz)</div></div>
+  </div>
+</div>
+
+        </main>
+        <footer class="mt-12 text-center text-gray-600 fade-in">
+            <p>&copy; 2021 Ahmed Hamdi Sakr. All rights reserved.</p>
+        </footer>
+
+
+<script>
+(function(){
+  const TWO_PI = Math.PI*2;
+  const Fs = 44100;            // synthetic-signal sampling rate
+  const T  = 1.0;              // plotted time window (s)
+  const N  = 4096;             // FFT length
+  const css = getComputedStyle(document.documentElement);
+  const col = (name) => css.getPropertyValue(name).trim();
+
+  // ---------- DOM ----------
+  const $ = (id) => document.getElementById(id);
+  const elSignal = $('signalSel'), elFilter = $('filterSel');
+  const elF0 = $('f0'), elF0Val = $('f0val');
+  const fsBadge = $('fsBadge'), TBadge = $('TBadge'), NBadge = $('NBadge');
+  const qBadge = $('qBadge');
+  const rowBW = $('rowBW'), elFc = $('fc'), elBw = $('bw');
+  const elFcVal = $('fcval'), elBwVal = $('bwval');
+  const signalExtra = $('signalExtra'), fileInput = $('fileInput');
+  const btnPlayX = $('btnPlayX'), btnPlayY = $('btnPlayY');
+  const btnRec = $('btnRec'), btnStop = $('btnStop'), recordRow = $('recordRow');
+  const statusMsg = $('statusMsg');
+
+  const cx = $('cx').getContext('2d'), cX = $('cX').getContext('2d');
+  const ch = $('ch').getContext('2d'), cH = $('cH').getContext('2d');
+  const cy = $('cy').getContext('2d'), cY = $('cY').getContext('2d');
+
+  setTeX(TBadge, String.raw`T=${T.toFixed(2)}\ \text{s}`, 'Window T = ' + T.toFixed(2) + ' s');
+  setTeX(NBadge, String.raw`\text{FFT }N=${N}`, 'FFT N = ' + N);
+
+  function setStatus(msg){ statusMsg.textContent = msg || ''; }
+
+  // ---------- Math rendering (KaTeX; plain-text fallback is already in the markup) ----------
+  function renderTeX(el, tex, display){
+    if (!el || !window.katex) return false;
+    try { katex.render(tex, el, {throwOnError:false, displayMode:!!display}); return true; }
+    catch(e){ return false; }
+  }
+  // Set an element to a KaTeX string (re-rendered on load if KaTeX was not ready yet); plain text as fallback
+  function setTeX(el, tex, fallback){
+    if (!el) return;
+    el.dataset.tex = tex;
+    if (!renderTeX(el, tex, false)) el.textContent = fallback;
+  }
+  let lastMath = null;
+  function renderStaticMath(){
+    document.querySelectorAll('[data-tex]').forEach(el => renderTeX(el, el.dataset.tex, el.hasAttribute('data-display')));
+    if (lastMath) updateMath(...lastMath);
+  }
+  window.addEventListener('load', renderStaticMath);   // KaTeX is loaded with `defer`
+  window.addEventListener('load', () => { if (document.fonts && document.fonts.load) document.fonts.load(MATH_FONT).then(render); });
+
+
+  const FILTER_TEX = {
+    lpf:   String.raw`b_0=b_2=\frac{1-\cos\omega_0}{2},\quad b_1=1-\cos\omega_0`,
+    hpf:   String.raw`b_0=b_2=\frac{1+\cos\omega_0}{2},\quad b_1=-(1+\cos\omega_0)`,
+    bpf:   String.raw`b_0=\alpha,\quad b_1=0,\quad b_2=-\alpha`,
+    notch: String.raw`b_0=b_2=1,\quad b_1=-2\cos\omega_0`
+  };
+  const FILTER_NAME = {lpf:'Low-pass', hpf:'High-pass', bpf:'Band-pass', notch:'Notch'};
+  function updateMath(type, fc, Q, rate, c){
+    lastMath = [type, fc, Q, rate, c];
+    const el1 = $('liveMath1'), el2 = $('liveMath2');
+    const tex1 = String.raw`\begin{gathered}\text{${FILTER_NAME[type]} biquad:}\quad ${FILTER_TEX[type]}\\[4pt] a_0=1+\alpha,\quad a_1=-2\cos\omega_0,\quad a_2=1-\alpha\qquad(\text{all coefficients divided by }a_0)\end{gathered}`;
+    const f4 = (v) => v.toFixed(4);
+    let tex2 = String.raw`f_c=${fc.toFixed(0)}\ \text{Hz},\quad Q=${Q.toFixed(3)},\quad F_s=${rate}\ \text{Hz}`;
+    if (type === 'bpf' || type === 'notch') tex2 += String.raw`,\quad \mathrm{BW}=\frac{f_c}{Q}=${(fc/Q).toFixed(0)}\ \text{Hz}`;
+    tex2 = String.raw`\begin{gathered}` + tex2 + String.raw`\\[4pt] b=[${f4(c.b0)},\ ${f4(c.b1)},\ ${f4(c.b2)}],\qquad a=[1,\ ${f4(c.a1)},\ ${f4(c.a2)}]\end{gathered}`;
+    if (!renderTeX(el1, tex1, true) && el1) el1.textContent = FILTER_NAME[type] + ' biquad (RBJ cookbook)';
+    if (!renderTeX(el2, tex2, true) && el2) el2.textContent = 'fc = ' + fc.toFixed(0) + ' Hz, Q = ' + Q.toFixed(3) + ', Fs = ' + rate + ' Hz';
+  }
+
+
+  // ---------- State ----------
+  let AC = null;                 // AudioContext (created lazily on first user action)
+  let uploadedBuffer = null;     // decoded uploaded / recorded audio (kept separate from synthetic signals)
+  let currentSrc = null;         // currently playing source node
+  let mediaStream = null, mediaRecorder = null, recChunks = [];
+  let noiseCache = null;         // fixed noise realisation so redraws are stable
+  let S = null;                  // last computed signals/spectra
+  let lastWinKey = null;         // identifies the signal the time window was last set for
+
+  // ---------- Canvas helpers ----------
+  const MATH_FONT = '13px KaTeX_Main, "Times New Roman", Times, serif';   // canvas tick labels
+  // Size the canvas backing store to CSS size x devicePixelRatio; returns logical size.
+  function fitCanvas(canvas){
+    const d = window.devicePixelRatio || 1;
+    const w = canvas.clientWidth, h = canvas.clientHeight;
+    const pw = Math.round(w*d), ph = Math.round(h*d);
+    if (canvas.width !== pw || canvas.height !== ph){ canvas.width = pw; canvas.height = ph; }
+    canvas.getContext('2d').setTransform(d,0,0,d,0,0);
+    return {width: w, height: h};
+  }
+  function fmtTick(u){
+    if (Math.abs(u) < 1e-12) return "0";
+    if (Math.abs(u) >= 1000) return Number((u/1000).toPrecision(3)) + "k";
+    return String(Number(u.toPrecision(3)));
+  }
+  // Catmull-Rom cubic upsampling of a uniformly sampled array by an integer factor K
+  function upsampleCubic(y, K){
+    const n = y.length, out = new Float64Array(n*K);
+    for (let i=0;i<n;i++){
+      const p0 = y[Math.max(i-1,0)], p1 = y[i], p2 = y[Math.min(i+1,n-1)], p3 = y[Math.min(i+2,n-1)];
+      for (let k=0;k<K;k++){
+        const t = k/K;
+        out[i*K+k] = 0.5*((2*p1) + (-p0+p2)*t + (2*p0-5*p1+4*p2-p3)*t*t + (-p0+3*p1-3*p2+p3)*t*t*t);
+      }
+    }
+    return out;
+  }
+  // Round up to a "nice" axis maximum (1, 1.2, 1.6, 2, 2.4, ... x 10^k) so 5 ticks land on round values
+  function niceCeil(v){
+    const e = Math.pow(10, Math.floor(Math.log10(v)));
+    const m = v / e;
+    const steps = [1, 1.2, 1.6, 2, 2.4, 2.8, 3.2, 4, 4.8, 6, 8, 10];
+    return (steps.find(s => s >= m - 1e-12) || 10) * e;
+  }
+  function lowerBound(arr, v){            // first index with arr[i] >= v (arr ascending)
+    let lo = 0, hi = arr.length;
+    while (lo < hi){ const m = (lo+hi) >> 1; if (arr[m] < v) lo = m+1; else hi = m; }
+    return lo;
+  }
+
+  function plotXY(ctx, X, Y, opts={}){
+    const {width, height} = fitCanvas(ctx.canvas);
+    const margin = {left:56, right:12, top:10, bottom:28};
+    const plot = {x0:margin.left, y0:margin.top, w:width-margin.left-margin.right, h:height-margin.top-margin.bottom};
+
+    const xmin = opts.xRange[0], xmax = opts.xRange[1];
+    let ymin, ymax;
+    if (opts.yRange){ [ymin, ymax] = opts.yRange; }
+    else {
+      ymin = Infinity; ymax = -Infinity;
+      for (let i=0;i<Y.length;i++){ const v = Y[i]; if (v < ymin) ymin = v; if (v > ymax) ymax = v; }
+      if (!isFinite(ymin) || !isFinite(ymax)){ ymin = -1; ymax = 1; }
+    }
+    if (!opts.yRange){
+      // auto range: round, zero-centred limits so the tick labels are clean
+      const m = Math.max(Math.abs(ymin), Math.abs(ymax)) || 1;
+      if (ymin < 0){ ymax = niceCeil(m*1.05); ymin = -ymax; }
+      else { ymin = 0; ymax = niceCeil(m*1.05); }
+    }
+
+    const xToPx = (x)=> plot.x0 + (x-xmin)*(plot.w/(xmax-xmin));
+    const yToPx = (y)=> plot.y0 + plot.h - ((y-ymin)/(ymax-ymin))*plot.h;
+
+    ctx.clearRect(0,0,width,height);
+    ctx.fillStyle = "#0a1326"; ctx.fillRect(0,0,width,height);
+
+    const yTicks = 5, xTicks = 5;
+    ctx.save(); ctx.beginPath(); ctx.rect(plot.x0, plot.y0, plot.w, plot.h); ctx.clip();
+    ctx.strokeStyle = "#15223e"; ctx.lineWidth = 1;
+    for (let i=0;i<yTicks;i++){ const y = yToPx(ymin + i*(ymax-ymin)/(yTicks-1)); ctx.beginPath(); ctx.moveTo(plot.x0,y); ctx.lineTo(plot.x0+plot.w,y); ctx.stroke(); }
+    for (let i=0;i<xTicks;i++){ const x = xToPx(xmin + i*(xmax-xmin)/(xTicks-1)); ctx.beginPath(); ctx.moveTo(x,plot.y0); ctx.lineTo(x,plot.y0+plot.h); ctx.stroke(); }
+    ctx.restore();
+
+    ctx.fillStyle = "#94a3b8"; ctx.font = MATH_FONT; ctx.textAlign = "right"; ctx.textBaseline = "middle";
+    for (let i=0;i<yTicks;i++){
+      const v = ymin + i*(ymax-ymin)/(yTicks-1), y = yToPx(v);
+      ctx.fillText(fmtTick(v), plot.x0-8, y);
+      ctx.strokeStyle = "#223356"; ctx.beginPath(); ctx.moveTo(plot.x0-4,y); ctx.lineTo(plot.x0,y); ctx.stroke();
+    }
+    ctx.textAlign = "center"; ctx.textBaseline = "top";
+    for (let i=0;i<xTicks;i++){
+      const u = xmin + i*(xmax-xmin)/(xTicks-1);
+      ctx.textAlign = (i === xTicks-1) ? "right" : "center";   // keep the last label inside the canvas
+      ctx.fillText(fmtTick(u), xToPx(u) + (i === xTicks-1 ? 4 : 0), plot.y0+plot.h+6);
+    }
+
+    if (ymin <= 0 && ymax >= 0){ const y0 = yToPx(0); ctx.strokeStyle = "#223356"; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(plot.x0,y0); ctx.lineTo(plot.x0+plot.w,y0); ctx.stroke(); }
+
+    // curve, clipped to the plot area; only visible samples are drawn
+    ctx.save(); ctx.beginPath(); ctx.rect(plot.x0, plot.y0, plot.w, plot.h); ctx.clip();
+    ctx.strokeStyle = opts.color || "#60a5fa"; ctx.lineWidth = opts.width || 2;
+    const i0 = Math.max(0, lowerBound(X, xmin) - 1);
+    const i1 = Math.min(X.length-1, lowerBound(X, xmax) + 1);
+    ctx.beginPath();
+    for (let i=i0;i<=i1;i++){ const x = xToPx(X[i]), y = yToPx(Y[i]); if (i===i0) ctx.moveTo(x,y); else ctx.lineTo(x,y); }
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  // ---------- Audio ----------
+  function ensureAC(){
+    if (!AC){
+      const Ctor = window.AudioContext || window.webkitAudioContext;
+      try { AC = new Ctor({sampleRate: Fs}); } catch(e){ AC = new Ctor(); }
+    }
+    return AC;
+  }
+  // Float array -> AudioBuffer, scaled down only if it would clip
+  function toBuffer(arr, rate){
+    let peak = 0;
+    for (let i=0;i<arr.length;i++){ const a = Math.abs(arr[i]); if (a > peak) peak = a; }
+    const g = peak > 0.95 ? 0.95/peak : 1;
+    const buf = ensureAC().createBuffer(1, arr.length, rate);
+    const d = buf.getChannelData(0);
+    for (let i=0;i<arr.length;i++) d[i] = arr[i]*g;
+    return buf;
+  }
+  async function playBuffer(buf){
+    const ac = ensureAC();
+    try { await ac.resume(); } catch(e){}
+    if (currentSrc){ try { currentSrc.stop(); } catch(e){} }
+    const src = ac.createBufferSource();
+    const gain = ac.createGain(); gain.gain.value = 0.5;   // keep playback comfortable
+    src.buffer = buf;
+    src.connect(gain); gain.connect(ac.destination);
+    src.onended = () => { if (currentSrc === src) currentSrc = null; };
+    currentSrc = src;
+    src.start();
+  }
+
+  // ---------- DSP ----------
+  function FFT(re, im){
+    const n = re.length; let j = 0;
+    for (let i=1; i<n; i++){
+      let bit = n >> 1;
+      for (; j & bit; bit >>= 1) j ^= bit;
+      j ^= bit;
+      if (i < j){ [re[i],re[j]]=[re[j],re[i]]; [im[i],im[j]]=[im[j],im[i]]; }
+    }
+    for (let len=2; len<=n; len<<=1){
+      const ang = -2*Math.PI/len;
+      const wlenRe = Math.cos(ang), wlenIm = Math.sin(ang);
+      for (let i=0; i<n; i+=len){
+        let wRe=1, wIm=0;
+        for (let k=0; k<len/2; k++){
+          const uRe = re[i+k], uIm = im[i+k];
+          const vRe = re[i+k+len/2]*wRe - im[i+k+len/2]*wIm;
+          const vIm = re[i+k+len/2]*wIm + im[i+k+len/2]*wRe;
+          re[i+k] = uRe + vRe; im[i+k] = uIm + vIm;
+          re[i+k+len/2] = uRe - vRe; im[i+k+len/2] = uIm - vIm;
+          const nwRe = wRe*wlenRe - wIm*wlenIm;
+          const nwIm = wRe*wlenIm + wIm*wlenRe;
+          wRe = nwRe; wIm = nwIm;
+        }
+      }
+    }
+  }
+  const hann = Float64Array.from({length: N}, (_,i)=> 0.5*(1 - Math.cos(TWO_PI*i/N)));
+  const hannSum = hann.reduce((s,v)=>s+v, 0);
+
+  // Averaged, Hann-windowed magnitude spectrum (fft-shifted). A cosine of amplitude A shows A/2 at +-f.
+  function fftRealMag(x){
+    const frames = Math.max(1, Math.floor(x.length / N));
+    const acc = new Float64Array(N), half = N >> 1;
+    for (let f=0; f<frames; f++){
+      const re = new Float64Array(N), im = new Float64Array(N);
+      for (let i=0;i<N;i++){ const idx = f*N + i; re[i] = idx < x.length ? x[idx]*hann[i] : 0; }
+      FFT(re, im);
+      for (let i=0;i<half;i++){
+        acc[i]      += Math.hypot(re[i+half], im[i+half]);
+        acc[i+half] += Math.hypot(re[i], im[i]);
+      }
+    }
+    for (let i=0;i<N;i++) acc[i] /= frames*hannSum;
+    return acc;
+  }
+
+  function genSignal(kind, f0, tArr, rate){
+    const n = tArr.length, x = new Float64Array(n);
+    switch(kind){
+      case 'cosine':
+        for (let i=0;i<n;i++) x[i] = Math.cos(TWO_PI*f0*tArr[i]); break;
+      case 'sumcos':
+        for (let i=0;i<n;i++) x[i] = 0.6*Math.cos(TWO_PI*f0*tArr[i]) + 0.4*Math.cos(TWO_PI*2*f0*tArr[i] + Math.PI/4); break;
+      case 'square':
+        for (let i=0;i<n;i++) x[i] = Math.sign(Math.sin(TWO_PI*f0*tArr[i])) || 1; break;
+      case 'triangle':
+        for (let i=0;i<n;i++){ const ph = (tArr[i]*f0)%1; x[i] = 4*Math.abs(ph-0.5)-1; } break;
+      case 'saw':
+        for (let i=0;i<n;i++){ const ph = (tArr[i]*f0)%1; x[i] = 2*ph-1; } break;
+      case 'chirp': {
+        const f1 = f0, f2 = Math.min(4*f0, 0.45*rate);   // keep the sweep below Nyquist
+        const dur = tArr[n-1] || 1;
+        for (let i=0;i<n;i++){ const t = tArr[i]; x[i] = Math.cos(TWO_PI*(f1*t + 0.5*(f2-f1)*t*t/dur)); }
+        break;
+      }
+      case 'noise':
+        if (!noiseCache || noiseCache.length !== n){
+          noiseCache = Float64Array.from({length:n}, ()=> (Math.random()*2-1)*0.6);
+        }
+        x.set(noiseCache); break;
+      case 'demo':
+        for (let i=0;i<n;i++) x[i] = 0.6*Math.cos(TWO_PI*440*tArr[i]) + 0.4*Math.cos(TWO_PI*880*tArr[i]); break;
+      default: break;   // zeros
+    }
+    return x;
+  }
+
+  // RBJ biquads. BPF uses the constant 0 dB peak-gain form (b0 = alpha).
+  function biquadCoeffs(type, fc, Q, rate){
+    const w0 = TWO_PI*fc/rate;
+    const cosw = Math.cos(w0), sinw = Math.sin(w0);
+    const alpha = sinw/(2*Q);
+    let b0,b1,b2;
+    if (type==='lpf'){ b0=(1-cosw)/2; b1=1-cosw; b2=(1-cosw)/2; }
+    else if (type==='hpf'){ b0=(1+cosw)/2; b1=-(1+cosw); b2=(1+cosw)/2; }
+    else if (type==='bpf'){ b0=alpha; b1=0; b2=-alpha; }
+    else if (type==='notch'){ b0=1; b1=-2*cosw; b2=1; }
+    else { b0=(1-cosw)/2; b1=1-cosw; b2=(1-cosw)/2; }
+    const a0=1+alpha, a1=-2*cosw, a2=1-alpha;
+    return { b0:b0/a0, b1:b1/a0, b2:b2/a0, a1:a1/a0, a2:a2/a0 };
+  }
+  function biquadFilter(x, c){
+    const y = new Float64Array(x.length);
+    let x1=0,x2=0,y1=0,y2=0;
+    const {b0,b1,b2,a1,a2} = c;
+    for (let n=0;n<x.length;n++){ const xn=x[n]; const yn=b0*xn + b1*x1 + b2*x2 - a1*y1 - a2*y2; y[n]=yn; x2=x1; x1=xn; y2=y1; y1=yn; }
+    return y;
+  }
+  function biquadFreqResp(c, freqs, rate){
+    const {b0,b1,b2,a1,a2} = c;
+    const Hmag = new Float64Array(freqs.length);
+    for (let i=0;i<freqs.length;i++){
+      const w = TWO_PI*freqs[i]/rate;
+      const cs = Math.cos(w), sn = -Math.sin(w);
+      const z2r = cs*cs - sn*sn, z2i = 2*cs*sn;
+      const numRe = b0 + b1*cs + b2*z2r, numIm = b1*sn + b2*z2i;
+      const denRe = 1 + a1*cs + a2*z2r,  denIm = a1*sn + a2*z2i;
+      Hmag[i] = Math.hypot(numRe, numIm) / Math.hypot(denRe, denIm);
+    }
+    return Hmag;
+  }
+
+  function getFilterParams(rate){
+    const type = elFilter.value;
+    const fc = Math.min(parseFloat(elFc.value), 0.45*rate);   // stay safely below Nyquist
+    const bw = parseFloat(elBw.value);
+    let QEff = 0.707;
+    if (type==='bpf' || type==='notch'){
+      QEff = Math.max(0.1, Math.min(50, fc / Math.max(1, bw)));
+      rowBW.style.display = 'grid';
+    } else {
+      rowBW.style.display = 'none';
+    }
+    setTeX(qBadge, String.raw`Q=${QEff.toFixed(3)}`, 'Q = ' + QEff.toFixed(3));
+    setTeX(elFcVal, String.raw`f_c=${fc.toFixed(0)}\ \text{Hz}`, 'fc = ' + fc.toFixed(0) + ' Hz');
+    setTeX(elBwVal, String.raw`\mathrm{BW}=${bw.toFixed(0)}\ \text{Hz}`, 'BW = ' + bw.toFixed(0) + ' Hz');
+    return { type, fcEff: fc, QEff };
+  }
+
+  // ---------- Zoom & pan (pointer events, shared across a group of canvases) ----------
+  const PLOT_L = 56, PLOT_R = 12;   // must match plotXY margins
+  function attachZoomPan(canvases, {initRange, hardBounds}, redraw){
+    let xRange = initRange.slice();
+    const [H0, H1] = hardBounds;
+    let panning = false, panStartX = 0, panStartRange = xRange, panCanvas = null;
+
+    const clampRange = (r) => {
+      let w = Math.min(r[1]-r[0], H1-H0);
+      w = Math.max(w, (H1-H0)*1e-3);
+      let a = r[0];
+      if (a < H0) a = H0;
+      if (a + w > H1) a = H1 - w;      // shift, never change the width while panning
+      return [a, a+w];
+    };
+    const plotWidth = (c) => Math.max(1, c.getBoundingClientRect().width - PLOT_L - PLOT_R);
+
+    canvases.forEach((canvas) => {
+      canvas.style.touchAction = 'pan-y';
+      canvas.style.cursor = 'grab';
+      canvas.addEventListener('wheel', (e) => {
+        e.preventDefault();
+        const rect = canvas.getBoundingClientRect();
+        const u = Math.min(1, Math.max(0, (e.clientX - rect.left - PLOT_L) / plotWidth(canvas)));
+        const [a, b] = xRange;
+        const xm = a + u*(b-a);
+        const zf = (e.deltaY < 0) ? 0.9 : 1.1;
+        xRange = clampRange([xm - (xm-a)*zf, xm + (b-xm)*zf]);
+        redraw();
+      }, {passive:false});
+      canvas.addEventListener('pointerdown', (e) => {
+        panning = true; panCanvas = canvas; panStartX = e.clientX; panStartRange = xRange.slice();
+        canvas.setPointerCapture(e.pointerId);
+        canvas.style.cursor = 'grabbing';
+      });
+      canvas.addEventListener('pointermove', (e) => {
+        if (!panning || panCanvas !== canvas) return;
+        const w = panStartRange[1] - panStartRange[0];
+        const dx = -(e.clientX - panStartX) / plotWidth(canvas) * w;
+        xRange = clampRange([panStartRange[0] + dx, panStartRange[1] + dx]);
+        redraw();
+      });
+      const end = () => { panning = false; panCanvas = null; canvas.style.cursor = 'grab'; };
+      canvas.addEventListener('pointerup', end);
+      canvas.addEventListener('pointercancel', end);
+      canvas.addEventListener('dblclick', () => { xRange = initRange.slice(); redraw(); });
+    });
+    return {
+      getRange: () => xRange.slice(),
+      // change the default (reset) window and jump to it
+      setInit: (r) => { initRange = r.slice(); xRange = clampRange(r.slice()); }
+    };
+  }
+
+  // ---------- Compute (only when inputs change) / render (also on zoom) ----------
+  function compute(){
+    const kind = elSignal.value;
+    const f0 = parseFloat(elF0.value);
+    setTeX(elF0Val, String.raw`f_0=${f0.toFixed(0)}\ \text{Hz}`, 'f0 = ' + f0.toFixed(0) + ' Hz');
+
+    const hasF0 = ['cosine','sumcos','square','triangle','saw','chirp'].includes(kind);
+    const isFile = (kind==='upload' || kind==='record');
+    signalExtra.style.display = hasF0 ? 'grid' : 'none';
+    fileInput.style.display = (kind==='upload') ? 'block' : 'none';
+    recordRow.style.display = (kind==='record') ? 'flex' : 'none';
+
+    // Default time window: a few cycles of the chosen signal (full second for files).
+    // Reset only when the signal itself changes, so filter tweaks keep the user's zoom.
+    const CYCLES = 4;
+    const winKey = kind + '|' + f0 + '|' + (uploadedBuffer ? uploadedBuffer.length : 0);
+    if (winKey !== lastWinKey){
+      lastWinKey = winKey;
+      let win = T;
+      if (hasF0) win = CYCLES / f0;
+      else if (kind === 'demo') win = CYCLES / 440;
+      else if (kind === 'noise') win = 0.01;
+      zoomTime.setInit([0, Math.min(T, win)]);
+    }
+
+    const rate = (isFile && uploadedBuffer) ? uploadedBuffer.sampleRate : Fs;
+    setTeX(fsBadge, String.raw`F_s=${rate}\ \text{Hz}`, 'Fs = ' + rate + ' Hz');
+    const nPlot = Math.floor(rate*T);
+    const tPlot = Float64Array.from({length:nPlot}, (_,k)=> k/rate);
+    const faxis = Float64Array.from({length:N}, (_,k)=> (k - N/2)*(rate/N));
+
+    const {type, fcEff, QEff} = getFilterParams(rate);
+    const coeffs = biquadCoeffs(type, fcEff, QEff, rate);
+
+    let xPlot, xFull = null;
+    if (isFile){
+      xPlot = new Float64Array(nPlot);
+      if (uploadedBuffer){
+        xFull = uploadedBuffer.getChannelData(0);          // first channel only
+        xPlot.set(xFull.subarray(0, Math.min(xFull.length, nPlot)));
+      }
+    } else {
+      xPlot = genSignal(kind, f0, tPlot, rate);
+    }
+
+    const yPlot = biquadFilter(xPlot, coeffs);
+
+    // impulse response, long enough to show the decay (|pole|^2 = a2)
+    let Lh = 400;
+    if (coeffs.a2 > 0 && coeffs.a2 < 1) Lh = Math.min(8192, Math.max(128, Math.ceil(-6.9 / Math.log(Math.sqrt(coeffs.a2)))));
+    const impulse = new Float64Array(Lh); impulse[0] = 1;
+
+    // Display-only dense time axis so high-frequency signals still look smooth with few cycles shown.
+    // x is evaluated exactly at the dense times; y is the real (Fs-rate) filter output, cubic-interpolated.
+    let tDisp = tPlot, xDisp = xPlot, yDisp = yPlot;
+    if (hasF0){
+      const fmax = f0 * (kind === 'chirp' ? 4 : kind === 'sumcos' ? 2 : 1);
+      const K = Math.min(16, Math.max(1, Math.ceil(60 * fmax / rate)));   // aim for >= 60 points per cycle
+      if (K > 1){
+        tDisp = Float64Array.from({length: nPlot*K}, (_,j)=> j/(rate*K));
+        xDisp = genSignal(kind, f0, tDisp, rate);
+        yDisp = upsampleCubic(yPlot, K);
+      }
+    }
+
+    S = {
+      isFile, rate, coeffs, tPlot, faxis, xPlot, yPlot, xFull, tDisp, xDisp, yDisp,
+      Xmag: fftRealMag(xPlot), Ymag: fftRealMag(yPlot),
+      Hmag: biquadFreqResp(coeffs, faxis, rate),
+      h: biquadFilter(impulse, coeffs),
+      th: Float64Array.from({length:Lh}, (_,i)=> 1000*i/rate)   // milliseconds
+    };
+
+    updateMath(type, fcEff, QEff, rate, coeffs);
+
+    const hasBuf = !isFile || !!uploadedBuffer;
+    btnPlayX.disabled = !hasBuf;
+    btnPlayY.disabled = !hasBuf;
+    render();
+  }
+
+  function render(){
+    if (!S) return;
+    const tr = zoomTime.getRange(), fr = zoomFreq.getRange();
+    const X = col("--xcolor"), Hc = col("--hcolor"), Yc = col("--ycolor");
+    plotXY(cx, S.tDisp, S.xDisp, {color:X,  xRange:tr});
+    // |X(f)| and |Y(f)| share one auto-scaled y-limit so they can be compared directly
+    let peak = 0;
+    for (let i=0;i<S.Xmag.length;i++){ if (S.Xmag[i] > peak) peak = S.Xmag[i]; if (S.Ymag[i] > peak) peak = S.Ymag[i]; }
+    const specMax = niceCeil(Math.max(peak*1.1, 1e-9));
+    plotXY(cX, S.faxis, S.Xmag,  {color:X,  xRange:fr, yRange:[0,specMax]});
+    plotXY(ch, S.th,    S.h,     {color:Hc, xRange:[0, S.th[S.th.length-1]]});
+    plotXY(cH, S.faxis, S.Hmag,  {color:Hc, xRange:fr, yRange:[0,1]});
+    plotXY(cy, S.tDisp, S.yDisp, {color:Yc, xRange:tr});
+    plotXY(cY, S.faxis, S.Ymag,  {color:Yc, xRange:fr, yRange:[0,specMax]});
+  }
+
+  const zoomTime = attachZoomPan([cx.canvas, cy.canvas], {initRange:[0,T], hardBounds:[0,T]}, render);
+  const zoomFreq = attachZoomPan([cX.canvas, cH.canvas, cY.canvas], {initRange:[-Fs/2,Fs/2], hardBounds:[-Fs/2,Fs/2]}, render);
+
+  // ---------- Input / recording ----------
+  async function loadAudio(arrayBuf){
+    try {
+      uploadedBuffer = await ensureAC().decodeAudioData(arrayBuf);
+      setStatus('');
+    } catch(e){
+      setStatus('Could not decode that audio file.');
+    }
+    compute();
+  }
+  fileInput.addEventListener('change', async (e)=>{
+    const file = e.target.files[0];
+    if (file) loadAudio(await file.arrayBuffer());
+  });
+
+  async function startRecording(){
+    if (!navigator.mediaDevices || !window.MediaRecorder){ setStatus('Recording is not supported in this browser.'); return; }
+    try { mediaStream = await navigator.mediaDevices.getUserMedia({audio:true}); }
+    catch(e){ setStatus('Microphone unavailable: ' + (e.message || e.name)); return; }
+    recChunks = [];
+    const rec = new MediaRecorder(mediaStream);
+    mediaRecorder = rec;
+    rec.ondataavailable = (e)=>{ if (e.data.size>0) recChunks.push(e.data); };
+    rec.onstop = async ()=>{
+      if (mediaStream){ mediaStream.getTracks().forEach(t=>t.stop()); mediaStream = null; }   // release the mic
+      const blob = new Blob(recChunks, {type: rec.mimeType || 'audio/webm'});
+      loadAudio(await blob.arrayBuffer());
+    };
+    rec.start();
+    setStatus('Recording…');
+    btnRec.disabled = true; btnStop.disabled = false;
+  }
+  function stopRecording(){
+    if (mediaRecorder && mediaRecorder.state !== 'inactive') mediaRecorder.stop();
+    btnRec.disabled = false; btnStop.disabled = true;
+  }
+
+  elSignal.addEventListener('change', compute);
+  elFilter.addEventListener('change', compute);
+  elF0.addEventListener('input', compute);
+  elFc.addEventListener('input', compute);
+  elBw.addEventListener('input', compute);
+  btnPlayX.addEventListener('click', ()=>{
+    if (!S) return;
+    const buf = S.isFile ? uploadedBuffer : toBuffer(S.xPlot, S.rate);
+    if (buf) playBuffer(buf);
+  });
+  btnPlayY.addEventListener('click', ()=>{
+    if (!S) return;
+    const x = S.isFile ? S.xFull : S.xPlot;          // filter the whole clip only when asked to play
+    if (x) playBuffer(toBuffer(biquadFilter(x, S.coeffs), S.rate));
+  });
+  btnRec.addEventListener('click', startRecording);
+  btnStop.addEventListener('click', stopRecording);
+  window.addEventListener('resize', render);
+
+  compute();
+})();
+</script>
+</body>
+</html>

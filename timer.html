@@ -5,12 +5,73 @@
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <title>Timer | Ahmed Hamdi Sakr</title>
+    <meta name="description" content="Exam countdown timer and live local-time clock with quick notes, for use in class and exams." />
 
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/feather-icons"></script>
-    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons@4.29.2/dist/feather.min.js"></script>
     <link href="styles.css" rel="stylesheet" />
+    <link rel="icon" type="image/x-icon" href="/images/icon.ico" />
     <script defer src="app.js"></script>
+    <style>
+        /* In fullscreen keep only the name in the top bar (no links / menu, and the name is not clickable) */
+        html:fullscreen #primary-nav, html:fullscreen #menuBtn, html:fullscreen #mobile-nav { display: none !important; }
+        html:fullscreen header a { pointer-events: none; }
+        html:-webkit-full-screen #primary-nav, html:-webkit-full-screen #menuBtn, html:-webkit-full-screen #mobile-nav { display: none !important; }
+        html:-webkit-full-screen header a { pointer-events: none; }
+
+        /* utility classes (flex, chip) would otherwise override the hidden attribute */
+        [hidden] { display: none !important; }
+
+        /* ---- Clock / Timer switch ---- */
+        .switch { position: relative; width: 3rem; height: 1.75rem; border-radius: 9999px; background: #cbd5e1; border: 0; padding: 0; cursor: pointer; transition: background-color .2s ease; flex-shrink: 0; }
+        .switch .knob { position: absolute; top: .25rem; left: .25rem; width: 1.25rem; height: 1.25rem; border-radius: 9999px; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,.3); transition: transform .2s ease; }
+        .switch[aria-checked="true"] { background: #2563eb; }
+        .switch[aria-checked="true"] .knob { transform: translateX(1.25rem); }
+        .mode-label { font-size: .95rem; color: #6b7280; transition: color .2s ease; }
+        .mode-label[data-active="true"] { color: #1d4ed8; font-weight: 600; }
+
+        /* ---- Clock and timer views share one cell: the card keeps the same size in both modes ---- */
+        .viewstack { display: grid; }
+        .viewstack > .view { grid-area: 1 / 1; min-width: 0; align-self: center; }
+        .viewstack > .view.is-off { visibility: hidden; pointer-events: none; }
+
+
+        /* ---- Local clock (big text; same digit size as the timer; colon = two dots centred on the digits) ---- */
+        .bigclock { text-align: center; color: #333; padding: .5rem 0; }
+        .bc-label { font-size: .95rem; color: #374151; }
+        .bc-time { display: flex; align-items: center; justify-content: center; font-size: clamp(3.5rem, 15.4vw, 11.2rem); font-weight: 700; line-height: 1.15; font-variant-numeric: tabular-nums; letter-spacing: -.02em; margin: .25rem 0; }
+        .bc-colon { display: flex; flex-direction: column; gap: .2em; margin: 0 .2em; position: relative; top: .055em; animation: bccolon 1s steps(1) infinite; }
+        .bc-colon i { display: block; width: .13em; height: .13em; border-radius: 9999px; background: #6b6b6b; }
+        @keyframes bccolon { 50% { opacity: .25; } }
+        .bc-time small { font-size: .3em; align-self: flex-start; margin: .2em 0 0 .15em; letter-spacing: 0; }
+        .bc-date { font-weight: 700; font-size: 1.05rem; }
+        .bc-zone { font-size: .8rem; color: #6b7280; margin-top: .35rem; }
+        @media (prefers-reduced-motion: reduce) { .bc-colon { animation: none; } }
+
+        /* ---- Countdown display ---- */
+        .tdisp { display: grid; grid-template-columns: auto auto auto auto auto; justify-content: center; align-items: center; column-gap: clamp(.4rem, 2vw, 1.5rem); row-gap: .5rem; margin: 1rem 0 .75rem; }
+        .tile { position: relative; display: flex; align-items: center; justify-content: center; width: clamp(4rem, 19vw, 15rem); aspect-ratio: 4 / 3; background: #f8fafc; border: 1px solid #e5e7eb; border-radius: 1.25rem; box-shadow: inset 0 2px 6px rgba(15,23,42,.06), 0 4px 12px rgba(15,23,42,.06); overflow: hidden; }
+        .tile span { font-size: clamp(2.5rem, 11vw, 8rem); font-weight: 700; line-height: 1; font-variant-numeric: tabular-nums; color: #1f2937; transition: color .3s ease; }
+        .tlabel { text-align: center; font-size: .75rem; letter-spacing: .08em; text-transform: uppercase; color: #6b7280; }
+        .colon { display: flex; flex-direction: column; gap: clamp(.6rem, 2.5vw, 1.6rem); }
+        .colon i { display: block; width: clamp(.5rem, 1.6vw, 1rem); height: clamp(.5rem, 1.6vw, 1rem); border-radius: 9999px; background: #9ca3af; }
+        .tdisp[data-state="warn"] .tile span { color: #d97706; }
+        .tdisp[data-state="danger"] .tile span, .tdisp[data-state="done"] .tile span { color: #dc2626; }
+        .tdisp[data-state="done"] .tile { animation: tblink 1s ease-in-out infinite; }
+        @keyframes tblink { 50% { opacity: .45; } }
+        @media (prefers-reduced-motion: reduce) { .tdisp[data-state="done"] .tile { animation: none; } }
+
+        /* ---- Presets, manual inputs, buttons ---- */
+        .preset { cursor: pointer; border: 1px solid transparent; font-weight: 500; padding: .35rem .9rem; transition: background-color .15s ease, color .15s ease; }
+        .preset:hover { background: #bfdbfe; }
+        .preset[aria-pressed="true"] { background: #2563eb; color: #fff; }
+        .preset:disabled { opacity: .5; cursor: not-allowed; }
+        .btn:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+        .minput { width: 4.5rem; text-align: center; font-size: 1.25rem; font-variant-numeric: tabular-nums; padding: .4rem .25rem; border: 1px solid #d1d5db; border-radius: .5rem; background: #fff; }
+        .minput:focus { outline: none; box-shadow: 0 0 0 2px #2563eb; }
+        .minput:disabled { background: #f3f4f6; color: #9ca3af; }
+        .mlab { display: flex; flex-direction: column; align-items: center; gap: .25rem; font-size: .75rem; letter-spacing: .08em; text-transform: uppercase; color: #6b7280; }
+    </style>
 </head>
 
 <body class="font-sans gradient-bg min-h-screen" data-page="timer">
@@ -18,290 +79,102 @@
     <div class="container mx-auto px-4 py-8 max-w-5xl">
         <!-- Main -->
         <main id="main" class="fade-in py-8 px-4 max-w-6xl mx-auto space-y-8 pt-20">
+            <h1 class="sr-only">Timer</h1>
 
-            <!-- Card: Current Time (DaysPedia) -->
+            <!-- Card: Current Time / Timer -->
             <div class="bg-white rounded-xl shadow-lg p-6 hover-scale">
-                <div class="flex items-center mb-4">
-                    <i data-feather="clock" class="text-blue-500 mr-2"></i>
-                    <h2 class="text-2xl font-semibold text-gray-800">Current Time</h2>
+                <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+                    <div class="flex items-center">
+                        <i data-feather="clock" class="text-blue-500 mr-2"></i>
+                        <h2 class="text-2xl font-semibold text-gray-800" id="cardTitle">Current Time</h2>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <span class="chip" id="nowChip" hidden></span>
+                        <span class="chip" id="bgChip" hidden></span>
+                        <span class="mode-label" id="lblClock" data-active="true">Clock</span>
+                        <button type="button" class="switch" id="modeSwitch" role="switch" aria-checked="false"
+                            aria-label="Switch between clock and countdown timer"><span class="knob"></span></button>
+                        <span class="mode-label" id="lblTimer" data-active="false">Timer</span>
+                    </div>
                 </div>
 
-                <!-- Clean container for the widget -->
-                <!--Dayspedia.com widget-->
-                <div class="DPDC" cityid="3297" lang="en" id="dayspedia_widget_93ed971523839cd"
-                    host="https://dayspedia.com" ampm="true" nightsign="true" sun="false" auto="true"
-                    style="width: 100%; background-color: initial; background-image: none; border-radius: 0px; border-width: 0px;">
-
-                    <style media="screen" id="dayspedia_widget_93ed971523839cd_style">
-                        /*COMMON*/
-                        .DPDC {
-                            display: table;
-                            position: relative;
-                            box-sizing: border-box;
-                            font-size: 100.01%;
-                            font-style: normal;
-                            font-family: inherit;
-                            background-position: 50% 50%;
-                            background-repeat: no-repeat;
-                            background-size: cover;
-                            overflow: hidden;
-                            user-select: none
-                        }
-
-                        .DPDCh,
-                        .DPDCd {
-                            width: fit-content;
-                            line-height: 1.4
-                        }
-
-                        .DPDCh {
-                            margin-bottom: 1em
-                        }
-
-                        .DPDCd {
-                            margin-top: .24em
-                        }
-
-                        .DPDCt {
-                            line-height: 1
-                        }
-
-                        .DPDCth,
-                        .DPDCtm,
-                        .DPDCts {
-                            display: inline-block;
-                            vertical-align: text-top;
-                            white-space: nowrap
-                        }
-
-                        .DPDCth {
-                            min-width: 1.15em
-                        }
-
-                        .DPDCtm,
-                        .DPDCts {
-                            min-width: 1.44em
-                        }
-
-                        .DPDCtm::before,
-                        .DPDCts::before {
-                            display: inline-block;
-                            content: ':';
-                            vertical-align: middle;
-                            margin: -.34em 0 0 -.07em;
-                            width: .32em;
-                            text-align: center;
-                            opacity: .72;
-                            filter: alpha(opacity=72)
-                        }
-
-                        .DPDCt12 {
-                            display: inline-block;
-                            vertical-align: text-top;
-                            font-size: 40%
-                        }
-
-                        .DPDCdm::after {
-                            content: ' '
-                        }
-
-                        .DPDCda::after {
-                            content: ', '
-                        }
-
-                        .DPDCdt {
-                            margin-right: .48em
-                        }
-
-                        .DPDCtn {
-                            display: inline-block;
-                            position: relative;
-                            width: 13px;
-                            height: 13px;
-                            border: 2px solid;
-                            border-radius: 50%;
-                            overflow: hidden
-                        }
-
-                        .DPDCtn>i {
-                            display: block;
-                            content: '';
-                            position: absolute;
-                            right: 33%;
-                            top: -5%;
-                            width: 85%;
-                            height: 85%;
-                            border-radius: 50%
-                        }
-
-                        .DPDCs {
-                            margin: .96em 0 0 -3px;
-                            font-size: 90%;
-                            line-height: 1;
-                            white-space: nowrap
-                        }
-
-                        .DPDCs sup {
-                            padding-left: .24em;
-                            font-size: 65%
-                        }
-
-                        .DPDCsl::before,
-                        .DPDCsl::after {
-                            display: inline-block;
-                            opacity: .4
-                        }
-
-                        .DPDCsl::before {
-                            content: '~';
-                            margin: 0 .12em
-                        }
-
-                        .DPDCsl::after {
-                            content: '~';
-                            margin: 0 .24em
-                        }
-
-                        .DPDCs svg {
-                            display: inline-block;
-                            vertical-align: bottom;
-                            width: 1.2em;
-                            height: 1.2em;
-                            opacity: .48
-                        }
-
-                        /*CUSTOM*/
-
-                        .DPDC {
-                            width: auto;
-                            padding: 24px;
-                            background-color: #ffffff;
-                            border: 1px solid #343434;
-                            border-radius: 8px
-                        }
-
-                        /* widget width, padding, background, border, rounded corners */
-                        .DPDCh {
-                            color: #007DBF;
-                            font-weight: normal
-                        }
-
-                        /* headline color, font-weight*/
-                        .DPDCt,
-                        .DPDCd {
-                            color: #343434;
-                            font-weight: bold
-                        }
-
-                        /* time & date color, font-weight */
-                        .DPDCtn {
-                            border-color: #343434
-                        }
-
-                        /* night-sign color = time & date color */
-                        .DPDCtn>i {
-                            background-color: #343434
-                        }
-
-                        /* night-sign color = time & date color */
-                        .DPDCt {
-                            font-size: 48px
-                        }
-
-                        /* time font-size */
-                        .DPDCh,
-                        .DPDCd {
-                            font-size: 16px
-                        }
-
-                        /* headline & date font-size */
-                    </style>
-
-                    <a class="DPl" href="https://dayspedia.com/time/us/Washington/" target="_blank"
-                        style="display:block!important;text-decoration:none!important;border:none!important;cursor:pointer!important;background:transparent!important;line-height:0!important;text-shadow:none!important;position:absolute;z-index:1;top:0;right:0;bottom:0;left:0">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 16 16"
-                            style="position:absolute;right:8px;bottom:0;width:16px;height:16px">
-                            <path style="fill: rgb(0, 0, 0);"
-                                d="M0,0v16h1.7c-0.1-0.2-0.1-0.3-0.1-0.5c0-0.9,0.8-1.6,1.6-1.6c0.9,0,1.6,0.8,1.6,1.6c0,0.2,0,0.3-0.1,0.5h1.8 c-0.1-0.2-0.1-0.3-0.1-0.5c0-0.9,0.8-1.6,1.6-1.6s1.6,0.8,1.6,1.6c0,0.2,0,0.3-0.1,0.5h1.8c-0.1-0.2-0.1-0.3-0.1-0.5 c0-0.9,0.8-1.6,1.6-1.6c0.9,0,1.6,0.8,1.6,1.6c0,0.2,0,0.3-0.1,0.5H16V0H0z M4.2,8H2V2h2.2c2.1,0,3.3,1.3,3.3,3S6.3,8,4.2,8z M11.4,6.3h-0.8V8H9V2h2.5c1.4,0,2.4,0.8,2.4,2.1C13.9,5.6,12.9,6.3,11.4,6.3z M4.4,3.5H3.7v3h0.7C5.4,6.5,6,6,6,5 C6,4.1,5.4,3.5,4.4,3.5z M11.3,3.4h-0.8V5h0.8c0.6,0,0.9-0.3,0.9-0.8C12.2,3.7,11.9,3.4,11.3,3.4z">
-                            </path>
-                        </svg>
-                        <span title="DaysPedia.com"
-                            style="position: absolute; right: 28px; bottom: 6px; height: 10px; width: 60px; overflow: hidden; text-align: right; color: rgb(0, 0, 0); font: 10px / 10px Arial, sans-serif !important;">Powered&nbsp;by
-                            DaysPedia.com</span>
-                    </a>
-                    <div class="DPDCh"
-                        style="text-align: center; margin-left: auto; margin-right: auto; font-size: 16px; color: rgb(0, 0, 0); font-weight: normal;">
-                        Current Time in Washington</div>
-                    <div class="DPDCt"
-                        style="text-align: center; margin-left: auto; margin-right: auto; font-size: 160px;">
-                        <span class="DPDCth">04</span><span class="DPDCtm">11</span><span class="DPDCts"
-                            style="display: none;">05</span><span class="DPDCt12">pm</span>
+                <div class="viewstack">
+                <div id="clockView" class="view">
+                <!-- Local clock: uses the device's own time zone (no location permission, no third-party script) -->
+                <div class="bigclock" id="bigClock">
+                    <div class="bc-label">Current Time</div>
+                    <div class="bc-time" aria-label="Current local time">
+                        <span id="bcH">--</span><span class="bc-colon" aria-hidden="true"><i></i><i></i></span><span id="bcM">--</span><small id="bcAp" hidden></small>
                     </div>
-                    <div class="DPDCd"
-                        style="text-align: center; margin-left: auto; margin-right: auto; font-size: 16px;">
-                        <span class="DPDCdt">Thu, August 18</span><span class="DPDCtn"
-                            style="display: none; width: 14px; height: 14px;"><i></i></span>
-                    </div>
-
-
-                    <div class="DPDCs"
-                        style="display: none; text-align: center; margin-left: auto; margin-right: auto; font-size: 16px;">
-                        <span class="DPDCsr">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24">
-                                <path
-                                    d="M12,4L7.8,8.2l1.4,1.4c0,0,0.9-0.9,1.8-1.8V14h2c0,0,0-3.3,0-6.2l1.8,1.8l1.4-1.4L12,4z">
-                                </path>
-                                <path
-                                    d="M6.8,15.3L5,13.5l-1.4,1.4l1.8,1.8L6.8,15.3z M4,21H1v2h3V21z M20.5,14.9L19,13.5l-1.8,1.8l1.4,1.4L20.5,14.9z M20,21v2h3 v-2H20z M6.1,23C6,22.7,6,22.3,6,22c0-3.3,2.7-6,6-6s6,2.7,6,6c0,0.3,0,0.7-0.1,1H6.1z">
-                                </path>
-                            </svg>
-                            06:24<sup>am</sup>
-                        </span>
-                        <span class="DPDCsl">13:35</span>
-                        <span class="DPDCss">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24">
-                                <path
-                                    d="M12,14L7.8,9.8l1.4-1.4c0,0,0.9,0.9,1.8,1.8V4h2c0,0,0,3.3,0,6.2l1.8-1.8l1.4,1.4L12,14z">
-                                </path>
-                                <path
-                                    d="M6.8,15.3L5,13.5l-1.4,1.4l1.8,1.8L6.8,15.3z M4,21H1v2h3V21z M20.5,14.9L19,13.5l-1.8,1.8l1.4,1.4L20.5,14.9z M20,21v2h3 v-2H20z M6.1,23C6,22.7,6,22.3,6,22c0-3.3,2.7-6,6-6s6,2.7,6,6c0,0.3,0,0.7-0.1,1H6.1z">
-                                </path>
-                            </svg>
-                            07:59<sup>pm</sup>
-                        </span>
-                    </div>
-                    <script>
-                        var s, t; s = document.createElement("script"); s.type = "text/javascript";
-                        s.src = "//cdn.dayspedia.com/js/dwidget.min.vb46adaa2.js";
-                        t = document.getElementsByTagName('script')[0]; t.parentNode.insertBefore(s, t);
-                        s.onload = function () {
-                            window.dwidget = new window.DigitClock();
-                            window.dwidget.init("dayspedia_widget_93ed971523839cd");
-                        };
-                    </script>
-                    <!--/DPDC-->
+                    <div class="bc-date" id="bcDate"></div>
+                    <div class="bc-zone" id="bcZone"></div>
                 </div>
-                <!--Dayspedia.com widget ENDS-->
+                </div>
 
-                <script>
-                    var elem = document.documentElement;
-                    function openFullscreen() {
-                        if (elem.requestFullscreen) {
-                            elem.requestFullscreen();
-                        } else if (elem.webkitRequestFullscreen) { /* Safari */
-                            elem.webkitRequestFullscreen();
-                        } else if (elem.msRequestFullscreen) { /* IE11 */
-                            elem.msRequestFullscreen();
-                        }
-                    }
-                </script>
-                <div class="flex justify-center">
-                    <button
-                        class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-blue-600 text-white hover:bg-blue-700 transition"
-                        onclick="openFullscreen();">
-                        <i data-feather="maximize-2"></i>
-                        Fullscreen
+                <!-- Countdown timer view -->
+                <div id="timerView" class="view is-off" aria-hidden="true" inert>
+                    <div class="tdisp" id="timerDisplay" role="timer" aria-label="Countdown timer" data-state="">
+                        <div class="tile"><span id="tH">01</span></div>
+                        <div class="colon" aria-hidden="true"><i></i><i></i></div>
+                        <div class="tile"><span id="tM">00</span></div>
+                        <div class="colon" aria-hidden="true"><i></i><i></i></div>
+                        <div class="tile"><span id="tS">00</span></div>
+                        <div class="tlabel">Hours</div><div></div>
+                        <div class="tlabel">Minutes</div><div></div>
+                        <div class="tlabel">Seconds</div>
+                    </div>
+
+                    <p class="text-center text-xl font-semibold text-red-600 mb-3" id="timerMsg" role="status"
+                        aria-live="polite" style="min-height:1.75rem"></p>
+
+                    <div class="flex flex-wrap justify-center gap-3 mb-5">
+                        <button type="button" class="btn btn-secondary" id="btnReset">
+                            <i data-feather="rotate-ccw" class="icon-4"></i><span>Reset</span>
+                        </button>
+                        <button type="button" class="btn btn-primary" id="btnStart">
+                            <span id="icoPlay"><i data-feather="play" class="icon-4"></i></span>
+                            <span id="icoPause" hidden><i data-feather="pause" class="icon-4"></i></span>
+                            <span id="startLabel">Start</span>
+                        </button>
+                        <button type="button" class="btn btn-secondary" id="btnAdd1" title="Add one minute">+1 min</button>
+                        <button type="button" class="btn btn-secondary" id="btnAdd5" title="Add five minutes">+5 min</button>
+                    </div>
+
+                    <div class="flex flex-wrap justify-center gap-2" id="presets" role="group" aria-label="Timer length">
+                        <button type="button" class="chip preset" data-sec="900" aria-pressed="false">15 min</button>
+                        <button type="button" class="chip preset" data-sec="1800" aria-pressed="false">30 min</button>
+                        <button type="button" class="chip preset" data-sec="2700" aria-pressed="false">45 min</button>
+                        <button type="button" class="chip preset" data-sec="3600" aria-pressed="true">1 hr</button>
+                        <button type="button" class="chip preset" data-sec="5400" aria-pressed="false">1.5 hr</button>
+                        <button type="button" class="chip preset" data-sec="7200" aria-pressed="false">2 hr</button>
+                        <button type="button" class="chip preset" data-sec="10800" aria-pressed="false">3 hr</button>
+                        <button type="button" class="chip preset" data-manual="1" aria-pressed="false">Manual</button>
+                    </div>
+
+                    <div class="flex justify-center items-end gap-2 mt-4 mb-2" id="manualBox" hidden>
+                        <label class="mlab">Hours<input class="minput" id="mH" type="number" min="0" max="99" value="0" inputmode="numeric" /></label>
+                        <span class="text-2xl text-gray-400 pb-1" aria-hidden="true">:</span>
+                        <label class="mlab">Minutes<input class="minput" id="mM" type="number" min="0" max="59" value="0" inputmode="numeric" /></label>
+                        <span class="text-2xl text-gray-400 pb-1" aria-hidden="true">:</span>
+                        <label class="mlab">Seconds<input class="minput" id="mS" type="number" min="0" max="59" value="0" inputmode="numeric" /></label>
+                    </div>
+                </div>
+                <!-- /Countdown timer view -->
+                </div>
+
+
+                <div class="flex flex-wrap items-center justify-center gap-x-6 gap-y-3 mt-5">
+                    <button id="fsBtn" type="button"
+                        class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-blue-600 text-white hover:bg-blue-700 transition">
+                        <span id="fsEnter"><i data-feather="maximize-2"></i></span>
+                        <span id="fsExit" hidden><i data-feather="minimize-2"></i></span>
+                        <span id="fsLabel">Fullscreen</span>
                     </button>
+                    <div class="flex flex-wrap items-center justify-center gap-2">
+                        <button type="button" class="switch" id="awakeSwitch" role="switch" aria-checked="true"
+                            aria-label="Keep screen awake"><span class="knob"></span></button>
+                        <span class="text-sm text-gray-700 whitespace-nowrap">Keep screen awake</span>
+                    </div>
                 </div>
             </div>
 
@@ -323,6 +196,366 @@
             <p>&copy; 2021 Ahmed Hamdi Sakr. All rights reserved.</p>
         </footer>
     </div>
+
+    <script>
+        /* Clock / countdown timer */
+        (function () {
+            var $ = function (id) { return document.getElementById(id); };
+            var sw = $('modeSwitch'), clockView = $('clockView'), timerView = $('timerView');
+            var cardTitle = $('cardTitle'), lblClock = $('lblClock'), lblTimer = $('lblTimer'), bgChip = $('bgChip'), nowChip = $('nowChip');
+            var disp = $('timerDisplay'), tH = $('tH'), tM = $('tM'), tS = $('tS'), msg = $('timerMsg');
+            var btnStart = $('btnStart'), btnReset = $('btnReset'), btnAdd1 = $('btnAdd1'), btnAdd5 = $('btnAdd5');
+            var icoPlay = $('icoPlay'), icoPause = $('icoPause'), startLabel = $('startLabel');
+            var presets = $('presets'), manualBox = $('manualBox');
+            var mH = $('mH'), mM = $('mM'), mS = $('mS');
+            var baseTitle = document.title;
+            var STORE_KEY = 'examTimer.v1';
+
+            var durationMs = 3600 * 1000, remainingMs = durationMs, endAt = 0;
+            var ticker = null, running = false, finished = false, hasStarted = false;
+            var audioCtx = null, wakeLock = null;
+
+            function pad(n) { return (n < 10 ? '0' : '') + n; }
+            function split(ms) {
+                var t = Math.max(0, Math.ceil(ms / 1000));
+                return { h: Math.floor(t / 3600), m: Math.floor(t % 3600 / 60), s: t % 60 };
+            }
+            function clockText(ms) { var p = split(ms); return pad(p.h) + ':' + pad(p.m) + ':' + pad(p.s); }
+            function setMsg(text, neutral) { msg.textContent = text || ''; msg.style.color = neutral ? '#6b7280' : ''; }
+
+            function render() {
+                var p = split(remainingMs);
+                tH.textContent = pad(p.h); tM.textContent = pad(p.m); tS.textContent = pad(p.s);
+
+                var state = '';
+                if (finished) state = 'done';
+                else if (hasStarted && remainingMs <= 60000) state = 'danger';
+                else if (hasStarted && remainingMs <= 300000) state = 'warn';
+                disp.setAttribute('data-state', state);
+
+                var paused = !running && !finished && hasStarted;
+                startLabel.textContent = running ? 'Pause' : (paused ? 'Resume' : 'Start');
+                icoPlay.hidden = running;
+                icoPause.hidden = !running;
+                btnStart.disabled = (!running && remainingMs <= 0);
+                btnReset.disabled = (!running && !finished && !hasStarted);
+                btnAdd1.disabled = btnAdd5.disabled = !(hasStarted || finished);
+
+                Array.prototype.forEach.call(presets.querySelectorAll('.preset'), function (b) { b.disabled = running; });
+                mH.disabled = mM.disabled = mS.disabled = running;
+
+                document.title = running ? (clockText(remainingMs) + ' | Timer') : baseTitle;
+
+                if (running && timerView.classList.contains('is-off')) {
+                    bgChip.hidden = false;
+                    bgChip.textContent = 'Timer running \u00b7 ' + clockText(remainingMs);
+                } else {
+                    bgChip.hidden = true;
+                }
+            }
+
+            /* ---- remember the countdown across a refresh (this device only) ---- */
+            function selection() {
+                var b = presets.querySelector('.preset[aria-pressed="true"]');
+                return !b ? '3600' : (b.getAttribute('data-manual') ? 'manual' : b.getAttribute('data-sec'));
+            }
+            function save() {
+                try {
+                    localStorage.setItem(STORE_KEY, JSON.stringify({
+                        savedAt: Date.now(), durationMs: durationMs, hasStarted: hasStarted, finished: finished,
+                        running: running, endAt: running ? endAt : 0,
+                        remainingMs: running ? Math.max(0, endAt - Date.now()) : remainingMs,
+                        sel: selection(), manual: [mH.value, mM.value, mS.value],
+                        timerMode: sw.getAttribute('aria-checked') === 'true'
+                    }));
+                } catch (e) { }
+            }
+            function clearSaved() { try { localStorage.removeItem(STORE_KEY); } catch (e) { } }
+
+            /* ---- audio alarm + screen wake lock ---- */
+            function ensureAudio() {
+                try {
+                    var Ctx = window.AudioContext || window.webkitAudioContext;
+                    if (!audioCtx && Ctx) audioCtx = new Ctx();
+                    if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+                } catch (e) { }
+            }
+            function alarm() {
+                try {
+                    ensureAudio();
+                    if (!audioCtx) return;
+                    var t0 = audioCtx.currentTime;
+                    for (var i = 0; i < 6; i++) {
+                        var o = audioCtx.createOscillator(), g = audioCtx.createGain(), at = t0 + i * 0.5;
+                        o.type = 'sine';
+                        o.frequency.value = (i % 2) ? 660 : 880;
+                        g.gain.setValueAtTime(0, at);
+                        g.gain.linearRampToValueAtTime(0.25, at + 0.02);
+                        g.gain.linearRampToValueAtTime(0, at + 0.4);
+                        o.connect(g); g.connect(audioCtx.destination);
+                        o.start(at); o.stop(at + 0.45);
+                    }
+                } catch (e) { }
+            }
+            /* ---- keep the screen awake (independent of the countdown; works in Clock and Timer mode) ---- */
+            var AWAKE_KEY = 'examTimer.awake';
+            var awakeSw = $('awakeSwitch');
+            var awakeOn = true, wakePending = false;
+            try { if (localStorage.getItem(AWAKE_KEY) === '0') awakeOn = false; } catch (e) { }
+            var wakeSupported = !!(navigator.wakeLock && navigator.wakeLock.request);
+
+            function awakeStatus() {                         // no visible tag: the state is kept as the switch's tooltip
+                var text;
+                if (!wakeSupported) text = 'Keep screen awake: not supported in this browser';
+                else if (!awakeOn) text = 'Keep screen awake: off (the screen may sleep)';
+                else if (wakeLock) text = 'Keep screen awake: active';
+                else if (document.visibilityState !== 'visible') text = 'Keep screen awake: paused while the tab is hidden';
+                else text = 'Keep screen awake: not active, click the page to retry';
+                awakeSw.title = text;
+                awakeSw.setAttribute('aria-checked', awakeOn ? 'true' : 'false');
+            }
+            function requestWake() {
+                if (!awakeOn || !wakeSupported || wakeLock || wakePending) return;
+                wakePending = true;
+                navigator.wakeLock.request('screen').then(function (l) {
+                    wakePending = false;
+                    wakeLock = l;
+                    l.addEventListener('release', function () { if (wakeLock === l) wakeLock = null; awakeStatus(); });
+                    awakeStatus();
+                }).catch(function () { wakePending = false; awakeStatus(); });   // e.g. battery saver or tab not visible
+            }
+            function releaseWake() {
+                var l = wakeLock; wakeLock = null;
+                try { if (l) l.release(); } catch (e) { }
+                awakeStatus();
+            }
+            awakeSw.addEventListener('click', function () {
+                awakeOn = !awakeOn;
+                try { localStorage.setItem(AWAKE_KEY, awakeOn ? '1' : '0'); } catch (e) { }
+                if (awakeOn) requestWake(); else releaseWake();
+                awakeStatus();
+            });
+            document.addEventListener('visibilitychange', function () {
+                if (document.visibilityState === 'visible') requestWake();   // the browser drops the lock when the tab is hidden
+                awakeStatus();
+            });
+            window.addEventListener('focus', requestWake);
+            document.addEventListener('pointerdown', function () { if (awakeOn && !wakeLock) requestWake(); }, true);
+
+            /* ---- countdown control ---- */
+            function tick() {
+                remainingMs = endAt - Date.now();
+                if (remainingMs <= 0) { finish(); return; }
+                render();
+            }
+            function start() {
+                if (running || remainingMs <= 0) return;
+                ensureAudio();                               // created inside the click so the alarm is allowed to play
+                endAt = Date.now() + remainingMs;            // wall-clock based: stays accurate even if the tab is throttled
+                running = true; finished = false; hasStarted = true; setMsg('');
+                ticker = setInterval(tick, 250);
+                requestWake();
+                render(); save();
+            }
+            function pause() {
+                if (!running) return;
+                remainingMs = Math.max(0, endAt - Date.now());
+                clearInterval(ticker); running = false;
+                render(); save();
+            }
+            function reset() {
+                clearInterval(ticker); running = false; finished = false; hasStarted = false;
+                remainingMs = durationMs; setMsg('');
+                render(); save();
+            }
+            function finish() {
+                clearInterval(ticker); running = false; finished = true; remainingMs = 0;
+                setMsg("Time's up!");
+                alarm();
+                render(); save();
+            }
+            function addTime(ms) {
+                if (finished) {                              // extra time after "Time's up": restart the countdown with it
+                    finished = false; remainingMs = ms; setMsg('');
+                    start();
+                    return;
+                }
+                if (!hasStarted) return;
+                remainingMs += ms;
+                if (running) endAt += ms;
+                render(); save();
+            }
+
+            btnStart.addEventListener('click', function () { running ? pause() : start(); });
+            btnReset.addEventListener('click', reset);
+            btnAdd1.addEventListener('click', function () { addTime(60 * 1000); });
+            btnAdd5.addEventListener('click', function () { addTime(5 * 60 * 1000); });
+
+            /* ---- presets and manual entry ---- */
+            function manualSeconds() {
+                function clamp(el, max) {
+                    var v = parseInt(el.value, 10); if (isNaN(v) || v < 0) v = 0; if (v > max) v = max;
+                    return v;
+                }
+                return clamp(mH, 99) * 3600 + clamp(mM, 59) * 60 + clamp(mS, 59);
+            }
+            presets.addEventListener('click', function (e) {
+                var b = e.target.closest ? e.target.closest('.preset') : null;
+                if (!b || running) return;
+                Array.prototype.forEach.call(presets.querySelectorAll('.preset'), function (x) {
+                    x.setAttribute('aria-pressed', x === b ? 'true' : 'false');
+                });
+                if (b.getAttribute('data-manual')) {
+                    manualBox.hidden = false;
+                    durationMs = manualSeconds() * 1000;
+                } else {
+                    manualBox.hidden = true;
+                    durationMs = parseInt(b.getAttribute('data-sec'), 10) * 1000;
+                }
+                reset();
+            });
+            [mH, mM, mS].forEach(function (inp) {
+                inp.addEventListener('input', function () {
+                    if (running) return;
+                    durationMs = manualSeconds() * 1000;
+                    reset();
+                });
+            });
+
+            /* ---- Clock / Timer switch ---- */
+            function setMode(on) {
+                sw.setAttribute('aria-checked', on ? 'true' : 'false');
+                timerView.classList.toggle('is-off', !on);
+                clockView.classList.toggle('is-off', on);
+                timerView.setAttribute('aria-hidden', on ? 'false' : 'true');
+                clockView.setAttribute('aria-hidden', on ? 'true' : 'false');
+                if (on) { timerView.removeAttribute('inert'); clockView.setAttribute('inert', ''); }
+                else { clockView.removeAttribute('inert'); timerView.setAttribute('inert', ''); }
+                cardTitle.textContent = on ? 'Timer' : 'Current Time';
+                lblClock.setAttribute('data-active', on ? 'false' : 'true');
+                lblTimer.setAttribute('data-active', on ? 'true' : 'false');
+                nowChip.hidden = !on;
+                render();
+            }
+            sw.addEventListener('click', function () {
+                setMode(sw.getAttribute('aria-checked') !== 'true');
+                save();
+            });
+
+            /* ---- local time: big clock in Clock mode, small tag in Timer mode (device time zone, no location permission) ---- */
+            var bcH = $('bcH'), bcM = $('bcM'), bcAp = $('bcAp'), bcDate = $('bcDate'), bcZone = $('bcZone');
+            var tzId = '';
+            try { tzId = Intl.DateTimeFormat().resolvedOptions().timeZone || ''; } catch (e) { }
+            var tf = new Intl.DateTimeFormat(undefined, { hour: 'numeric', minute: '2-digit' });
+            var tzShortFmt = new Intl.DateTimeFormat(undefined, { hour: 'numeric', timeZoneName: 'short' });
+            var tzLongFmt = new Intl.DateTimeFormat(undefined, { hour: 'numeric', timeZoneName: 'long' });
+            var dfLong = new Intl.DateTimeFormat(undefined, { weekday: 'short', month: 'long', day: 'numeric' });
+            var dfShort = new Intl.DateTimeFormat(undefined, { weekday: 'short', month: 'short', day: 'numeric' });
+            function partOf(fmt, d, type) {
+                var r = '';
+                fmt.formatToParts(d).forEach(function (p) { if (p.type === type) r = p.value; });
+                return r;
+            }
+            function updateNow() {
+                var d = new Date(), h = '', m = '', ap = '';
+                tf.formatToParts(d).forEach(function (p) {
+                    if (p.type === 'hour') h = p.value;
+                    else if (p.type === 'minute') m = p.value;
+                    else if (p.type === 'dayPeriod') ap = p.value.toLowerCase();
+                });
+                var shortName = partOf(tzShortFmt, d, 'timeZoneName'), longName = partOf(tzLongFmt, d, 'timeZoneName');
+                bcH.textContent = h; bcM.textContent = m;
+                bcAp.textContent = ap; bcAp.hidden = !ap;               // 24-hour locales have no am/pm
+                bcDate.textContent = dfLong.format(d);
+                bcZone.textContent = longName + (tzId ? ' \u00b7 ' + tzId.replace(/_/g, ' ') : '');
+                nowChip.textContent = h + ':' + m + (ap ? ' ' + ap : '') + (shortName ? ' ' + shortName : '') + ' \u00b7 ' + dfShort.format(d);
+            }
+            function scheduleNow() {                                   // re-run right after each second boundary so the seconds tile never lags
+                updateNow();
+                setTimeout(scheduleNow, 1000 - (Date.now() % 1000) + 5);
+            }
+            scheduleNow();
+
+            /* ---- restore after a refresh / crash / tab restore ---- */
+            function restore() {
+                var st = null;
+                try { st = JSON.parse(localStorage.getItem(STORE_KEY)); } catch (e) { }
+                if (!st || typeof st.durationMs !== 'number') return;
+                var age = Date.now() - st.savedAt;
+                if (age > (st.finished ? 3600000 : 12 * 3600000)) { clearSaved(); return; }   // stale
+
+                var found = false;
+                Array.prototype.forEach.call(presets.querySelectorAll('.preset'), function (b) {
+                    var match = b.getAttribute('data-manual') ? st.sel === 'manual' : b.getAttribute('data-sec') === st.sel;
+                    b.setAttribute('aria-pressed', match ? 'true' : 'false');
+                    if (match) found = true;
+                });
+                if (!found) return;
+                manualBox.hidden = st.sel !== 'manual';
+                if (st.manual && st.manual.length === 3) { mH.value = st.manual[0]; mM.value = st.manual[1]; mS.value = st.manual[2]; }
+
+                durationMs = st.durationMs; hasStarted = !!st.hasStarted; finished = !!st.finished;
+                if (st.running) {
+                    var left = st.endAt - Date.now();
+                    if (left > 0) {
+                        remainingMs = left; endAt = st.endAt; running = true;
+                        ticker = setInterval(tick, 250);
+                        requestWake();
+                        setMsg('Restored after reload \u2014 click anywhere to enable the alarm sound.', true);
+                        var unlock = function () { ensureAudio(); if (running) setMsg(''); };
+                        document.addEventListener('pointerdown', unlock, { once: true });
+                        document.addEventListener('keydown', unlock, { once: true });
+                    } else {                                 // ran out while the page was closed
+                        remainingMs = 0; finished = true; running = false; hasStarted = true;
+                        setMsg("Time's up!");
+                    }
+                } else {
+                    remainingMs = st.remainingMs;
+                    if (finished) setMsg("Time's up!");
+                }
+                if (st.timerMode) setMode(true);
+                render();
+            }
+
+            render();
+            restore();
+            awakeStatus();
+            requestWake();
+        })();
+    </script>
+
+    <script>
+        /* Fullscreen toggle: enters fullscreen, or exits if already in it */
+        (function () {
+            var btn = document.getElementById('fsBtn'), enter = document.getElementById('fsEnter'),
+                exit = document.getElementById('fsExit'), label = document.getElementById('fsLabel');
+            function isFs() {
+                return !!(document.fullscreenElement || document.webkitFullscreenElement || document.msFullscreenElement);
+            }
+            function toggleFullscreen() {
+                var el = document.documentElement, p;
+                if (isFs()) {
+                    var ex = document.exitFullscreen || document.webkitExitFullscreen || document.msExitFullscreen;
+                    if (ex) p = ex.call(document);
+                } else {
+                    var rq = el.requestFullscreen || el.webkitRequestFullscreen || el.msRequestFullscreen;
+                    if (rq) p = rq.call(el);
+                }
+                if (p && p.catch) p.catch(function () { });
+            }
+            function sync() {
+                var on = isFs();
+                enter.hidden = on;
+                exit.hidden = !on;
+                label.textContent = on ? 'Exit fullscreen' : 'Fullscreen';
+            }
+            btn.addEventListener('click', toggleFullscreen);
+            ['fullscreenchange', 'webkitfullscreenchange', 'MSFullscreenChange'].forEach(function (ev) {
+                document.addEventListener(ev, sync);
+            });
+            sync();
+        })();
+    </script>
 </body>
 
 </html>

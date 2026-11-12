@@ -5,12 +5,16 @@
 <head>
 <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-<title>Interactive Fourier Analysis Demo</title>
+<title>Interactive Fourier Transform Demo</title>
+<meta name="description" content="Interactive demo of the Fourier transform: how a first-order low-pass filter scales and delays a cosine of adjustable frequency, in the time and frequency domains." />
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/feather-icons"></script>
-    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons@4.29.2/dist/feather.min.js"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css" />
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
 
     <link href="/styles.css" rel="stylesheet" />
+    <link rel="icon" type="image/x-icon" href="/images/icon.ico" />
     <script defer="True" src="/app.js"></script>
 
 <style>
@@ -22,19 +26,31 @@
   --ycolor:#60a5fa; 
   --hcolor:#22c55e;
   --card:#111827;
+  --fg:#0f172a;
+}
+@media (max-width: 768px){
+  .controls { grid-template-columns: 1fr !important; }
+  .plot-grid { grid-template-columns: 1fr !important; }
 }
   .controls { display: grid; grid-template-columns: 1.2fr 1fr 1fr 1fr; gap: 12px; margin-bottom: 10px; }
   .control { background: var(--card); padding: 12px; border-radius: 12px; border: 1px solid #0f172a; }
   label { font-weight: 600; display: block; margin-bottom: 6px; color: #cbd5e1; }
   select, input[type="number"], input[type="range"] { width: 100%; padding: 8px 10px; border-radius: 8px; background: #cbd5e1; color: var(--fg); border: 1px solid #1f2a44; }
   input[type="range"] { padding: 0; height: 28px; }
-  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+  .plot-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
   .wrap{max-width:none;margin:0 auto}
 
   .canvas-row { display: grid; grid-template-columns: 1fr; gap: 12px; }
   .card { background: var(--card); border: 1px solid #0f172a; border-radius: 12px; padding: 10px 12px; }
   .card h2 { font-size: 16px; margin: 0 0 6px; color: #cbd5e1; }
   canvas { width: 100%; height: 260px; display: block; background: #0a1326; border-radius: 8px; }
+  .axis-label{ text-align:right; color:#94a3b8; font-size:13px; padding:2px 12px 0 0; min-height:1.6em; }
+  .control .katex, .chip .katex, .small .katex{ font-size:1.05em; }
+  .math-block{ color:#e2e8f0; overflow-x:auto; padding:2px 0; }
+  .math-block .katex-display{ margin:0.5em 0; }
+  .math-block.live{ color:#cbd5e1; }
+  .card h2 .katex{ font-size:1.1em; }
+  .plot-grid .card h2{ min-height:3em; display:flex; align-items:center; margin-bottom:6px; }
   .dot { width:10px; height:10px; border-radius:50%; display:inline-block; }
   .dot.x{background: var(--xcolor)}
  .dot.y{background: var(--ycolor)}
@@ -43,7 +59,7 @@
 </style>
 </head>
 
-<body class="font-sans gradient-bg min-h-screen" data-page="ftdemo">
+<body class="font-sans gradient-bg min-h-screen" data-page="teaching">
 
   <header class="fixed inset-x-0 top-0 z-[9999] bg-white/70 backdrop-blur border-b border-gray-200">
         <div class="max-w-6xl mx-auto px-4">
@@ -83,51 +99,66 @@
         <div class="container mx-auto px-4 py-8 max-w-5xl">
         <!-- Navigation -->
         <main class="fade-in py-8 px-4 max-w-6xl mx-auto pt-20" id="main">
+            <h1 class="sr-only">Interactive Fourier Transform Demo</h1>
 
   <div class="bg-white rounded-xl shadow-lg p-6">
   <h2 class="mb-4">Interactive Fourier Transform Demo</h2>
-  <p>Slider changes the frequency of the input signal.</p>
+  <p>Slider changes the frequency <span class="m" data-tex="f_0">f<sub>0</sub></span> of the input cosine. It passes through a first-order low-pass filter, so the output is the input scaled by <span class="m" data-tex="|H(f_0)|">|H(f<sub>0</sub>)|</span> and phase-shifted by <span class="m" data-tex="\phi(f_0)">&phi;(f<sub>0</sub>)</span>.</p>
 
 <div class="controls" style="grid-template-columns: repeat(2, minmax(0, 1fr));">
     <div class="control">
-      <label for="f0">Input frequency f<sub>0</sub> (Hz): <span id="f0val">10</span></label>
+      <label for="f0">Input frequency <span id="f0val" class="m">f<sub>0</sub> = 10 Hz</span></label>
       <input id="f0" type="range" min="1" max="400" step="1" value="10"/>
     </div>
 
         <div class="control">
       <label>Legend</label>
       <div class="legend">
-        <span class="chip"><span class="dot x"></span>Input x</span>
-        <span class="chip"><span class="dot h"></span>Filter h/H</span>
-        <span class="chip"><span class="dot y"></span>Output y</span>
+        <span class="chip"><span class="dot x"></span>Input <span class="m" data-tex="x(t)">x</span></span>
+        <span class="chip"><span class="dot h"></span>Filter <span class="m" data-tex="h(t),\,H(f)">h/H</span></span>
+        <span class="chip"><span class="dot y"></span>Output <span class="m" data-tex="y(t)">y</span></span>
       </div>
     </div>
   </div>
 
-  <div class="grid">
+  <!-- Model card (disabled): remove this comment to show it again
+  <div class="card" style="margin-bottom:12px">
+    <h2>Model</h2>
+    <div class="math-block" data-display data-tex="y(t)=(x*h)(t)\;\Longleftrightarrow\;Y(f)=H(f)\,X(f),\qquad H(f)=\frac{\alpha}{\alpha+j\,2\pi f},\quad \alpha=2\pi\cdot 50\ \text{rad/s}\ (f_c=50\ \text{Hz})">y(t) = (x * h)(t) &hArr; Y(f) = H(f) X(f), H(f) = &alpha; / (&alpha; + j2&pi;f), &alpha; = 2&pi;&middot;50 rad/s (f<sub>c</sub> = 50 Hz)</div>
+    <div class="math-block live" id="liveMath" aria-live="polite"></div>
+  </div>
+  -->
+
+  <div class="plot-grid">
     <div class="card">
-      <h2>x(t) = cos(2π f<sub>0</sub> t)</h2>
-      <canvas id="cx"></canvas>
+      <h2 data-tex="x(t) = \cos(2\pi f_0 t)">x(t) = cos(2π f<sub>0</sub> t)</h2>
+      <canvas id="cx" role="img" aria-label="Input signal x(t)"></canvas>
+      <div class="axis-label" data-tex="t\ (\mathrm{s})">t (s)</div>
     </div>
     <div class="card">
-      <h2>|X(f)| = 1&frasl;2 [&delta;(f-f<sub>0</sub>) + &delta;(f+f<sub>0</sub>)]</h2>
-      <canvas id="cX"></canvas>
+      <h2 data-tex="|X(f)| = \tfrac{1}{2}\left[\delta(f-f_0)+\delta(f+f_0)\right]">|X(f)| = 1&frasl;2 [&delta;(f-f<sub>0</sub>) + &delta;(f+f<sub>0</sub>)]</h2>
+      <canvas id="cX" role="img" aria-label="Magnitude spectrum of input"></canvas>
+      <div class="axis-label" data-tex="f\ (\mathrm{Hz})">f (Hz)</div>
     </div>
     <div class="card">
-      <h2>h(t) = &alpha; e<sup>-&alpha; t</sup> u(t), &alpha; = 2π·50</h2>
-      <canvas id="ch"></canvas>
+      <h2 data-tex="h(t) = \alpha e^{-\alpha t}\,u(t),\quad \alpha = 2\pi\cdot 50">h(t) = &alpha; e<sup>-&alpha; t</sup> u(t), &alpha; = 2π·50</h2>
+      <canvas id="ch" role="img" aria-label="Impulse response h(t)"></canvas>
+      <div class="axis-label" data-tex="t\ (\mathrm{s})">t (s)</div>
     </div>
     <div class="card">
-      <h2>|H(f)| = &alpha; / &radic;(&alpha;&sup2; + (2&pi;f)&sup2;)</h2>
-      <canvas id="cH"></canvas>
+      <h2 data-tex="|H(f)| = \dfrac{\alpha}{\sqrt{\alpha^2+(2\pi f)^2}}">|H(f)| = &alpha; / &radic;(&alpha;&sup2; + (2&pi;f)&sup2;)</h2>
+      <canvas id="cH" role="img" aria-label="Filter magnitude response"></canvas>
+      <div class="axis-label" data-tex="f\ (\mathrm{Hz})">f (Hz)</div>
     </div>
     <div class="card">
-      <h2>y(t) = |H(f<sub>0</sub>)| cos(2π f<sub>0</sub> t + &phi;(f<sub>0</sub>))</h2>
-      <canvas id="cy"></canvas>
+      <h2 data-tex="y(t) = |H(f_0)|\cos\!\big(2\pi f_0 t + \phi(f_0)\big)">y(t) = |H(f<sub>0</sub>)| cos(2π f<sub>0</sub> t + &phi;(f<sub>0</sub>))</h2>
+      <canvas id="cy" role="img" aria-label="Output signal y(t)"></canvas>
+      <div class="axis-label" data-tex="t\ (\mathrm{s})">t (s)</div>
     </div>
     <div class="card">
-      <h2>|Y(f)| = 1&frasl;2 |H(f<sub>0</sub>)|[&delta;(f-f<sub>0</sub>) + &delta;(f+f<sub>0</sub>)]</h2>
-      <canvas id="cY"></canvas>
+      <h2 data-tex="|Y(f)| = \tfrac{1}{2}|H(f_0)|\left[\delta(f-f_0)+\delta(f+f_0)\right]">|Y(f)| = 1&frasl;2 |H(f<sub>0</sub>)|[&delta;(f-f<sub>0</sub>) + &delta;(f+f<sub>0</sub>)]</h2>
+      <canvas id="cY" role="img" aria-label="Magnitude spectrum of output"></canvas>
+      <div class="axis-label" data-tex="f\ (\mathrm{Hz})">f (Hz)</div>
     </div>
   </div>
 
@@ -143,11 +174,10 @@
 (function(){
   // ---------- Config ----------
   const TWO_PI = Math.PI * 2;
-  const T = 0.5;               // time window for plotting (seconds)
-  const Fs = 5000;             // time sampling for smooth curves
-  const dt = 1/Fs;
-  const Ntime = Math.floor(T*Fs);
-  const t = Array.from({length:Ntime}, (_,k)=>k*dt);
+  const Tmax = 0.5;            // max time window for plotting (seconds)
+  const Fs = 20000;            // time sampling for smooth curves
+  const css = getComputedStyle(document.documentElement);
+  const col = (name) => css.getPropertyValue(name).trim();
   const alpha = TWO_PI * 50;   // &alpha; = 2π·50
 
   // Frequency axis for continuous plots (for H only)
@@ -167,9 +197,24 @@
   const cY = document.getElementById('cY').getContext('2d');
 
   // ---------- Helpers ----------
+  const MATH_FONT = '13px KaTeX_Main, "Times New Roman", Times, serif';   // canvas tick labels
+  // Size the canvas backing store to CSS size x devicePixelRatio; returns logical size.
+  function fitCanvas(canvas){
+    const d = window.devicePixelRatio || 1;
+    const w = canvas.clientWidth, h = canvas.clientHeight;
+    const pw = Math.round(w*d), ph = Math.round(h*d);
+    if (canvas.width !== pw || canvas.height !== ph){ canvas.width = pw; canvas.height = ph; }
+    canvas.getContext('2d').setTransform(d,0,0,d,0,0);
+    return {width: w, height: h};
+  }
+  function fmtTick(u){
+    if (Math.abs(u) < 1e-12) return "0";
+    if (Math.abs(u) >= 1000) return Number((u/1000).toPrecision(3)) + "k";
+    return String(Number(u.toPrecision(3)));
+  }
   function plotXY(ctx, X, Y, opts={}){	
-    const {width, height} = ctx.canvas;
-    const margin = {left: 56, right: 12, top: 10, bottom: 26};
+    const {width, height} = fitCanvas(ctx.canvas);
+    const margin = {left: 56, right: 12, top: 10, bottom: 28};
     const plot = {x0: margin.left, y0: margin.top, w: width - margin.left - margin.right, h: height - margin.top - margin.bottom};
 
     // ranges
@@ -206,7 +251,7 @@
     ctx.restore();
 
     // labels
-    ctx.fillStyle = "#94a3b8"; ctx.font = "12px system-ui"; ctx.textAlign = "right"; ctx.textBaseline = "middle";
+    ctx.fillStyle = "#94a3b8"; ctx.font = MATH_FONT; ctx.textAlign = "right"; ctx.textBaseline = "middle";
     for(let i=0;i<yTicks;i++){
       const v = ymin + i*(ymax-ymin)/(yTicks-1);
       const y = yToPx(v);
@@ -217,8 +262,7 @@
     for(let i=0;i<xTicks;i++){
       const u = xmin + i*(xmax-xmin)/(xTicks-1);
       const x = xToPx(u);
-      const lab = (Math.abs(u)<1e-9) ? "0" : (Math.abs(u)>=1000 ? (u/1000).toFixed(1)+"k" : u.toFixed(1));
-      ctx.fillText(lab, x, plot.y0 + plot.h + 6);
+      ctx.fillText(fmtTick(u), x, plot.y0 + plot.h + 6);
     }
 
     // axis at y=0
@@ -228,7 +272,8 @@
       ctx.beginPath(); ctx.moveTo(plot.x0, y0px); ctx.lineTo(plot.x0 + plot.w, y0px); ctx.stroke();
     }
 
-    // draw
+    // draw (clipped to plot area)
+    ctx.save(); ctx.beginPath(); ctx.rect(plot.x0, plot.y0, plot.w, plot.h); ctx.clip();
     ctx.strokeStyle = opts.color || "#60a5fa"; ctx.lineWidth = opts.width || 2; ctx.globalAlpha = opts.alpha ?? 1;
     ctx.beginPath();
     for(let i=0;i<X.length;i++){
@@ -236,6 +281,7 @@
       if (i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
     }
     ctx.stroke();
+    ctx.restore();
 	// --- draw optional markers that use the same axis scales ---
 	if (opts.markers && Array.isArray(opts.markers)) {
 	  for (const m of opts.markers) {
@@ -253,8 +299,8 @@
 
   function plotImpulses(ctx, fmin, fmax, stems, opts={}){
     // stems: [{f: frequency (Hz), h: height, color?:str, label?:str}]
-    const {width, height} = ctx.canvas;
-    const margin = {left: 56, right: 12, top: 10, bottom: 26};
+    const {width, height} = fitCanvas(ctx.canvas);
+    const margin = {left: 56, right: 12, top: 10, bottom: 28};
     const plot = {x0: margin.left, y0: margin.top, w: width - margin.left - margin.right, h: height - margin.top - margin.bottom};
 
     const ymin = 0, ymax = (opts.yMax ?? Math.max(1, ...stems.map(s=>s.h))*1.1);
@@ -283,7 +329,7 @@
     ctx.restore();
 
     // y ticks
-    ctx.fillStyle = "#94a3b8"; ctx.font = "12px system-ui"; ctx.textAlign = "right"; ctx.textBaseline = "middle";
+    ctx.fillStyle = "#94a3b8"; ctx.font = MATH_FONT; ctx.textAlign = "right"; ctx.textBaseline = "middle";
     for(let i=0;i<yTicks;i++){
       const v = ymin + i*(ymax-ymin)/(yTicks-1);
       const y = yToPx(v);
@@ -295,8 +341,7 @@
     for(let i=0;i<xTicks;i++){
       const u = fmin + i*(fmax-fmin)/(xTicks-1);
       const x = xToPx(u);
-      const lab = (Math.abs(u)<1e-9) ? "0" : u.toFixed(0);
-      ctx.fillText(lab, x, plot.y0 + plot.h + 6);
+      ctx.fillText(fmtTick(u), x, plot.y0 + plot.h + 6);
     }
 
     // stems
@@ -309,16 +354,50 @@
       ctx.beginPath(); ctx.moveTo(x, y0); ctx.lineTo(x, y); ctx.stroke();
       ctx.beginPath(); ctx.arc(x, y, opts.dotRadius ?? 3.5, 0, Math.PI*2); ctx.fillStyle = ctx.strokeStyle; ctx.fill();
       if (s.label){
-        ctx.fillStyle = "#cbd5e1"; ctx.font = "12px system-ui"; ctx.textAlign = "left"; ctx.textBaseline = "bottom";
+        ctx.fillStyle = "#cbd5e1"; ctx.font = MATH_FONT; ctx.textAlign = "left"; ctx.textBaseline = "bottom";
         ctx.fillText(s.label, x+6, y-2);
       }
     });
   }
   
+  // ---------- Math rendering (KaTeX; plain-text fallback is already in the markup) ----------
+  function renderTeX(el, tex, display){
+    if (!window.katex) return false;
+    try { katex.render(tex, el, {throwOnError:false, displayMode:!!display}); return true; }
+    catch(e){ return false; }
+  }
+  // Set an element to a KaTeX string (re-rendered on load if KaTeX was not ready yet); plain text as fallback
+  function setTeX(el, tex, fallback){
+    if (!el) return;
+    el.dataset.tex = tex;
+    if (!renderTeX(el, tex, false)) el.textContent = fallback;
+  }
+  let lastLive = null;
+  function updateLive(f0, A0, phi0){
+    lastLive = [f0, A0, phi0];
+    const el = document.getElementById('liveMath');
+    if (!el) return;
+    const dB = 20*Math.log10(A0), deg = phi0*180/Math.PI;
+    const tex = String.raw`f_0=${f0.toFixed(0)}\ \text{Hz}:\quad |H(f_0)|=\frac{\alpha}{\sqrt{\alpha^2+(2\pi f_0)^2}}=${A0.toFixed(3)}\ (${dB.toFixed(2)}\ \text{dB}),\qquad \phi(f_0)=-\arctan\frac{2\pi f_0}{\alpha}=${deg.toFixed(1)}^\circ`;
+    if (!renderTeX(el, tex, true)){
+      el.textContent = 'f0 = ' + f0.toFixed(0) + ' Hz:  |H(f0)| = ' + A0.toFixed(3) + ' (' + dB.toFixed(2) + ' dB),  phase = ' + deg.toFixed(1) + ' deg';
+    }
+  }
+  function renderStaticMath(){
+    document.querySelectorAll('[data-tex]').forEach(el => renderTeX(el, el.dataset.tex, el.hasAttribute('data-display')));
+    if (lastLive) updateLive(...lastLive);
+  }
+  window.addEventListener('load', renderStaticMath);   // KaTeX is loaded with `defer`
+  window.addEventListener('load', () => { if (document.fonts && document.fonts.load) document.fonts.load(MATH_FONT).then(drawAll); });
+
   // ---------- Main draw ----------
   function drawAll(){
     const f0 = parseFloat(elF0.value);
-    elF0Val.textContent = f0.toFixed(0);
+    setTeX(elF0Val, String.raw`f_0=${f0.toFixed(0)}\ \text{Hz}`, 'f0 = ' + f0.toFixed(0) + ' Hz');
+
+    // Time window: a few cycles of f0 so the waveform is never aliased on screen
+    const Tw = Math.min(Tmax, 4/f0);
+    const t = Array.from({length: Math.floor(Tw*Fs)+1}, (_,k)=>k/Fs);
 
     // Input cosine
     const x = t.map(tt => Math.cos(TWO_PI * f0 * tt));
@@ -330,6 +409,7 @@
     });
     const phi0 = -Math.atan2(TWO_PI*f0, alpha);          // phase at +f0
     const A0   = alpha / Math.sqrt(alpha*alpha + (TWO_PI*f0)*(TWO_PI*f0)); // |H(f0)|
+    updateLive(f0, A0, phi0);
 
     // Output time-domain (analytic)
     const y = t.map(tt => A0 * Math.cos(TWO_PI * f0 * tt + phi0));
@@ -345,13 +425,13 @@
     ];
 
     // ---- Plot all six ----
-    plotXY(cx, t, x,   { color: getComputedStyle(document.documentElement).getPropertyValue("--xcolor").trim(), width:2, xRange:[0, T], yRange:[-1.1, 1.1] });
-    plotImpulses(cX, -500, 500, Xstems, { yMax: 0.6, color: getComputedStyle(document.documentElement).getPropertyValue("--xcolor").trim() });
+    plotXY(cx, t, x,   { color: col("--xcolor"), width:2, xRange:[0, Tw], yRange:[-1.1, 1.1] });
+    plotImpulses(cX, -500, 500, Xstems, { yMax: 0.6, color: col("--xcolor") });
 
-    const h = t.map(tt => (tt>=0 ? alpha * Math.exp(-alpha*tt) : 0));
-    <!-- plotXY(ch, t, h,   { color: getComputedStyle(document.documentElement).getPropertyValue("--hcolor").trim(), width:2, xRange:[0, T] }); -->
-    plotXY(ch, t, h,   { color: getComputedStyle(document.documentElement).getPropertyValue("--hcolor").trim(), width:2, xRange:[0, 0.02], yRange:[0, alpha] });
-    <!-- plotXY(cH, f, Hmag, { color:"#22c55e", width:2, xRange:[-500, 500], yRange:[0,1.05] }); -->
+    // Impulse response on its own dense grid (0..20 ms)
+    const th = Array.from({length: 401}, (_,k)=> k*0.02/400);
+    const h = th.map(tt => alpha * Math.exp(-alpha*tt));
+    plotXY(ch, th, h, { color: col("--hcolor"), width:2, xRange:[0, 0.02], yRange:[0, alpha] });
 	
 	const Habs = (ff) => {
 	  const num = alpha;
@@ -365,17 +445,18 @@
 	  xRange: [-500, 500],
 	  yRange: [0, 1.05],
 	  markers: [
-		{ x: -f0, y: Habs(-f0), color: getComputedStyle(document.documentElement).getPropertyValue("--xcolor").trim(), radius: 4 },
-		{ x:  +f0, y: Habs( +f0), color: getComputedStyle(document.documentElement).getPropertyValue("--xcolor").trim(), radius: 4 },
+		{ x: -f0, y: Habs(-f0), color: col("--xcolor"), radius: 4 },
+		{ x:  +f0, y: Habs( +f0), color: col("--xcolor"), radius: 4 },
 	  ]
 	});
 
-    plotXY(cy, t, y,   { color: getComputedStyle(document.documentElement).getPropertyValue("--ycolor").trim(), width:2, xRange:[0, T], yRange:[-1.1, 1.1] });
-    plotImpulses(cY, -500, 500, Ystems, { yMax: 0.6, color: getComputedStyle(document.documentElement).getPropertyValue("--ycolor").trim() });
+    plotXY(cy, t, y,   { color: col("--ycolor"), width:2, xRange:[0, Tw], yRange:[-1.1, 1.1] });
+    plotImpulses(cY, -500, 500, Ystems, { yMax: 0.6, color: col("--ycolor") });
   }
 
   // listeners
   elF0.addEventListener('input', drawAll);
+  window.addEventListener('resize', drawAll);
 
   // initial
   drawAll();

@@ -6,11 +6,15 @@
 <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
 <title>Interactive Fourier Series Coefficient Demo</title>
+<meta name="description" content="Interactive demo of Fourier series coefficients: choose a signal, the number of harmonics and a phase shift, and see the reconstruction, the error and the spectra." />
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/feather-icons"></script>
-    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons@4.29.2/dist/feather.min.js"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css" />
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
 
     <link href="/styles.css" rel="stylesheet" />
+    <link rel="icon" type="image/x-icon" href="/images/icon.ico" />
     <script defer="True" src="/app.js"></script>
 
 <style>
@@ -20,17 +24,26 @@
   --xcolor:#f59e0b;    /* original signal line */
   --errcolor:#ef4444;    /* error line */
   --card:#111827;       /* panel background */
+  --fg:#0f172a;         /* input text */
 }
-  .controls { display: grid; grid-template-columns: 1.2fr 1fr 1fr 1fr; gap: 12px; margin-bottom: 10px; }
+@media (max-width: 768px){
+  .controls { grid-template-columns: 1fr !important; }
+}
+  .controls { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-bottom: 10px; }
   .control { background: var(--card); padding: 12px; border-radius: 12px; border: 1px solid #0f172a; }
   label { font-weight: 600; display: block; margin-bottom: 6px; color: #cbd5e1; }
   select, input[type="number"], input[type="range"] { width: 100%; padding: 8px 10px; border-radius: 8px; background: #cbd5e1; color: var(--fg); border: 1px solid #1f2a44; }
   input[type="range"] { padding: 0; height: 28px; }
-  .toggles { display:flex; gap:16px; align-items:center; margin-bottom: 16px; }
   .canvas-row { display: grid; grid-template-columns: 1fr; gap: 12px; }
   .card { background: var(--card); border: 1px solid #0f172a; border-radius: 12px; padding: 10px 12px; }
   .card h2 { font-size: 16px; margin: 0 0 6px; color: #cbd5e1; }
   canvas { width: 100%; height: 260px; display: block; background: #0a1326; border-radius: 8px; }
+  .axis-label{ text-align:right; color:#94a3b8; font-size:13px; padding:2px 12px 0 0; min-height:1.6em; }
+  .control .katex, .chip .katex, .small .katex{ font-size:1.05em; }
+  .math-block{ color:#e2e8f0; overflow-x:auto; padding:2px 0; }
+  .math-block .katex-display{ margin:0.5em 0; }
+  .math-block.live{ color:#cbd5e1; }
+  .card h2 .katex{ font-size:1.1em; }
   .dot { width:10px; height:10px; border-radius:50%; display:inline-block; }
   .dot.x { background: var(--xcolor); }
   .dot.y { background: var(--reccolor); }
@@ -38,7 +51,7 @@
 </style>
 </head>
 
-<body class="font-sans gradient-bg min-h-screen" data-page="fsdemo">
+<body class="font-sans gradient-bg min-h-screen" data-page="teaching">
 
   <header class="fixed inset-x-0 top-0 z-[9999] bg-white/70 backdrop-blur border-b border-gray-200">
         <div class="max-w-6xl mx-auto px-4">
@@ -78,10 +91,11 @@
         <div class="container mx-auto px-4 py-8 max-w-5xl">
         <!-- Navigation -->
         <main class="fade-in py-8 px-4 max-w-6xl mx-auto pt-20" id="main">
+            <h1 class="sr-only">Interactive Fourier Series Coefficient Demo</h1>
 
   <div class="bg-white rounded-xl shadow-lg p-6">
   <h2 class="mb-4">Interactive Fourier Series Coefficient Demo</h2>
-  <p>Choose a signal, number of coefficients, phase shift, and how many cycles to show. You can also overlay the error e(t) = x(t) - y(t).</p>
+  <p>Choose a signal, number of coefficients, phase shift, and how many cycles to show. You can also overlay the error <span class="m" data-tex="e(t)=x(t)-y(t)">e(t) = x(t) - y(t)</span>.</p>
 
   <div class="controls">
     <div class="control">
@@ -96,18 +110,18 @@
         <option value="half_rectified_cosine">Half-wave Rectified Cosine</option>
       </select>
     <!-- <div class="toggles"> -->
-    <label><input type="checkbox" id="showError" /> Show error e(t) = x(t) - y(t)</label>
+    <label><input type="checkbox" id="showError" /> Show error <span class="m" data-tex="e(t)=x(t)-y(t)">e(t) = x(t) - y(t)</span></label>
     <label><input type="checkbox" id="showHarmonics" /> Show Harmonics</label>
   <!-- </div> -->
 
     </div>
 
     <div class="control">
-      <label for="ncoef">Number of coefficients N: <span id="nval">0</span></label>
+      <label for="ncoef">Number of coefficients <span id="nval" class="m">N = 0</span></label>
       <input type="range" min="0" max="15" step="1" value="0" id="ncoef" />
     </div>
     <div class="control">
-      <label for="phase">Phase Shift (% of period): <span id="pval">0</span>%</label>
+      <label for="phase">Phase shift <span id="pval" class="m">&delta; = 0% of T</span></label>
       <input type="range" min="-50" max="50" step="1" value="0" id="phase" />
     </div>
     <div class="control">
@@ -118,22 +132,33 @@
 
 
   <div class="canvas-row">
+    <!-- Model card (disabled): remove this comment to show it again
+  <div class="card">
+      <h2>Model</h2>
+      <div class="math-block" data-display data-tex="a_k=\frac{1}{T}\int_0^T x(t)\,e^{-j2\pi kt/T}\,dt,\qquad y(t)=\sum_{k=-N}^{N}a_k\,e^{j2\pi kt/T},\qquad e(t)=x(t)-y(t)">a<sub>k</sub> = (1/T) &int; x(t) e<sup>-j2&pi;kt/T</sup> dt, y(t) = &Sigma; a<sub>k</sub> e<sup>j2&pi;kt/T</sup> (k = -N&hellip;N), e(t) = x(t) - y(t)</div>
+      <div class="math-block live" id="liveSig" aria-live="polite"></div>
+      <div class="math-block live" id="liveCoef" aria-live="polite"></div>
+    </div>
+  -->
     <div class="card">
-      <h2>Time-Domain Signal & Reconstruction</h2>
-      <canvas id="timeCanvas" width="1100" height="280"></canvas>
+      <h2 data-tex="\text{Time domain: }x(t)\text{ and }y(t)=\sum_{k=-N}^{N}a_k e^{j2\pi kt/T}">Time-Domain Signal &amp; Reconstruction</h2>
+      <canvas id="timeCanvas" role="img" aria-label="Time-domain plot of the original signal, its Fourier reconstruction and optional error"></canvas>
+      <div class="axis-label" data-tex="t/T">t/T</div>
       <div class="mt-2 flex flex-wrap gap-2">
-        <span class="chip"><span class="dot x"></span>Original x(t)</span>
-        <span class="chip"><span class="dot y"></span>Reconstructed y(t)</span>
-        <span class="chip"><span class="dot e"></span>Error e(t)</span>
+        <span class="chip"><span class="dot x"></span>Original <span class="m" data-tex="x(t)">x(t)</span></span>
+        <span class="chip"><span class="dot y"></span>Reconstructed <span class="m" data-tex="y(t)">y(t)</span></span>
+        <span class="chip"><span class="dot e"></span>Error <span class="m" data-tex="e(t)">e(t)</span></span>
       </div>
     </div>
     <div class="card">
-      <h2>Magnitude Spectrum |a<sub>n</sub>|</h2>
-      <canvas id="magCanvas" width="1100" height="280"></canvas>
+      <h2 data-tex="\text{Magnitude spectrum }|a_k|">Magnitude Spectrum |a<sub>k</sub>|</h2>
+      <canvas id="magCanvas" role="img" aria-label="Magnitude spectrum stem plot"></canvas>
+      <div class="axis-label" data-tex="k">k</div>
     </div>
     <div class="card">
-      <h2>Phase Spectrum &angle;a<sub>n</sub> (rad)</h2>
-      <canvas id="phaseCanvas" width="1100" height="280"></canvas>
+      <h2 data-tex="\text{Phase spectrum }\angle a_k\ \text{(rad)}">Phase Spectrum &angle;a<sub>k</sub> (rad)</h2>
+      <canvas id="phaseCanvas" role="img" aria-label="Phase spectrum stem plot"></canvas>
+      <div class="axis-label" data-tex="k">k</div>
     </div>
   </div>
 
@@ -150,7 +175,18 @@
   // Core config
   const T = 1.0;               // period [s]
   const Ts = 1e-4;             // sampling time [s] for coefficient integration
-  const tOne = Array.from({length: Math.floor(1/Ts)+1}, (_,k)=>k*Ts); // [0, T]
+  const tOne = Array.from({length: Math.floor(1/Ts)}, (_,k)=>k*Ts); // [0, T) - endpoint excluded so it is not counted twice
+
+  const MATH_FONT = '13px KaTeX_Main, "Times New Roman", Times, serif';   // canvas tick labels
+  // Size the canvas backing store to its CSS size x devicePixelRatio; returns logical size.
+  function fitCanvas(canvas){
+    const d = window.devicePixelRatio || 1;
+    const w = canvas.clientWidth, h = canvas.clientHeight;
+    const pw = Math.round(w*d), ph = Math.round(h*d);
+    if (canvas.width !== pw || canvas.height !== ph){ canvas.width = pw; canvas.height = ph; }
+    canvas.getContext('2d').setTransform(d,0,0,d,0,0);
+    return {width: w, height: h};
+  }
 
   const TWO_PI = Math.PI*2;
 
@@ -187,7 +223,7 @@
           x[k] = 4/T * (Math.abs(u - T/2) - T/4);
           break;
         case 'ramp':
-          x[k] = (u <= T/2) ? (2*u/T) : (2*u/T - 1);
+          x[k] = (u <= T/2) ? (2*u/T) : (2*u/T - 2); // -1..1 sawtooth with period T
           break;
         case 'full_rectified_sine':
           x[k] = Math.abs(Math.sin(TWO_PI*u/T));
@@ -218,21 +254,25 @@
     return s;
   }
 
+  const trigCache = [];
   function computeCoeffs(x, N){
     // numerical integration via sampling (rectangle rule) on one period
     const L = x.length;
     const a = new Array(N+1).fill(0); // indices 0..N (a[0] unused in standard form)
     const b = new Array(N+1).fill(0);
-    // precompute cos/sin tables
+    // cos/sin tables are cached across redraws (they only depend on n)
     const cosn = []; const sinn = [];
     for(let n=1;n<=N;n++){
-      const cn = new Array(L); const sn = new Array(L);
-      for(let k=0;k<L;k++){
-        const ang = TWO_PI*n*tOne[k]/T;
-        cn[k] = Math.cos(ang);
-        sn[k] = Math.sin(ang);
+      if (!trigCache[n]){
+        const cn = new Float64Array(L); const sn = new Float64Array(L);
+        for(let k=0;k<L;k++){
+          const ang = TWO_PI*n*tOne[k]/T;
+          cn[k] = Math.cos(ang);
+          sn[k] = Math.sin(ang);
+        }
+        trigCache[n] = {cn, sn};
       }
-      cosn[n]=cn; sinn[n]=sn;
+      cosn[n]=trigCache[n].cn; sinn[n]=trigCache[n].sn;
     }
     const sum = x.reduce((s,v)=>s+v,0);
     const a0 = 2*sum/L; // trapezoid correction negligible at fine Ts; rectangle is OK here
@@ -347,7 +387,7 @@ function decomposeReconstruction(tArray, coeffs, N){
   }
 
 function plotSignalWithAxes(ctx, tArray, seriesList, opts){
-  const {width, height} = ctx.canvas;
+  const {width, height} = fitCanvas(ctx.canvas);
   const margin = {left: 48, right: 12, top: 10, bottom: 22};
   const plot = {x0: margin.left, y0: margin.top, w: width - margin.left - margin.right, h: height - margin.top - margin.bottom};
 
@@ -405,7 +445,7 @@ function plotSignalWithAxes(ctx, tArray, seriesList, opts){
 
   // --- axes & tick labels ---
   // y labels
-  ctx.fillStyle = "#94a3b8"; ctx.font = "12px system-ui";
+  ctx.fillStyle = "#94a3b8"; ctx.font = MATH_FONT;
   ctx.textAlign = "right"; ctx.textBaseline = "middle";
   yt.ticks.forEach(v => {
     const y = yToPx(v);
@@ -442,7 +482,7 @@ function plotSignalWithAxes(ctx, tArray, seriesList, opts){
 
 // ---- Magnitude stem plot: stems start at y=0; grid aligned to ticks & integer n ----
 function stemPlotWithAxes(ctx, values, opts = {}) {
-  const { width, height } = ctx.canvas;
+  const { width, height } = fitCanvas(ctx.canvas);
   const margin = { left: 48, right: 12, top: 10, bottom: 22 };
   const plot = {
     x0: margin.left,
@@ -502,7 +542,7 @@ function stemPlotWithAxes(ctx, values, opts = {}) {
 
   // ----- Y TICKS + LABELS -----
   ctx.fillStyle = "#94a3b8";
-  ctx.font = "12px system-ui";
+  ctx.font = MATH_FONT;
   ctx.textAlign = "right";
   ctx.textBaseline = "middle";
   yTicksVals.forEach(v => {
@@ -538,7 +578,9 @@ function stemPlotWithAxes(ctx, values, opts = {}) {
   ctx.fillStyle = "#94a3b8";
   ctx.textAlign = "center";
   ctx.textBaseline = "top";
-  for (let i = 0; i < N; i += (N > 23 ? 2 : 1)) {
+  const every = Math.max(1, Math.ceil(24 / step));   // label spacing adapts to the available width
+  for (let i = 0; i < N; i++) {
+    if ((i - nspan) % every !== 0) continue;
     const x = plot.x0 + marginX + i * step;
     const n = i - nspan;
     ctx.fillText(String(n), x, plot.y0 + plot.h + 4);
@@ -548,7 +590,7 @@ function stemPlotWithAxes(ctx, values, opts = {}) {
 
 // ---- Phase stem plot: stems start at y=0; grid aligned to phase ticks & integer n ----
 function phasePlotWithAxes(ctx, values, opts = {}) {
-  const { width, height } = ctx.canvas;
+  const { width, height } = fitCanvas(ctx.canvas);
   const margin = { left: 48, right: 12, top: 10, bottom: 22 };
   const plot = {
     x0: margin.left,
@@ -602,7 +644,7 @@ function phasePlotWithAxes(ctx, values, opts = {}) {
 
   // ----- Y TICKS + LABELS -----
   ctx.fillStyle = "#94a3b8";
-  ctx.font = "12px system-ui";
+  ctx.font = MATH_FONT;
   ctx.textAlign = "right";
   ctx.textBaseline = "middle";
   for (const v of tickVals) {
@@ -644,7 +686,9 @@ function phasePlotWithAxes(ctx, values, opts = {}) {
   ctx.fillStyle = "#94a3b8";
   ctx.textAlign = "center";
   ctx.textBaseline = "top";
-  for (let i = 0; i < N; i += (N > 23 ? 2 : 1)) {
+  const every = Math.max(1, Math.ceil(24 / step));   // label spacing adapts to the available width
+  for (let i = 0; i < N; i++) {
+    if ((i - nspan) % every !== 0) continue;
     const x = plot.x0 + marginX + i * step;
     const n = i - nspan;
     ctx.fillText(String(n), x, plot.y0 + plot.h + 4);
@@ -670,13 +714,59 @@ function plotAllHarmonics(ctx, tArray, coeffs, N, opts = {}) {
   plotSignalWithAxes(ctx, tArray, series, plotOpts);
 }
 
+  // ---------- Math rendering (KaTeX; plain-text fallback is already in the markup) ----------
+  function renderTeX(el, tex, display){
+    if (!el || !window.katex) return false;
+    try { katex.render(tex, el, {throwOnError:false, displayMode:!!display}); return true; }
+    catch(e){ return false; }
+  }
+  // Set an element to a KaTeX string (re-rendered on load if KaTeX was not ready yet); plain text as fallback
+  function setTeX(el, tex, fallback){
+    if (!el) return;
+    el.dataset.tex = tex;
+    if (!renderTeX(el, tex, false)) el.textContent = fallback;
+  }
+  let lastMath = null;
+  function renderStaticMath(){
+    document.querySelectorAll('[data-tex]').forEach(el => renderTeX(el, el.dataset.tex, el.hasAttribute('data-display')));
+    if (lastMath) updateMath(...lastMath);
+  }
+  window.addEventListener('load', renderStaticMath);   // KaTeX is loaded with `defer`
+  window.addEventListener('load', () => { if (document.fonts && document.fonts.load) document.fonts.load(MATH_FONT).then(drawAll); });
+
+
+  // x_0(t) for each waveform (period T)
+  const SIGNAL_TEX = {
+    square: String.raw`\begin{cases}1 & 0\le t<T/2\\ -1 & T/2\le t<T\end{cases}`,
+    triangle: String.raw`\frac{4}{T}\left|t-\frac{T}{2}\right|-1,\quad 0\le t<T`,
+    ramp: String.raw`\begin{cases}2t/T & 0\le t<T/2\\ 2t/T-2 & T/2\le t<T\end{cases}`,
+    full_rectified_sine: String.raw`\left|\sin\frac{2\pi t}{T}\right|`,
+    full_rectified_cosine: String.raw`\left|\cos\frac{2\pi t}{T}\right|`,
+    half_rectified_sine: String.raw`\max\!\left(\sin\frac{2\pi t}{T},\,0\right)`,
+    half_rectified_cosine: String.raw`\max\!\left(\cos\frac{2\pi t}{T},\,0\right)`
+  };
+  function updateMath(wave, phasePct, N, a0, c1mag, c1ph, mse){
+    lastMath = [wave, phasePct, N, a0, c1mag, c1ph, mse];
+    const elS = document.getElementById('liveSig'), elC = document.getElementById('liveCoef');
+    const base = SIGNAL_TEX[wave] || '';
+    const delta = phasePct/100;
+    const texS = (phasePct === 0)
+      ? String.raw`x(t)=${base}`
+      : String.raw`x(t)=x_0\!\left(t+${delta.toFixed(2)}\,T\right),\quad x_0(t)=${base}`;
+    let texC = String.raw`N=${N}:\quad a_0=${a0.toFixed(3)}`;
+    if (N >= 1) texC += String.raw`,\quad |a_1|=${c1mag.toFixed(3)},\ \angle a_1=${c1ph.toFixed(2)}\ \text{rad}`;
+    texC += String.raw`,\qquad \mathrm{MSE}=\frac{1}{T}\int_0^T |e(t)|^2\,dt\approx ${mse.toFixed(4)}`;
+    if (!renderTeX(elS, texS, true) && elS) elS.textContent = 'x(t) = ' + wave + ' wave, phase shift ' + phasePct + '%';
+    if (!renderTeX(elC, texC, true) && elC) elC.textContent = 'N = ' + N + ', a0 = ' + a0.toFixed(3) + ', MSE = ' + mse.toFixed(4);
+  }
+
   function drawAll(){
     const wave = elWave.value;
     const N = parseInt(elNcoef.value,10);
     const phasePct = parseInt(elPhase.value,10);
     const cycles = parseInt(elCycles.value,10);
-    elNval.textContent = N;
-    elPval.textContent = phasePct;
+    setTeX(elNval, 'N=' + N, 'N = ' + N);
+    setTeX(elPval, String.raw`\delta=${phasePct}\%\text{ of }T`, 'delta = ' + phasePct + '% of T');
     elCval.textContent = cycles;
 
     // Build dense one-period samples for coefficient estimation
@@ -714,14 +804,8 @@ function plotAllHarmonics(ctx, tArray, coeffs, N, opts = {}) {
     // magnitude and phase arrays for -span..span
     const {f, span} = makeComplexCoeffs(coeffs.a0, coeffs.a, coeffs.b, N, 15);
     const mags = f.map(c => Math.hypot(c.re, c.im));
-    const phs  = f.map(c => Math.atan2(c.im, c.re));
-	
-	function wrapToHalfPi(a){
-	  while (a >  Math.PI) a -= 2*Math.PI;
-	  while (a <= -Math.PI) a += 2*Math.PI;
-	  return a;
-	}
-	const phsLimited = phs.map(wrapToHalfPi);
+    // Phase is undefined for (numerically) zero coefficients: show 0 instead of noise / ±π
+    const phsLimited = f.map(c => Math.hypot(c.re, c.im) < 1e-6 ? 0 : Math.atan2(c.im, c.re));
 
     const ctxM = magCanvas.getContext('2d');
     stemPlotWithAxes(ctxM, mags, {nspan: 15, yRange: [0, 1.2]});
@@ -729,9 +813,15 @@ function plotAllHarmonics(ctx, tArray, coeffs, N, opts = {}) {
     const ctxP = phaseCanvas.getContext('2d');
     // phasePlotWithAxes(ctxP, phsLimited, {nspan: span});
 	phasePlotWithAxes(ctxP, phsLimited, { nspan: 15, yRange: [-Math.PI, Math.PI] });
+
+    // live math readout
+    const mse = ePlot.reduce((s,v)=>s+v*v, 0) / ePlot.length;
+    const c1 = (N >= 1) ? f[span+1] : {re:0, im:0};
+    updateMath(wave, phasePct, N, coeffs.a0/2, Math.hypot(c1.re, c1.im), phsLimited[span+1], mse);
   }
 
   [elWave, elNcoef, elPhase, elCycles, elShowE, elShowH].forEach(el => el.addEventListener('input', drawAll));
+  window.addEventListener('resize', drawAll);
   drawAll();
 })();
 </script>

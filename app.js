@@ -44,7 +44,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   var placeholder = document.getElementById('site-nav');
   if (placeholder) {
-    fetch('nav.html')
+    fetch('/nav.html')
       .then(function (r) { return r.text(); })
       .then(function (html) {
         placeholder.outerHTML = html;
