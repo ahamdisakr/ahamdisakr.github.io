@@ -66,16 +66,22 @@ main h3 {
   letter-spacing: -0.01em;
 }
 
+/* h4: Regular (400). Weight 500 is not a real face in Segoe UI, so browsers disagree on it: Edge draws Semibold, Firefox Regular. Use 400 or 600. */
 main h4 {
   font-size: 1.125rem;
-  font-weight: 500;
+  font-weight: 400;
   color: var(--ink);
   margin: 0 0 0.75rem;
 }
 
+/* Team page names: Semibold (600) */
+body[data-page="team"] main h4 {
+  font-weight: 600;
+}
+
 main h3 {
   font-size: 1.5rem;
-  font-weight: 500;
+  font-weight: 600;
   color: #1f2937;
   margin: 0 0 0.5rem;
 }
