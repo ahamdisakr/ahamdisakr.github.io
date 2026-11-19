@@ -5,8 +5,8 @@
 <head>
 <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-<title>Interactive Fourier Series Coefficient Demo</title>
-<meta name="description" content="Interactive demo of Fourier series coefficients: choose a signal, the number of harmonics and a phase shift, and see the reconstruction, the error and the spectra." />
+<title>Fourier Series Coefficients | Ahmed Hamdi Sakr</title>
+<meta name="description" content="Interactive demo of Fourier series coefficients: choose a signal, the number of harmonics and a time shift, and see the reconstruction, the error and the spectra." />
     <script defer src="https://cdn.jsdelivr.net/npm/feather-icons@4.29.2/dist/feather.min.js"></script>
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css" />
@@ -27,9 +27,9 @@
         <main class="page fade-in" id="main">
   <div class="panel panel--static">
   <h1 class="title-lg mb-4">Interactive Fourier Series Coefficient Demo</h1>
-  <p>Choose a signal, number of coefficients, phase shift, and how many cycles to show. You can also overlay the error <span class="m" data-tex="e(t)=x(t)-y(t)">e(t) = x(t) - y(t)</span>.</p>
+  <p>Choose a signal, the number of coefficients and a time shift. You can also overlay the error <span class="m" data-tex="e(t)=x(t)-y(t)">e(t) = x(t) - y(t)</span>. Shifting the signal in time leaves <span class="m" data-tex="|a_k|">|a<sub>k</sub>|</span> unchanged and only changes the phase, by an amount proportional to <span class="m" data-tex="k">k</span>: <span class="m" data-tex="a_k \to a_k\,e^{-j2\pi k\tau/T}">a<sub>k</sub> &rarr; a<sub>k</sub> e<sup>-j2&pi;k&tau;/T</sup></span>.</p>
 
-  <div class="controls">
+  <div class="controls controls--sticky controls--3">
     <div class="control">
       <label for="wave">Signal Type</label>
       <select id="wave">
@@ -51,12 +51,8 @@
       <input type="range" min="0" max="15" step="1" value="0" id="ncoef" />
     </div>
     <div class="control">
-      <label for="phase">Phase shift <span id="pval" class="m">&delta; = 0% of T</span></label>
+      <label for="phase">Time shift <span id="pval" class="m">&tau; = 0% of T</span></label>
       <input type="range" min="-50" max="50" step="1" value="0" id="phase" />
-    </div>
-    <div class="control">
-      <label for="cycles">Cycles shown in time plot: <span id="cval">3</span></label>
-      <input type="range" min="1" max="5" step="1" value="3" id="cycles" />
     </div>
   </div>
 
@@ -98,6 +94,7 @@
         <footer class="site-footer fade-in">
             <p>&copy; 2021&ndash;2026 Ahmed Hamdi Sakr. All rights reserved.</p>
         </footer>
+        </div>
 
 
 <script>
@@ -126,8 +123,7 @@
   const elNval  = document.getElementById('nval');
   const elPhase = document.getElementById('phase');
   const elPval  = document.getElementById('pval');
-  const elCycles= document.getElementById('cycles');
-  const elCval  = document.getElementById('cval');
+  const CYCLES = 4;            // periods shown in the time plot
   const elShowE = document.getElementById('showError');
   const elShowH = document.getElementById('showHarmonics');
 
@@ -140,10 +136,10 @@
 
   function makeWaveSamples(kind, phasePct, tArray){
     const x = new Array(tArray.length);
-    const ph = phasePct/100 * T; // phase as time shift
+    const tau = phasePct/100 * T; // time shift: x(t) = x0(t - tau), positive tau moves the signal right
     for (let k=0; k<tArray.length; k++) {
       const ti = tArray[k];
-      const tm = ti + T + ph; // shift and avoid negatives
+      const tm = ti + T - tau; // shift (adding T keeps it positive, since |tau| <= T/2)
       const u = wrapMod(tm, T); // in [0, T)
       switch(kind){
         case 'square':
@@ -682,11 +678,11 @@ function plotAllHarmonics(ctx, tArray, coeffs, N, opts = {}) {
     const delta = phasePct/100;
     const texS = (phasePct === 0)
       ? String.raw`x(t)=${base}`
-      : String.raw`x(t)=x_0\!\left(t+${delta.toFixed(2)}\,T\right),\quad x_0(t)=${base}`;
+      : String.raw`x(t)=x_0\!\left(t${delta > 0 ? '-' : '+'}${Math.abs(delta).toFixed(2)}\,T\right),\quad x_0(t)=${base}`;
     let texC = String.raw`N=${N}:\quad a_0=${a0.toFixed(3)}`;
     if (N >= 1) texC += String.raw`,\quad |a_1|=${c1mag.toFixed(3)},\ \angle a_1=${c1ph.toFixed(2)}\ \text{rad}`;
     texC += String.raw`,\qquad \mathrm{MSE}=\frac{1}{T}\int_0^T |e(t)|^2\,dt\approx ${mse.toFixed(4)}`;
-    if (!renderTeX(elS, texS, true) && elS) elS.textContent = 'x(t) = ' + wave + ' wave, phase shift ' + phasePct + '%';
+    if (!renderTeX(elS, texS, true) && elS) elS.textContent = 'x(t) = ' + wave + ' wave, time shift ' + phasePct + '% of T';
     if (!renderTeX(elC, texC, true) && elC) elC.textContent = 'N = ' + N + ', a0 = ' + a0.toFixed(3) + ', MSE = ' + mse.toFixed(4);
   }
 
@@ -694,10 +690,9 @@ function plotAllHarmonics(ctx, tArray, coeffs, N, opts = {}) {
     const wave = elWave.value;
     const N = parseInt(elNcoef.value,10);
     const phasePct = parseInt(elPhase.value,10);
-    const cycles = parseInt(elCycles.value,10);
+    const cycles = CYCLES;
     setTeX(elNval, 'N=' + N, 'N = ' + N);
-    setTeX(elPval, String.raw`\delta=${phasePct}\%\text{ of }T`, 'delta = ' + phasePct + '% of T');
-    elCval.textContent = cycles;
+    setTeX(elPval, String.raw`\tau=${phasePct}\%\text{ of }T`, 'τ = ' + phasePct + '% of T');
 
     // Build dense one-period samples for coefficient estimation
     const xOne = makeWaveSamples(wave, phasePct, tOne);
@@ -735,7 +730,10 @@ function plotAllHarmonics(ctx, tArray, coeffs, N, opts = {}) {
     const {f, span} = makeComplexCoeffs(coeffs.a0, coeffs.a, coeffs.b, N, 15);
     const mags = f.map(c => Math.hypot(c.re, c.im));
     // Phase is undefined for (numerically) zero coefficients: show 0 instead of noise / ±π
-    const phsLimited = f.map(c => Math.hypot(c.re, c.im) < 1e-6 ? 0 : Math.atan2(c.im, c.re));
+    // Show no phase for coefficients that are zero up to sampling noise (~2e-4 when a jump lands on a sample):
+    // the threshold is relative to the largest coefficient, so real small harmonics (e.g. triangle k = 15) keep theirs.
+    const magMax = Math.max(...f.map(c => Math.hypot(c.re, c.im)));
+    const phsLimited = f.map(c => Math.hypot(c.re, c.im) < 1e-3 * magMax ? 0 : Math.atan2(c.im, c.re));
 
     const ctxM = magCanvas.getContext('2d');
     stemPlotWithAxes(ctxM, mags, {nspan: 15, yRange: [0, 1.2]});
@@ -750,7 +748,7 @@ function plotAllHarmonics(ctx, tArray, coeffs, N, opts = {}) {
     updateMath(wave, phasePct, N, coeffs.a0/2, Math.hypot(c1.re, c1.im), phsLimited[span+1], mse);
   }
 
-  [elWave, elNcoef, elPhase, elCycles, elShowE, elShowH].forEach(el => el.addEventListener('input', drawAll));
+  [elWave, elNcoef, elPhase, elShowE, elShowH].forEach(el => el.addEventListener('input', drawAll));
   window.addEventListener('resize', drawAll);
   drawAll();
 })();

@@ -12,6 +12,9 @@
   --hcolor: #22c55e;    /* filter */
   --reccolor: #34d399;  /* Fourier-series reconstruction (green) */
   --errcolor: #ef4444;  /* error line */
+  --scolor: #c084fc;    /* sine probe (Fourier intuition demo) */
+  --poscolor: #22c55e;  /* positive area under a product */
+  --negcolor: #ef4444;  /* negative area under a product */
   --card: #111827;      /* panel background */
   --fg: #0f172a;        /* input text */
 }
@@ -28,7 +31,7 @@ select, input[type="number"], input[type="range"] { width: 100%; padding: 8px 10
 select { padding: 0; color: inherit; }
 input[type="range"] { padding: 0; height: 28px; }
 .small{font-size:12px;color:#9fb1d1}
-.canvas-row { display: grid; grid-template-columns: 1fr; gap: 12px; }
+.canvas-row { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; }
 .card { background: var(--card); border: 1px solid #0f172a; border-radius: 12px; padding: 10px 12px; box-shadow: 0 8px 24px rgba(0, 0, 0, .06); }
 .card h2 { font-size: 16px; margin: 0 0 6px; color: #cbd5e1; }
 canvas { width: 100%; height: 260px; display: block; background: #0a1326; border-radius: 8px; }
@@ -47,6 +50,30 @@ canvas { width: 100%; height: 260px; display: block; background: #0a1326; border
 button:disabled{opacity:0.6}
 .row{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;margin-top:6px}
 .dot.e { background: var(--errcolor); }
+
+/* Fourier intuition demo: short time plots, area readouts, plot groups, sweep button */
+canvas.short { height: 200px; }
+.readout { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 18px; padding: 8px 2px 2px; color: #cbd5e1; font-variant-numeric: tabular-nums; }
+.readout .net { flex-basis: 100%; font-size: 22px; font-weight: 700; color: #f8fafc; max-width: 100%; overflow-x: auto; }
+.group { margin-top: 12px; }
+.sweep-btn { flex: none; padding: .3rem .8rem; font-weight: 600; font-size: 14px; border: 0; cursor: pointer; }
+.control-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 6px; }
+.control-head label { margin-bottom: 0; }
+.sig-select { height: 28px; padding: 0 6px; }
+@media (min-width: 768px) {
+  .controls--3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+.probe-note { font-weight: 400; font-size: 13px; color: var(--muted); }
+/* Controls pinned under the fixed 4rem site header while the plots scroll; the white band matches the panel.
+   Tablet and up only: on phones the two stacked controls would cover a quarter of the screen. */
+@media (min-width: 768px) {
+  .controls--sticky { position: sticky; top: 4rem; z-index: 5; background: #fff; padding: 8px 0; margin-top: -8px; }
+}
+.readout .net .katex { font-size: 0.85em; }
+.readout .part { font-size: 14px; color: var(--muted); }
+.readout .part b { font-weight: 600; }
+.readout .part.pos b { color: var(--poscolor); }
+.readout .part.neg b { color: var(--negcolor); }
 
 /* The Fourier-series demo draws the reconstruction in green */
 [data-demo="series"] .dot.y { background: var(--reccolor); }

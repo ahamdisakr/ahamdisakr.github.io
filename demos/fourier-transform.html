@@ -5,7 +5,7 @@
 <head>
 <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-<title>Interactive Fourier Transform Demo</title>
+<title>Fourier Transform | Ahmed Hamdi Sakr</title>
 <meta name="description" content="Interactive demo of the Fourier transform: how a first-order low-pass filter scales and delays a cosine of adjustable frequency, in the time and frequency domains." />
     <script defer src="https://cdn.jsdelivr.net/npm/feather-icons@4.29.2/dist/feather.min.js"></script>
 
@@ -29,7 +29,7 @@
   <h1 class="title-lg mb-4">Interactive Fourier Transform Demo</h1>
   <p>Slider changes the frequency <span class="m" data-tex="f_0">f<sub>0</sub></span> of the input cosine. It passes through a first-order low-pass filter, so the output is the input scaled by <span class="m" data-tex="|H(f_0)|">|H(f<sub>0</sub>)|</span> and phase-shifted by <span class="m" data-tex="\phi(f_0)">&phi;(f<sub>0</sub>)</span>.</p>
 
-<div class="controls">
+<div class="controls controls--sticky">
     <div class="control">
       <label for="f0">Input frequency <span id="f0val" class="m">f<sub>0</sub> = 10 Hz</span></label>
       <input id="f0" type="range" min="1" max="400" step="1" value="10"/>
@@ -92,6 +92,7 @@
         <footer class="site-footer fade-in">
             <p>&copy; 2021&ndash;2026 Ahmed Hamdi Sakr. All rights reserved.</p>
         </footer>
+        </div>
 
 
 <script>

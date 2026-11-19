@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+<meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+<title>Why Fourier Analysis Works | Ahmed Hamdi Sakr</title>
+<meta name="description" content="Interactive demo of why Fourier analysis works: multiply a square-wave burst by a probe cosine (and sine), watch the positive and negative areas cancel, and see the net area trace out the spectrum." />
+    <script defer src="https://cdn.jsdelivr.net/npm/feather-icons@4.29.2/dist/feather.min.js"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css" />
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+
+    <link href="/styles.css" rel="stylesheet" />
+    <link href="/demos/demo.css" rel="stylesheet" />
+    <link rel="icon" type="image/x-icon" href="/images/icon.ico" />
+    <script defer src="/app.js"></script>
+
+</head>
+
+<body data-page="teaching">
+
+    <div id="site-nav"></div>
+
+        <div class="site-container">
+        <main class="page fade-in" id="main">
+  <div class="panel panel--static">
+  <h1 class="title-lg mb-4">Why Fourier Analysis Works</h1>
+  <p>To ask how much of a frequency <span class="m" data-tex="f">f</span> is inside a signal <span class="m" data-tex="x(t)">x(t)</span>, multiply the signal by a probe cosine and a probe sine at that frequency and measure the net area under each product. When <span class="m" data-tex="f">f</span> matches a frequency in <span class="m" data-tex="x(t)">x(t)</span>, the signal and the probe rise and fall together, the product stays mostly on one side of zero and the area builds up. When it does not, the positive (green) and negative (red) pieces cancel and the net area is close to zero. Plotting the net area against <span class="m" data-tex="f">f</span> gives the spectrum.</p>
+  <p class="mb-4"><strong>Try it:</strong> with the square wave, move <span class="m" data-tex="f">f</span> to 1, 3 and 5 Hz (the odd harmonics), then to 2 Hz or anywhere in between. The area only builds up near the harmonics, so the spectrum is a set of narrow spikes, close to the deltas of a periodic square wave. Then set <span class="m" data-tex="\tau = 0.25\ \text{s}">&tau; = 0.25 s</span>: at 1 Hz the cosine area vanishes and the sine area takes over, even though that frequency is still in the signal. That is why the Fourier transform uses both, <span class="m" data-tex="e^{-j2\pi f t} = \cos(2\pi f t) - j\sin(2\pi f t)">e<sup>-j2&pi;ft</sup> = cos(2&pi;ft) - j sin(2&pi;ft)</span>, and why <span class="m" data-tex="|X(f)|">|X(f)|</span> does not change with the shift. Finally, switch the signal: each shape collects its area at its own set of frequencies.</p>
+
+  <div class="controls controls--sticky controls--3">
+    <div class="control">
+      <label for="sig">Signal</label>
+      <select id="sig" class="sig-select">
+        <option value="square">Square wave</option>
+        <option value="pulse">Pulse train (25% duty)</option>
+        <option value="triangle">Triangle wave</option>
+        <option value="sawtooth">Sawtooth wave</option>
+        <option value="halfrect">Half-wave rectified cosine</option>
+        <option value="fullrect">Full-wave rectified cosine</option>
+        <option value="tones">Two tones: 1.5 Hz cosine + 4 Hz sine</option>
+      </select>
+    </div>
+    <div class="control">
+      <div class="control-head">
+        <label for="freq">Frequency <span id="fval" class="m">f = 0.50 Hz</span></label>
+        <button class="btn btn-primary sweep-btn" id="btnSweep" type="button">&#9654;&#xFE0E; Sweep f</button>
+      </div>
+      <input id="freq" type="range" min="0.5" max="8" step="0.01" value="0.50"/>
+    </div>
+    <div class="control">
+      <label for="tau">Time shift <span id="tauval" class="m">&tau; = 0.00 s</span></label>
+      <input id="tau" type="range" min="-0.5" max="0.5" step="0.01" value="0"/>
+    </div>
+  </div>
+
+  <div class="canvas-row">
+    <div class="card">
+      <h2><span>Signal: <span class="m" data-tex="x(t)">x(t)</span></span></h2>
+      <canvas id="cx" class="short" role="img" aria-label="Signal x(t)"></canvas>
+      <div class="axis-label" data-tex="t\ (\mathrm{s})">t (s)</div>
+    </div>
+  </div>
+
+  <div class="plot-grid group">
+    <div class="card">
+      <h2><span>Product: <span class="m" data-tex="x(t)\cos(2\pi f t)">x(t) cos(2&pi;ft)</span> <span class="probe-note">(faint: probe <span class="m" data-tex="\cos(2\pi f t)">cos(2&pi;ft)</span>)</span></span></h2>
+      <canvas id="cc" class="short" role="img" aria-label="Product of x(t) and the probe cosine, with the probe drawn faintly and the area under the product shaded"></canvas>
+      <div class="axis-label" data-tex="t\ (\mathrm{s})">t (s)</div>
+      <div class="readout" aria-live="polite">
+        <span class="net" id="netC">C(f) = 0</span>
+        <span class="part pos">+ area <b id="posC">0</b></span>
+        <span class="part neg">&minus; area <b id="negC">0</b></span>
+      </div>
+    </div>
+    <div class="card">
+      <h2><span>Product: <span class="m" data-tex="x(t)\sin(2\pi f t)">x(t) sin(2&pi;ft)</span> <span class="probe-note">(faint: probe <span class="m" data-tex="\sin(2\pi f t)">sin(2&pi;ft)</span>)</span></span></h2>
+      <canvas id="cs" class="short" role="img" aria-label="Product of x(t) and the probe sine, with the probe drawn faintly and the area under the product shaded"></canvas>
+      <div class="axis-label" data-tex="t\ (\mathrm{s})">t (s)</div>
+      <div class="readout" aria-live="polite">
+        <span class="net" id="netS">S(f) = 0</span>
+        <span class="part pos">+ area <b id="posS">0</b></span>
+        <span class="part neg">&minus; area <b id="negS">0</b></span>
+      </div>
+    </div>
+    <div class="card">
+      <h2><span>Cosine area vs. <span class="m" data-tex="f">f</span>: <span class="m" data-tex="C(f)">C(f)</span></span></h2>
+      <canvas id="cC" class="short" role="img" aria-label="Cosine net area C(f) plotted against probe frequency, with the current frequency marked"></canvas>
+      <div class="axis-label" data-tex="f\ (\mathrm{Hz})">f (Hz)</div>
+    </div>
+    <div class="card">
+      <h2><span>Sine area vs. <span class="m" data-tex="f">f</span>: <span class="m" data-tex="S(f)">S(f)</span></span></h2>
+      <canvas id="cS" class="short" role="img" aria-label="Sine net area S(f) plotted against probe frequency, with the current frequency marked"></canvas>
+      <div class="axis-label" data-tex="f\ (\mathrm{Hz})">f (Hz)</div>
+    </div>
+  </div>
+
+  <div class="canvas-row group">
+    <div class="card">
+      <h2><span>Magnitude spectrum: <span class="m" data-tex="|X(f)| = \sqrt{C(f)^2 + S(f)^2}">|X(f)| = &radic;(C(f)&sup2; + S(f)&sup2;)</span></span></h2>
+      <canvas id="cX" role="img" aria-label="Magnitude spectrum |X(f)| plotted against probe frequency, with the current frequency marked"></canvas>
+      <div class="axis-label" data-tex="f\ (\mathrm{Hz})">f (Hz)</div>
+      <div class="math-block live" id="liveMath" aria-live="polite"></div>
+    </div>
+  </div>
+
+</div>
+
+        </main>
+        <footer class="site-footer fade-in">
+            <p>&copy; 2021&ndash;2026 Ahmed Hamdi Sakr. All rights reserved.</p>
+        </footer>
+        </div>
+
+
+<script>
+(function(){
+  // ---------- Config ----------
+  const TWO_PI = Math.PI * 2;
+  const N_CYCLES = 20;         // burst length: long enough to be close to periodic (spikes ~ deltas)
+  const T0 = -5, T1 = 5;       // signal plot window: the middle 10 cycles (areas use all 20)
+  const P0 = -2.5, P1 = 2.5;   // product plots window: the middle 5 cycles
+  const T_TICKS = 11;          // full-width time plot: a tick every 1 s
+  const T_TICKS_HALF = [-2, -1, 0, 1, 2];   // product plots: a tick every 1 s
+  const FMIN = 0.5, FMAX = 8;  // spectrum axis (Hz); starts at 0.5 Hz so the 0 Hz (average) spike is not shown
+  const NF = 1501;             // spectrum samples: fine enough to resolve the narrow peaks
+  const F_TICKS = [1, 2, 3, 4, 5, 6, 7, 8];
+  const SWEEP_RATE = 0.4;      // Hz per second while sweeping
+  const css = getComputedStyle(document.documentElement);
+  const col = (name, fb) => css.getPropertyValue(name).trim() || fb;
+  const C_X = col('--xcolor', '#f59e0b'), C_COS = col('--ycolor', '#60a5fa'), C_SIN = col('--scolor', '#c084fc');
+  const C_POS = col('--poscolor', '#22c55e'), C_NEG = col('--negcolor', '#ef4444');
+  const C_GRID = col('--grid', '#15223e'), C_AXIS = '#223356', C_TICK = '#94a3b8', C_BG = '#0a1326', C_PROD = '#e2e8f0';
+  const fGrid = Array.from({length: NF}, (_, i) => FMIN + i * (FMAX - FMIN) / (NF - 1));
+
+  // DOM
+  const elF = document.getElementById('freq'), elTau = document.getElementById('tau');
+  const elSig = document.getElementById('sig'), elSweep = document.getElementById('btnSweep');
+  const ctxX = document.getElementById('cx').getContext('2d');
+  const ctxC = document.getElementById('cc').getContext('2d');     // x·cos product
+  const ctxS = document.getElementById('cs').getContext('2d');     // x·sin product
+  const ctxFC = document.getElementById('cC').getContext('2d');    // C(f)
+  const ctxFS = document.getElementById('cS').getContext('2d');    // S(f)
+  const ctxF = document.getElementById('cX').getContext('2d');     // |X(f)|
+
+  // ---------- Signals: one period (1 s) as a function of u = t - τ, repeated over the burst ----------
+  // x(t) = shape(t - τ) for |t - τ| < N/2, else 0. Values are sampled at the midpoints of cells of width H;
+  // every jump of every shape (and the burst edges) falls on a cell boundary, so the sums stay accurate.
+  const frac = (u) => u - Math.floor(u);
+  const SIGNALS = {
+    square:   {yr: [-0.5, 1.5], x: (u) => frac(u + 0.25) < 0.5 ? 1 : 0},     // 1 where cos 2πu > 0
+    pulse:    {yr: [-0.5, 1.5], x: (u) => frac(u + 0.125) < 0.25 ? 1 : 0},   // 25% duty, centred on u = 0
+    triangle: {yr: [-0.5, 1.5], x: (u) => 1 - 2 * Math.abs(frac(u + 0.5) - 0.5)},
+    sawtooth: {yr: [-0.5, 1.5], x: (u) => frac(u)},
+    halfrect: {yr: [-0.5, 1.5], x: (u) => Math.max(0, Math.cos(TWO_PI * u))},
+    fullrect: {yr: [-0.5, 1.5], x: (u) => Math.abs(Math.cos(TWO_PI * u))},
+    tones:    {yr: [-2, 2],     x: (u) => Math.cos(TWO_PI * 1.5 * u) + 0.6 * Math.sin(TWO_PI * 4 * u)},
+  };
+  const H = 1 / 400;                        // cell width (s): 50 samples per cycle at 8 Hz
+  const K = Math.round(N_CYCLES / H);       // number of cells over the whole burst
+  const U = Float64Array.from({length: K}, (_, k) => -N_CYCLES / 2 + (k + 0.5) * H);
+
+  // Midpoint-rule ∫ x(u) cos(2πf(u+τ)) du and the sine version, for every f in fGrid, at τ = 0.
+  // cos/sin of the probe are advanced by a rotation per sample, so there are no trig calls in the inner loop.
+  function spectrumAtZeroShift(x0){
+    const C0 = new Float64Array(NF), S0 = new Float64Array(NF);
+    for (let i = 0; i < NF; i++){
+      const w = TWO_PI * fGrid[i], cd = Math.cos(w * H), sd = Math.sin(w * H);
+      let c = Math.cos(w * U[0]), s = Math.sin(w * U[0]), sc = 0, ss = 0;
+      for (let k = 0; k < K; k++){
+        const v = x0[k]; sc += v * c; ss += v * s;
+        const c2 = c * cd - s * sd; s = s * cd + c * sd; c = c2;
+      }
+      C0[i] = sc * H; S0[i] = ss * H;
+    }
+    return {C0, S0};
+  }
+
+  // ---------- Plot helpers (style matches the other demos) ----------
+  const MATH_FONT = '13px KaTeX_Main, "Times New Roman", Times, serif';   // canvas tick labels
+  function fitCanvas(canvas){
+    const d = window.devicePixelRatio || 1;
+    const w = canvas.clientWidth, h = canvas.clientHeight;
+    const pw = Math.round(w*d), ph = Math.round(h*d);
+    if (canvas.width !== pw || canvas.height !== ph){ canvas.width = pw; canvas.height = ph; }
+    canvas.getContext('2d').setTransform(d,0,0,d,0,0);
+    return {width: w, height: h};
+  }
+  function fmtTick(u){
+    if (Math.abs(u) < 1e-12) return "0";
+    if (Math.abs(u) >= 1000) return Number((u/1000).toPrecision(3)) + "k";
+    return String(Number(u.toPrecision(3)));
+  }
+  const fmt = (v) => (Math.abs(v) < 5e-4 ? 0 : v).toFixed(3);
+
+  // Background, grid, ticks and zero axis. Returns the mappers used by the drawing helpers.
+  // xTicks: a number of evenly spaced ticks, or an explicit list of tick positions.
+  function frame(ctx, xr, yr, xTicks){
+    const xt = Array.isArray(xTicks) ? xTicks
+      : Array.from({length: xTicks}, (_, i) => xr[0] + i * (xr[1] - xr[0]) / (xTicks - 1));
+    const {width, height} = fitCanvas(ctx.canvas);
+    const m = {left: 56, right: 12, top: 10, bottom: 28};
+    const P = {x0: m.left, y0: m.top, w: width - m.left - m.right, h: height - m.top - m.bottom};
+    const [xmin, xmax] = xr, [ymin, ymax] = yr;
+    const X = (v) => P.x0 + (v - xmin) * (P.w / (xmax - xmin));
+    const Y = (v) => P.y0 + P.h - ((v - ymin) / (ymax - ymin)) * P.h;
+    const yTicks = 5;
+
+    ctx.clearRect(0, 0, width, height);
+    ctx.fillStyle = C_BG; ctx.fillRect(0, 0, width, height);
+
+    ctx.save(); ctx.beginPath(); ctx.rect(P.x0, P.y0, P.w, P.h); ctx.clip();
+    ctx.strokeStyle = C_GRID; ctx.lineWidth = 1;
+    for (let i = 0; i < yTicks; i++){ const y = Y(ymin + i*(ymax-ymin)/(yTicks-1)); ctx.beginPath(); ctx.moveTo(P.x0, y); ctx.lineTo(P.x0 + P.w, y); ctx.stroke(); }
+    for (const u of xt){ const x = X(u); ctx.beginPath(); ctx.moveTo(x, P.y0); ctx.lineTo(x, P.y0 + P.h); ctx.stroke(); }
+    ctx.restore();
+
+    ctx.fillStyle = C_TICK; ctx.font = MATH_FONT; ctx.textAlign = "right"; ctx.textBaseline = "middle";
+    for (let i = 0; i < yTicks; i++){
+      const v = ymin + i*(ymax-ymin)/(yTicks-1), y = Y(v);
+      ctx.fillText((Math.abs(v) < 5e-3 ? 0 : v).toFixed(2), P.x0 - 8, y);
+      ctx.strokeStyle = C_AXIS; ctx.beginPath(); ctx.moveTo(P.x0-4, y); ctx.lineTo(P.x0, y); ctx.stroke();
+    }
+    ctx.textAlign = "center"; ctx.textBaseline = "top";
+    for (const u of xt) ctx.fillText(fmtTick(u), X(u), P.y0 + P.h + 6);
+
+    if (ymin <= 0 && ymax >= 0){
+      ctx.strokeStyle = C_AXIS; ctx.lineWidth = 1.5;
+      ctx.beginPath(); ctx.moveTo(P.x0, Y(0)); ctx.lineTo(P.x0 + P.w, Y(0)); ctx.stroke();
+    }
+    return {ctx, P, X, Y};
+  }
+  function clipped(F, fn){
+    const {ctx, P} = F;
+    ctx.save(); ctx.beginPath(); ctx.rect(P.x0, P.y0, P.w, P.h); ctx.clip(); fn(ctx); ctx.restore();
+  }
+  function line(F, xs, ys, color, width = 2, alpha = 1){
+    clipped(F, (ctx) => {
+      ctx.strokeStyle = color; ctx.lineWidth = width; ctx.globalAlpha = alpha; ctx.lineJoin = 'round';
+      ctx.beginPath();
+      for (let i = 0; i < xs.length; i++){ const x = F.X(xs[i]), y = F.Y(ys[i]); if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y); }
+      ctx.stroke();
+    });
+  }
+  // Shade between the curve and y = 0: positive part in one colour, negative part in another.
+  function fillArea(F, xs, ys, cPos, cNeg, alpha = 0.4){
+    const {P, X, Y} = F, y0 = Y(0);
+    const path = () => {
+      const ctx = F.ctx;
+      ctx.beginPath(); ctx.moveTo(X(xs[0]), y0);
+      for (let i = 0; i < xs.length; i++) ctx.lineTo(X(xs[i]), Y(ys[i]));
+      ctx.lineTo(X(xs[xs.length - 1]), y0); ctx.closePath();
+    };
+    for (const [top, h, c] of [[P.y0, y0 - P.y0, cPos], [y0, P.y0 + P.h - y0, cNeg]]){
+      const ctx = F.ctx;
+      ctx.save(); ctx.beginPath(); ctx.rect(P.x0, top, P.w, h); ctx.clip();
+      ctx.globalAlpha = alpha; ctx.fillStyle = c; path(); ctx.fill();
+      ctx.restore();
+    }
+  }
+  function dot(F, x, y, color, r = 5){
+    clipped(F, (ctx) => {
+      ctx.fillStyle = color; ctx.strokeStyle = C_BG; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.arc(F.X(x), F.Y(y), r, 0, TWO_PI); ctx.fill(); ctx.stroke();
+    });
+  }
+  function vline(F, x, color){
+    clipped(F, (ctx) => {
+      ctx.strokeStyle = color; ctx.lineWidth = 1; ctx.setLineDash([4, 4]);
+      ctx.beginPath(); ctx.moveTo(F.X(x), F.P.y0); ctx.lineTo(F.X(x), F.P.y0 + F.P.h); ctx.stroke();
+    });
+  }
+
+  // ---------- Math rendering (KaTeX; plain-text fallback is already in the markup) ----------
+  function renderTeX(el, tex, display){
+    if (!window.katex) return false;
+    try { katex.render(tex, el, {throwOnError:false, displayMode:!!display}); return true; }
+    catch(e){ return false; }
+  }
+  function setTeX(el, tex, fallback){
+    if (!el) return;
+    el.dataset.tex = tex;
+    if (!renderTeX(el, tex, false)) el.textContent = fallback;
+  }
+  window.addEventListener('load', () => {
+    document.querySelectorAll('[data-tex]').forEach(el => renderTeX(el, el.dataset.tex, el.hasAttribute('data-display')));
+    drawAll();
+  });
+  window.addEventListener('load', () => { if (document.fonts && document.fonts.load) document.fonts.load(MATH_FONT).then(drawAll); });
+
+  // ---------- State ----------
+  // Per signal: samples x0 and the spectrum at τ = 0. Per τ: the spectrum rotated by the shift
+  // property (x(t-τ) ⇒ C − jS is multiplied by e^{-j2πfτ}) and the indices of the plotted window.
+  let x0, ampl, spec0, peak, ghost, tau = 0;
+  let w0 = 0, w1 = -1, tWin = null;     // samples in the signal plot window
+  let p0 = 0, p1 = -1, tWinP = null;    // samples in the product plots window
+  function setSignal(){
+    const sig = SIGNALS[elSig.value] || SIGNALS.square;
+    x0 = U.map(sig.x);
+    ampl = 0; for (const v of x0) ampl = Math.max(ampl, Math.abs(v));
+    spec0 = spectrumAtZeroShift(x0);
+    peak = 0;
+    for (let i = 0; i < NF; i++) peak = Math.max(peak, Math.hypot(spec0.C0[i], spec0.S0[i]));
+    applyShift();
+  }
+  function applyShift(){
+    tau = parseFloat(elTau.value);
+    setTeX(document.getElementById('tauval'), String.raw`\tau=${tau.toFixed(2)}\ \text{s}`, `τ = ${tau.toFixed(2)} s`);
+    const {C0, S0} = spec0;
+    ghost = {C: new Float64Array(NF), S: new Float64Array(NF), M: new Float64Array(NF)};
+    for (let i = 0; i < NF; i++){
+      const th = TWO_PI * fGrid[i] * tau, c = Math.cos(th), s = Math.sin(th);
+      ghost.C[i] = C0[i] * c - S0[i] * s;
+      ghost.S[i] = S0[i] * c + C0[i] * s;
+      ghost.M[i] = Math.hypot(C0[i], S0[i]);
+    }
+    w0 = Math.max(0, Math.ceil((T0 - tau - U[0]) / H));
+    w1 = Math.min(K - 1, Math.floor((T1 - tau - U[0]) / H));
+    tWin = Float64Array.from({length: w1 - w0 + 1}, (_, j) => U[w0 + j] + tau);
+    p0 = Math.max(0, Math.ceil((P0 - tau - U[0]) / H));
+    p1 = Math.min(K - 1, Math.floor((P1 - tau - U[0]) / H));
+    tWinP = Float64Array.from({length: p1 - p0 + 1}, (_, j) => U[p0 + j] + tau);
+    drawAll();
+  }
+
+  // ---------- Main draw ----------
+  // Product x(t)·probe with its area shaded; the probe itself is drawn faintly behind it.
+  function drawProduct(ctx, probe, prod, probeColor, A, ids, label, fn){
+    const F = frame(ctx, [P0, P1], [-1.15 * ampl, 1.15 * ampl], T_TICKS_HALF);
+    line(F, tWinP, probe, probeColor, 1.25, 0.45);
+    fillArea(F, tWinP, prod, C_POS, C_NEG);
+    line(F, tWinP, prod, C_PROD, 1.5);
+    setTeX(document.getElementById(ids[0]), String.raw`${label}(f)=\int x(t)${fn}(2\pi f t)\,dt=${fmt(A.net)}`, `${label}(f) = ${fmt(A.net)}`);
+    document.getElementById(ids[1]).textContent = fmt(A.pos);
+    document.getElementById(ids[2]).textContent = fmt(A.neg).replace('-', '−');
+  }
+
+  function drawAll(){
+    if (!ghost) return;
+    const f = parseFloat(elF.value);
+    setTeX(document.getElementById('fval'), String.raw`f=${f.toFixed(2)}\ \text{Hz}`, `f = ${f.toFixed(2)} Hz`);
+
+    // Areas over the whole burst, and the plotted window of probes and products, in one pass
+    const nW = p1 - p0 + 1;
+    const pc = new Float64Array(nW), ps = new Float64Array(nW), qc = new Float64Array(nW), qs = new Float64Array(nW);
+    const w = TWO_PI * f, cd = Math.cos(w * H), sd = Math.sin(w * H);
+    let c = Math.cos(w * (U[0] + tau)), s = Math.sin(w * (U[0] + tau));
+    let cPos = 0, cNeg = 0, sPos = 0, sNeg = 0;
+    for (let k = 0; k < K; k++){
+      const a = x0[k] * c, b = x0[k] * s;
+      if (a >= 0) cPos += a; else cNeg += a;
+      if (b >= 0) sPos += b; else sNeg += b;
+      if (k >= p0 && k <= p1){ const j = k - p0; pc[j] = a; ps[j] = b; qc[j] = c; qs[j] = s; }
+      const c2 = c * cd - s * sd; s = s * cd + c * sd; c = c2;
+    }
+    const AC = {pos: cPos * H, neg: cNeg * H, net: (cPos + cNeg) * H};
+    const AS = {pos: sPos * H, neg: sNeg * H, net: (sPos + sNeg) * H};
+    const C = AC.net, S = AS.net, mag = Math.hypot(C, S);
+
+    // 1) signal
+    const yr = (SIGNALS[elSig.value] || SIGNALS.square).yr;
+    let F = frame(ctxX, [T0, T1], yr, T_TICKS);
+    line(F, tWin, x0.subarray(w0, w1 + 1), C_X, 2);
+
+    // 2) products with shaded area (probes drawn faintly behind), side by side
+    drawProduct(ctxC, qc, pc, C_COS, AC, ['netC', 'posC', 'negC'], 'C', String.raw`\cos`);
+    drawProduct(ctxS, qs, ps, C_SIN, AS, ['netS', 'posS', 'negS'], 'S', String.raw`\sin`);
+
+    // 3) C(f) and S(f) side by side (same scale), then |X(f)|:
+    //    faint curve over all f, bright marker at the current f
+    const M = peak > 0 ? peak * 1.15 : 1;
+    const spectrum = (ctx, ys, yr, val, color) => {
+      const G = frame(ctx, [FMIN, FMAX], yr, F_TICKS);
+      vline(G, f, '#64748b');
+      line(G, fGrid, ys, color, 2, 0.6);
+      dot(G, f, val, color, 6);
+    };
+    spectrum(ctxFC, ghost.C, [-M, M], C, C_COS);
+    spectrum(ctxFS, ghost.S, [-M, M], S, C_SIN);
+    spectrum(ctxF, ghost.M, [0, M], mag, C_PROD);
+
+    // live readout under the spectrum
+    const el = document.getElementById('liveMath');
+    const tex = String.raw`|X(f)|=\sqrt{C(f)^2+S(f)^2}=${fmt(mag)}`;
+    if (!renderTeX(el, tex, true)) el.textContent = '|X(f)| = ' + fmt(mag);
+  }
+
+  // ---------- Sweep animation ----------
+  let raf = null, lastTs = 0, sweepF = 0;
+  function stopSweep(){
+    if (raf) cancelAnimationFrame(raf);
+    raf = null; elSweep.innerHTML = '&#9654;&#xFE0E; Sweep f';
+  }
+  function step(ts){
+    const dt = lastTs ? Math.min(0.1, (ts - lastTs) / 1000) : 0;
+    lastTs = ts;
+    sweepF = Math.min(FMAX, sweepF + SWEEP_RATE * dt);
+    elF.value = sweepF;
+    drawAll();
+    if (sweepF >= FMAX) { stopSweep(); return; }
+    raf = requestAnimationFrame(step);
+  }
+  elSweep.addEventListener('click', () => {
+    if (raf) { stopSweep(); return; }
+    sweepF = parseFloat(elF.value);
+    if (sweepF >= FMAX - 1e-9) sweepF = FMIN;
+    lastTs = 0; elSweep.innerHTML = '&#10074;&#10074;&#xFE0E; Pause';
+    raf = requestAnimationFrame(step);
+  });
+
+  // listeners
+  elF.addEventListener('input', () => { stopSweep(); drawAll(); });
+  elTau.addEventListener('input', applyShift);
+  elSig.addEventListener('change', setSignal);
+  window.addEventListener('resize', drawAll);
+
+  // initial
+  setSignal();
+})();
+</script>
+</body>
+</html>

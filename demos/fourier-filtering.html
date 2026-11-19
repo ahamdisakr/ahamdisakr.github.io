@@ -5,7 +5,7 @@
 <head>
 <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-<title>Interactive Fourier Transform Filtering Demo</title>
+<title>Fourier Transform Filtering | Ahmed Hamdi Sakr</title>
 <meta name="description" content="Interactive demo of Fourier transform filtering: apply low-pass, high-pass, band-pass and notch filters to test signals or your own audio and compare the time and frequency domains." />
     <script defer src="https://cdn.jsdelivr.net/npm/feather-icons@4.29.2/dist/feather.min.js"></script>
 
@@ -28,7 +28,7 @@
   <h1 class="title-lg mb-4">Interactive Fourier Transform Filtering Demo</h1>
     <p>Pick a signal and filter. For BPF/Notch, <span class="m" data-tex="Q=f_c/\mathrm{BW}">Q = f<sub>c</sub>/BW</span>. Upload/record audio and A/B play.</p>
 
-<div class="controls">
+<div class="controls controls--sticky">
         <div class="control">
       <label for="signalSel">Signal</label>
       <select id="signalSel">
@@ -84,7 +84,9 @@
         <strong><span id="qBadge">Q = 1.000</span></strong>
       </div>
     </div>
+  </div>
 
+  <div class="controls">
     <div class="control">
       <label>Sampling & Window</label>
       <div class="small"><span id="fsBadge"></span></div>
@@ -132,6 +134,7 @@
         <footer class="site-footer fade-in">
             <p>&copy; 2021&ndash;2026 Ahmed Hamdi Sakr. All rights reserved.</p>
         </footer>
+        </div>
 
 
 <script>
