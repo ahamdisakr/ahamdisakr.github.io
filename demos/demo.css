@@ -70,6 +70,9 @@ canvas.short { height: 200px; }
 .sig-select { height: 28px; padding: 0 6px; }
 @media (min-width: 768px) {
   .controls--3, .plot-grid--3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  /* titles of different lengths: the title takes up the spare height, so the three plots line up */
+  .plot-grid--3 .card { display: flex; flex-direction: column; }
+  .plot-grid--3 .card h2 { flex: 1 0 auto; }
 }
 .probe-note { font-weight: 400; font-size: 13px; color: var(--muted); }
 /* Controls pinned under the fixed 4rem site header while the plots scroll; the white band matches the panel.

@@ -30,7 +30,7 @@
   <h1 class="title-lg mb-4">Poles, Zeros and Frequency Response</h1>
   <p>A rational transfer function is fixed, up to a gain <span class="m" data-tex="K">K</span>, by its zeros <span class="m" data-tex="z_i">z<sub>i</sub></span> and poles <span class="m" data-tex="p_i">p<sub>i</sub></span>. In continuous time the frequency response is <span class="m" data-tex="H(s)">H(s)</span> on the <span class="m" data-tex="j\omega">j&omega;</span> axis; in discrete time it is <span class="m" data-tex="H(z)">H(z)</span> on the unit circle <span class="m" data-tex="z=e^{j\Omega}">z = e<sup>j&Omega;</sup></span>. Each factor is a vector from a pole or zero to that point, so</p>
   <div class="math-block mb-4" data-display data-tex="|H(j\omega)|=K\,\frac{\prod_i |j\omega-z_i|}{\prod_i |j\omega-p_i|},\qquad \angle H(j\omega)=\sum_i \angle(j\omega-z_i)-\sum_i \angle(j\omega-p_i).">|H(j&omega;)| = K &prod;|j&omega; &minus; z<sub>i</sub>| / &prod;|j&omega; &minus; p<sub>i</sub>|, &ang;H(j&omega;) = &Sigma;&ang;(j&omega; &minus; z<sub>i</sub>) &minus; &Sigma;&ang;(j&omega; &minus; p<sub>i</sub>)</div>
-  <p class="mb-4"><strong>Try it:</strong> with the resonance preset, press Sweep and watch the dashed vectors: as the point passes the pole near <span class="m" data-tex="4j">4j</span>, its vector becomes short and <span class="m" data-tex="|H|">|H|</span> peaks. Drag that pole toward the <span class="m" data-tex="j\omega">j&omega;</span> axis: the peak gets taller and narrower and <span class="m" data-tex="h(t)">h(t)</span> rings longer. Drag it into the right half-plane and <span class="m" data-tex="h(t)">h(t)</span> grows without bound. Choose the notch preset: a zero on the axis makes <span class="m" data-tex="|H|">|H|</span> exactly zero at that frequency. Then switch to the z-plane, where the unit circle plays the role of the <span class="m" data-tex="j\omega">j&omega;</span> axis and stable poles lie inside the circle.</p>
+  <p class="mb-4"><strong>Try it:</strong> with the resonance preset, press Sweep and watch the dashed vectors: as the point passes the pole near <span class="m" data-tex="4j">4j</span>, its vector becomes short and <span class="m" data-tex="|H|">|H|</span> peaks. Drag that pole toward the <span class="m" data-tex="j\omega">j&omega;</span> axis: the peak gets taller and narrower and <span class="m" data-tex="h(t)">h(t)</span> rings longer. Drag it into the right half-plane and <span class="m" data-tex="h(t)">h(t)</span> grows without bound. Choose the notch preset: a zero on the axis makes <span class="m" data-tex="|H|">|H|</span> exactly zero at that frequency. Then switch to the z-plane, where the unit circle plays the role of the <span class="m" data-tex="j\omega">j&omega;</span> axis and stable poles lie inside the circle. Finally, choose the Bode view in the s-plane: with the first-order low-pass, the magnitude falls 20 dB per decade above the pole, and the second-order high-pass rises 40 dB per decade below its poles, 20 dB for each zero at the origin.</p>
   <div class="predict">
     <h2 class="predict-title">Predict, then check</h2>
     <details><summary>With poles at <span class="m" data-tex="-\sigma\pm 4j">&minus;&sigma; &plusmn; 4j</span>, what happens to the peak of <span class="m" data-tex="|H|">|H|</span> and to <span class="m" data-tex="h(t)">h(t)</span> as <span class="m" data-tex="\sigma">&sigma;</span> shrinks toward 0?</summary><p>The peak near <span class="m" data-tex="\omega=4\ \text{rad/s}">&omega; = 4 rad/s</span> gets taller and narrower (its width is about <span class="m" data-tex="2\sigma">2&sigma;</span>), and <span class="m" data-tex="h(t)\propto e^{-\sigma t}\sin(4t)">h(t) &prop; e<sup>&minus;&sigma;t</sup> sin(4t)</span> rings longer, since it decays with time constant <span class="m" data-tex="1/\sigma">1/&sigma;</span>.</p></details>
@@ -46,6 +46,11 @@
       </select>
       <label for="preset">Preset</label>
       <select id="preset" class="sig-select"></select>
+      <label for="view">Response axes</label>
+      <select id="view" class="sig-select">
+        <option value="lin">Linear</option>
+        <option value="bode">Bode: dB, log frequency</option>
+      </select>
     </div>
     <div class="control">
       <label>Poles and zeros <span class="probe-note">(drag them; click one to select)</span></label>
@@ -108,12 +113,12 @@
 
 <script>
 (function(){
-  const {MATH_FONT, fitCanvas, fmtTick, niceTicks, renderTeX, setTeX} = window.Demo;   // shared helpers (demos/demo.js)
+  const {MATH_FONT, fitCanvas, fmtTick, niceTicks, renderTeX, setTeX, logTicks, logSpace} = window.Demo;   // shared helpers (demos/demo.js)
   // ---------- Config ----------
   const TWO_PI = Math.PI * 2;
   const NW = 801;                                   // frequency grid points
   const DOMAINS = {
-    s: {box: [-6, 3, -9, 9], wMax: 8, T: 10, unit: 'rad/s', w: '\\omega', W: 'ω'},
+    s: {box: [-6, 3, -9, 9], wMax: 8, T: 10, unit: 'rad/s', w: '\\omega', W: 'ω', bode: [0.1, 100]},   // bode: log axis range
     z: {box: [-1.6, 1.6, -1.6, 1.6], wMax: Math.PI, N: 40, unit: 'rad/sample', w: '\\Omega', W: 'Ω'},
   };
   // Presets: real roots {re}, conjugate pairs {re, im} (im > 0 stands for re ± j im)
@@ -141,12 +146,13 @@
 
   // DOM
   const el = (id) => document.getElementById(id);
-  const elDom = el('dom'), elPreset = el('preset'), elW = el('wsel'), elSweep = el('btnSweep'), elRemove = el('remove'), elStatus = el('status');
+  const elView = el('view'), elDom = el('dom'), elPreset = el('preset'), elW = el('wsel'), elSweep = el('btnSweep'), elRemove = el('remove'), elStatus = el('status');
   const cvPZ = el('cpz'), ctxPZ = cvPZ.getContext('2d'), ctxM = el('cm').getContext('2d'), ctxP = el('cp').getContext('2d'), ctxH = el('ch').getContext('2d');
 
   // ---------- Plot helpers (style matches the other demos) ----------
   const PI_LABEL = (v) => { const r = Math.round(v / (Math.PI / 4)); return ['0', 'π/4', 'π/2', '3π/4', 'π'][r] ?? fmtTick(v); };
-  // Plot frame. opts: {xt, yt, xFmt, yFmt, equal} — equal: same scale on both axes (pole-zero plot)
+  // Plot frame. opts: {xt, yt, xFmt, yFmt, equal, logX} — equal: same scale on both axes (pole-zero plot);
+  // logX: logarithmic x axis (Bode view), labelled at each decade with fainter lines in between
   function frame(ctx, xr, yr, opts = {}){
     const {width, height} = fitCanvas(ctx.canvas);
     const m = {left: 56, right: 12, top: 10, bottom: 28};
@@ -157,9 +163,12 @@
       const cx = (xmin + xmax) / 2, cy = (ymin + ymax) / 2;
       xmin = cx - P.w / s / 2; xmax = cx + P.w / s / 2; ymin = cy - P.h / s / 2; ymax = cy + P.h / s / 2;
     }
-    const X = (v) => P.x0 + (v - xmin) * (P.w / (xmax - xmin));
+    const lx0 = Math.log10(xmin), lx1 = Math.log10(xmax);
+    const X = opts.logX ? (v) => P.x0 + (Math.log10(v) - lx0) * (P.w / (lx1 - lx0))
+                        : (v) => P.x0 + (v - xmin) * (P.w / (xmax - xmin));
     const Y = (v) => P.y0 + P.h - ((v - ymin) / (ymax - ymin)) * P.h;
-    const xt = opts.xt || niceTicks(xmin, xmax, 6), yt = opts.yt || niceTicks(ymin, ymax);
+    const LT = opts.logX ? logTicks(xmin, xmax) : null;
+    const xt = opts.xt || (LT ? LT.major : niceTicks(xmin, xmax, 6)), yt = opts.yt || niceTicks(ymin, ymax);
     const xFmt = opts.xFmt || fmtTick, yFmt = opts.yFmt || fmtTick;
 
     ctx.clearRect(0, 0, width, height);
@@ -169,6 +178,7 @@
     ctx.strokeStyle = C_GRID; ctx.lineWidth = 1;
     for (const v of yt){ const y = Y(v); ctx.beginPath(); ctx.moveTo(P.x0, y); ctx.lineTo(P.x0 + P.w, y); ctx.stroke(); }
     for (const u of xt){ const x = X(u); ctx.beginPath(); ctx.moveTo(x, P.y0); ctx.lineTo(x, P.y0 + P.h); ctx.stroke(); }
+    if (LT){ ctx.globalAlpha = 0.45; for (const u of LT.minor){ const x = X(u); ctx.beginPath(); ctx.moveTo(x, P.y0); ctx.lineTo(x, P.y0 + P.h); ctx.stroke(); } ctx.globalAlpha = 1; }
     ctx.restore();
 
     ctx.fillStyle = C_TICK; ctx.font = MATH_FONT; ctx.textAlign = "right"; ctx.textBaseline = "middle";
@@ -433,15 +443,45 @@
     });
     dot(F, q.re, q.im, C_PT, 6);
 
-    // 2) magnitude and 3) phase, with the current frequency marked
+    // 2) magnitude and 3) phase, with the current frequency marked.
+    // Bode view: magnitude in dB; in the s-plane also a log frequency axis (the z-plane keeps 0..π,
+    // where a log axis would mostly show the lowest frequencies)
+    const bode = elView.value === 'bode', logX = bode && dom === 's';
+    let fx = wg, fMag = mags, fPh = phs, fPhNow = phNow, xr = [0, Dm.wMax];
+    if (logX){
+      xr = Dm.bode;
+      // log grid, plus the exact frequency of each zero on the jω axis so a notch reaches the bottom
+      const onAxisZeros = zs.filter((z) => Math.abs(z.re) < 1e-9 && z.im > xr[0] && z.im < xr[1]).map((z) => z.im);
+      fx = Float64Array.from([...logSpace(xr[0], xr[1], NW), ...onAxisZeros].sort((a, b) => a - b));
+      const rawB = Array.from(fx, (v) => response(v, zs, ps));
+      fMag = rawB.map((r) => r.mag * K);
+      fPh = [];
+      rawB.forEach((r, i) => { let d = r.ang * 180 / Math.PI; if (i){ while (d - fPh[i-1] > 180) d -= 360; while (d - fPh[i-1] < -180) d += 360; } fPh.push(d); });
+      const jb = Math.max(0, Math.min(NW - 1, Math.round((Math.log10(Math.max(w, xr[0])) - Math.log10(xr[0])) / (Math.log10(xr[1]) - Math.log10(xr[0])) * (NW - 1))));
+      fPhNow = now.ang * 180 / Math.PI;
+      while (fPhNow - fPh[jb] > 180) fPhNow -= 360; while (fPhNow - fPh[jb] < -180) fPhNow += 360;
+    }
+    const toDB = (v) => Math.max(-200, 20 * Math.log10(v));          // |H| = 0 drops off the bottom
+    const onAxis = !logX || (w >= xr[0] && w <= xr[1]);              // w = 0 has no place on a log axis
     const piAxis = dom === 'z' ? {xt: [0, Math.PI/4, Math.PI/2, 3*Math.PI/4, Math.PI], xFmt: PI_LABEL} : {};
-    let G = frame(ctxM, [0, Dm.wMax], [0, 1.1], {...piAxis, yt: [0, 0.25, 0.5, 0.75, 1]});
-    vline(G, w, '#64748b'); line(G, wg, mags, C_Y, 2.5); dot(G, w, Math.min(magNow, 1.1), C_PT, 6);
-    let lo = Math.min(...phs), hi = Math.max(...phs);
+    const axOpts = logX ? {logX: true} : piAxis;
+    let G;
+    if (bode){
+      G = frame(ctxM, xr, [-60, 10], {...axOpts, yt: [-60, -40, -20, 0], yFmt: (v) => v + ' dB'});
+      if (onAxis) vline(G, w, '#64748b');
+      line(G, fx, Array.from(fMag, toDB), C_Y, 2.5);
+      if (onAxis && isFinite(magNow)) dot(G, w, Math.min(10, Math.max(-60, toDB(magNow))), C_PT, 6);
+    } else {
+      G = frame(ctxM, xr, [0, 1.1], {...axOpts, yt: [0, 0.25, 0.5, 0.75, 1]});
+      vline(G, w, '#64748b'); line(G, fx, fMag, C_Y, 2.5); dot(G, w, Math.min(magNow, 1.1), C_PT, 6);
+    }
+    let lo = Math.min(...fPh), hi = Math.max(...fPh);
     lo = Math.floor(lo / 90) * 90; hi = Math.ceil(hi / 90) * 90; if (hi - lo < 180){ const c = (hi + lo) / 2; lo = c - 90; hi = c + 90; }
     const stepDeg = hi - lo > 360 ? 90 : 45, pt = []; for (let v = lo; v <= hi + 1e-9; v += stepDeg) pt.push(v);
-    G = frame(ctxP, [0, Dm.wMax], [lo - 0.04 * (hi - lo), hi + 0.04 * (hi - lo)], {...piAxis, yt: pt, yFmt: (v) => Math.round(v) + '°'});
-    vline(G, w, '#64748b'); line(G, wg, phs, C_Y, 2.5); dot(G, w, phNow, C_PT, 6);
+    G = frame(ctxP, xr, [lo - 0.04 * (hi - lo), hi + 0.04 * (hi - lo)], {...axOpts, yt: pt, yFmt: (v) => Math.round(v) + '°'});
+    if (onAxis) vline(G, w, '#64748b');
+    line(G, fx, fPh, C_Y, 2.5);
+    if (onAxis) dot(G, w, fPhNow, C_PT, 6);
 
     // 4) impulse response
     const imp = impulse(K, zs, ps);
@@ -473,11 +513,11 @@
     if (!renderTeX(lm, tex, true)) lm.textContent = `|H| = ${isFinite(magNow) ? fmt(magNow) : '∞'}, angle = ${phNow.toFixed(1)}°`;
   }
 
-  function setDomain(){
+  // viewOnly: only the response axes changed (keep the poles and zeros)
+  function setDomain(viewOnly = false){
     dom = elDom.value;
     const Dm = D(), w = Dm.w;
     setTeX(el('axPZ'), dom === 's' ? String.raw`\mathrm{Re}\,s\ (1/\mathrm{s})` : String.raw`\mathrm{Re}\,z`, dom === 's' ? 'Re s (1/s)' : 'Re z');
-    for (const id of ['axM', 'axP']) setTeX(el(id), dom === 's' ? String.raw`\omega\ (\mathrm{rad/s})` : String.raw`\Omega\ (\mathrm{rad/sample})`, dom === 's' ? 'ω (rad/s)' : 'Ω (rad/sample)');
     setTeX(el('axH'), dom === 's' ? String.raw`t\ (\mathrm{s})` : String.raw`n\ (\text{samples})`, dom === 's' ? 't (s)' : 'n (samples)');
     // Titles: plain text with only the symbol in KaTeX, so they wrap on phones (one long KaTeX string cannot)
     const setTitle = (id, text, tex, fallback, note) => {
@@ -486,10 +526,14 @@
       setTeX(h.querySelector('.m'), tex, fallback);
     };
     const Hw = dom === 's' ? String.raw`H(j\omega)` : String.raw`H(e^{j\Omega})`, HwTxt = dom === 's' ? 'H(jω)' : 'H(e^jΩ)';
-    setTitle('titleM', 'Magnitude response', `|${Hw}|`, `|${HwTxt}|`, '(normalized to a peak of 1)');
+    setTitle('titleM', 'Magnitude response', `|${Hw}|`, `|${HwTxt}|`, elView.value === 'bode' ? '(in dB, normalized to a peak of 0 dB)' : '(normalized to a peak of 1)');
+    // frequency axes: a log scale in the Bode view of the s-plane
+    const logX = elView.value === 'bode' && dom === 's';
+    for (const id of ['axM', 'axP']) setTeX(el(id), dom === 's' ? String.raw`\omega\ (\mathrm{rad/s})` + (logX ? String.raw`,\ \text{log scale}` : '') : String.raw`\Omega\ (\mathrm{rad/sample})`,
+      dom === 's' ? 'ω (rad/s)' + (logX ? ', log scale' : '') : 'Ω (rad/sample)');
     setTitle('titleP', 'Phase response', String.raw`\angle ` + Hw, '∠' + HwTxt);
     setTitle('titleH', 'Impulse response', dom === 's' ? 'h(t)' : 'h[n]', dom === 's' ? 'h(t)' : 'h[n]');
-    fillPresets(); loadPreset();
+    if (!viewOnly){ fillPresets(); loadPreset(); } else drawAll();
   }
 
   // ---------- Sweep the frequency (dragging the slider stops it) ----------
@@ -518,6 +562,7 @@
   // listeners
   elW.addEventListener('input', () => { stopSweep(); drawAll(); });
   elDom.addEventListener('change', () => { stopSweep(); setDomain(); });
+  elView.addEventListener('change', () => setDomain(true));
   elPreset.addEventListener('change', () => { stopSweep(); loadPreset(); });
   window.addEventListener('resize', drawAll);
 

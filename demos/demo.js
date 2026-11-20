@@ -5,7 +5,7 @@
    - Previous / next links between the demos (the DEMOS list, in course order)
    - Embed mode: ?embed=1 hides the site menu and footer and adds a credit line
    - window.Demo: small helpers every demo uses (canvas sizing, tick values,
-     tick labels, KaTeX rendering, zoom and pan along x)
+     tick labels, log-axis ticks, KaTeX rendering, zoom and pan along x)
    Page-specific plotting (frame, line, stems, ...) stays in each page.
    ========================================================================== */
 (function () {
@@ -99,6 +99,25 @@
     });
     var out = [];
     for (var k = Math.ceil(lo / best.s - 1e-9); k * best.s <= hi + 1e-9 * best.s; k++) out.push(k === 0 ? 0 : k * best.s);
+    return out;
+  }
+
+  // Log axis (Bode plots): labelled ticks at each decade, minor grid lines at 2..9 times each decade
+  function logTicks(lo, hi) {
+    var major = [], minor = [];
+    for (var e = Math.floor(Math.log10(lo)); e <= Math.ceil(Math.log10(hi)); e++) {
+      for (var m = 1; m <= 9; m++) {
+        var v = m * Math.pow(10, e);
+        if (v < lo * (1 - 1e-9) || v > hi * (1 + 1e-9)) continue;
+        (m === 1 ? major : minor).push(Number(v.toPrecision(6)));
+      }
+    }
+    return { major: major, minor: minor };
+  }
+  // n points spaced evenly on a log scale from lo to hi
+  function logSpace(lo, hi, n) {
+    var a = Math.log10(lo), b = Math.log10(hi), out = new Float64Array(n);
+    for (var i = 0; i < n; i++) out[i] = Math.pow(10, a + (b - a) * i / (n - 1));
     return out;
   }
 
@@ -201,6 +220,7 @@
 
   window.Demo = {
     MATH_FONT: MATH_FONT, fitCanvas: fitCanvas, fmtTick: fmtTick, niceTicks: niceTicks,
-    renderTeX: renderTeX, setTeX: setTeX, zoomX: zoomX, ZOOM_HINT: ZOOM_HINT
+    renderTeX: renderTeX, setTeX: setTeX, zoomX: zoomX, ZOOM_HINT: ZOOM_HINT,
+    logTicks: logTicks, logSpace: logSpace
   };
 })();

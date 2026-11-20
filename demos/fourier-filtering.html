@@ -93,22 +93,11 @@
     </div>
   </div>
 
-  <div class="controls">
+  <div class="controls" style="grid-template-columns:minmax(0,1fr)">   <!-- one full-width box -->
     <div class="control">
       <label>Sampling & Window</label>
-      <div class="small"><span id="fsBadge"></span></div>
-      <div class="small"><span id="TBadge"></span></div>
-      <div class="small"><span id="NBadge"></span> (Hann window, averaged)</div>
+      <div class="small"><span id="fsBadge"></span> &middot; <span id="TBadge"></span> &middot; <span id="NBadge"></span> (Hann window, averaged)</div>
       <div class="small" style="margin-top:6px">Plots: Ctrl + scroll or pinch to zoom, drag to pan, double-click to reset.</div>
-    </div>
-
-    <div class="control">
-      <label>Legend</label>
-      <div class="legend">
-        <span class="chip"><span class="dot x"></span>Input <span class="m" data-tex="x(t)">x</span></span>
-        <span class="chip"><span class="dot h"></span>Filter <span class="m" data-tex="h(t),\,H(f)">h/H</span></span>
-        <span class="chip"><span class="dot y"></span>Output <span class="m" data-tex="y(t)">y</span></span>
-      </div>
     </div>
   </div>
 
@@ -122,17 +111,17 @@
   -->
 
   <div class="plot-grid">
-    <div class="card"><h2 data-tex="\text{Input }x(t)">Input x(t)</h2><canvas id="cx" role="img" aria-label="Input signal"></canvas>
+    <div class="card"><h2><span>Input <span class="m" data-tex="x(t)">x(t)</span></span></h2><canvas id="cx" role="img" aria-label="Input signal"></canvas>
       <div class="axis-label" data-tex="t\ (\mathrm{s})">t (s)</div></div>
-    <div class="card"><h2 data-tex="|X(f)|">|X(f)|</h2><canvas id="cX" role="img" aria-label="Input magnitude spectrum"></canvas>
+    <div class="card"><h2><span>Input spectrum <span class="m" data-tex="|X(f)|">|X(f)|</span></span></h2><canvas id="cX" role="img" aria-label="Input magnitude spectrum"></canvas>
       <div class="axis-label" data-tex="f\ (\mathrm{Hz})">f (Hz)</div></div>
-    <div class="card"><h2 data-tex="\text{Impulse response }h(t)">Impulse response h(t)</h2><canvas id="ch" role="img" aria-label="Filter impulse response"></canvas>
+    <div class="card"><h2><span>Impulse response <span class="m" data-tex="h(t)">h(t)</span></span></h2><canvas id="ch" role="img" aria-label="Filter impulse response"></canvas>
       <div class="axis-label" data-tex="t\ (\mathrm{ms})">t (ms)</div></div>
-    <div class="card"><h2 data-tex="|H(f)|=\left|H\!\left(e^{j2\pi f/F_s}\right)\right|">|H(f)|</h2><canvas id="cH" role="img" aria-label="Filter magnitude response"></canvas>
+    <div class="card"><h2><span>Magnitude response <span class="m" data-tex="|H(f)|=\left|H\!\left(e^{j2\pi f/F_s}\right)\right|">|H(f)|</span></span></h2><canvas id="cH" role="img" aria-label="Filter magnitude response"></canvas>
       <div class="axis-label" data-tex="f\ (\mathrm{Hz})">f (Hz)</div></div>
-    <div class="card"><h2 data-tex="\text{Output }y(t)=(x*h)(t)">Output y(t)</h2><canvas id="cy" role="img" aria-label="Output signal"></canvas>
+    <div class="card"><h2><span>Output <span class="m" data-tex="y(t)=(x*h)(t)">y(t)</span></span></h2><canvas id="cy" role="img" aria-label="Output signal"></canvas>
       <div class="axis-label" data-tex="t\ (\mathrm{s})">t (s)</div></div>
-    <div class="card"><h2 data-tex="|Y(f)|=|H(f)|\,|X(f)|">|Y(f)|</h2><canvas id="cY" role="img" aria-label="Output magnitude spectrum"></canvas>
+    <div class="card"><h2><span>Output spectrum <span class="m" data-tex="|Y(f)|=|H(f)|\,|X(f)|">|Y(f)|</span></span></h2><canvas id="cY" role="img" aria-label="Output magnitude spectrum"></canvas>
       <div class="axis-label" data-tex="f\ (\mathrm{Hz})">f (Hz)</div></div>
   </div>
 </div>
