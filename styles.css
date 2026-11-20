@@ -323,6 +323,9 @@ img[loading="lazy"] {
 }
 
 /* ---- Site header / navigation (nav.html and the copies in the demos) ------ */
+/* In-page links (e.g. teaching.html#demos) stop below the fixed 4rem header */
+main [id] { scroll-margin-top: 5rem; }
+
 .site-header {
   position: fixed;
   inset-inline: 0;

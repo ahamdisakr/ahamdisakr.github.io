@@ -479,9 +479,16 @@
     setTeX(el('axPZ'), dom === 's' ? String.raw`\mathrm{Re}\,s\ (1/\mathrm{s})` : String.raw`\mathrm{Re}\,z`, dom === 's' ? 'Re s (1/s)' : 'Re z');
     for (const id of ['axM', 'axP']) setTeX(el(id), dom === 's' ? String.raw`\omega\ (\mathrm{rad/s})` : String.raw`\Omega\ (\mathrm{rad/sample})`, dom === 's' ? 'ω (rad/s)' : 'Ω (rad/sample)');
     setTeX(el('axH'), dom === 's' ? String.raw`t\ (\mathrm{s})` : String.raw`n\ (\text{samples})`, dom === 's' ? 't (s)' : 'n (samples)');
-    setTeX(el('titleM'), String.raw`\text{Magnitude response }|H(${dom === 's' ? 'j\\omega' : 'e^{j\\Omega}'})|\ \text{(peak normalized to 1)}`, 'Magnitude response (peak normalized to 1)');
-    setTeX(el('titleP'), String.raw`\text{Phase response }\angle H(${dom === 's' ? 'j\\omega' : 'e^{j\\Omega}'})`, 'Phase response');
-    setTeX(el('titleH'), dom === 's' ? String.raw`\text{Impulse response }h(t)` : String.raw`\text{Impulse response }h[n]`, 'Impulse response');
+    // Titles: plain text with only the symbol in KaTeX, so they wrap on phones (one long KaTeX string cannot)
+    const setTitle = (id, text, tex, fallback, note) => {
+      const h = el(id);
+      h.innerHTML = `<span>${text} <span class="m"></span>${note ? ` <span class="probe-note">${note}</span>` : ''}</span>`;   // fixed strings
+      setTeX(h.querySelector('.m'), tex, fallback);
+    };
+    const Hw = dom === 's' ? String.raw`H(j\omega)` : String.raw`H(e^{j\Omega})`, HwTxt = dom === 's' ? 'H(jω)' : 'H(e^jΩ)';
+    setTitle('titleM', 'Magnitude response', `|${Hw}|`, `|${HwTxt}|`, '(normalized to a peak of 1)');
+    setTitle('titleP', 'Phase response', String.raw`\angle ` + Hw, '∠' + HwTxt);
+    setTitle('titleH', 'Impulse response', dom === 's' ? 'h(t)' : 'h[n]', dom === 's' ? 'h(t)' : 'h[n]');
     fillPresets(); loadPreset();
   }
 

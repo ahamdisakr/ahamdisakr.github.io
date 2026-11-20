@@ -2,6 +2,7 @@
    Shared code for the interactive demos (demos/*.html)
    Loaded in each page's <head> (not deferred), before the page's own script:
      <script src="/demos/demo.js"></script>
+   - Previous / next links between the demos (the DEMOS list, in course order)
    - Embed mode: ?embed=1 hides the site menu and footer and adds a credit line
    - window.Demo: small helpers every demo uses (canvas sizing, tick values,
      tick labels, KaTeX rendering, zoom and pan along x)
@@ -10,20 +11,57 @@
 (function () {
   'use strict';
 
+  // ---------- The demos in course order (as on teaching.html): previous / next links ----------
+  var DEMOS = [
+    ['lti-systems', 'Linearity and Time Invariance'],
+    ['convolution-impulses', 'Convolution from Impulse Responses'],
+    ['convolution-flip-slide', 'Convolution: Flip and Slide'],
+    ['fourier-intuition', 'Why Fourier Analysis Works'],
+    ['fourier-series', 'Fourier Series Coefficients'],
+    ['fourier-transform', 'Frequency Response'],
+    ['fourier-filtering', 'Filtering Signals and Audio'],
+    ['ft-properties', 'Fourier Transform Properties'],
+    ['sampling-aliasing', 'Sampling and Aliasing'],
+    ['poles-zeros', 'Poles, Zeros and Frequency Response']
+  ];
+
   // ---------- Embed mode (?embed=1), e.g. inside a Brightspace page ----------
   var COPYRIGHT_YEARS = '2021&ndash;2026';          // keep in step with the site footer
-  if (/[?&]embed=1(&|$)/.test(location.search)) {
-    document.documentElement.classList.add('embed');
-    document.addEventListener('DOMContentLoaded', function () {
+  var EMBED = /[?&]embed=1(&|$)/.test(location.search);
+  if (EMBED) document.documentElement.classList.add('embed');
+
+  document.addEventListener('DOMContentLoaded', function () {
+    var panel = document.querySelector('main .panel') || document.body;
+
+    // Previous / all demos / next, at the end of the page. In embed mode the links stay in
+    // embed mode, so a student can step through the demos inside the same frame.
+    var slug = (location.pathname.split('/').pop() || '').replace(/\.html$/, '');
+    var i = DEMOS.map(function (d) { return d[0]; }).indexOf(slug);
+    if (i >= 0) {
+      var q = EMBED ? '?embed=1' : '';
+      var link = function (d, cls, label) {
+        return '<a class="demo-nav-link ' + cls + '" href="/demos/' + d[0] + '.html' + q + '">' +
+          '<span class="demo-nav-dir">' + label + '</span><span class="demo-nav-title">' + d[1] + '</span></a>';
+      };
+      var nav = document.createElement('nav');
+      nav.className = 'demo-nav';
+      nav.setAttribute('aria-label', 'Other demos');
+      nav.innerHTML =
+        (i > 0 ? link(DEMOS[i - 1], 'prev', '&larr; Previous') : '<span></span>') +
+        '<a class="demo-nav-all" href="/teaching.html#demos"' + (EMBED ? ' target="_blank" rel="noopener"' : '') + '>All demos</a>' +
+        (i < DEMOS.length - 1 ? link(DEMOS[i + 1], 'next', 'Next &rarr;') : '<span></span>');
+      panel.appendChild(nav);
+    }
+
+    if (EMBED) {
       var p = document.createElement('p');
       p.className = 'embed-credit';
       p.innerHTML = 'Interactive demo &copy; ' + COPYRIGHT_YEARS +
         ' <a href="/teaching.html" target="_blank" rel="noopener">Ahmed Hamdi Sakr</a> &middot; ' +
         '<a href="' + location.pathname + '" target="_blank" rel="noopener">Open the full page &#8599;</a>';
-      var panel = document.querySelector('main .panel');
-      (panel || document.body).appendChild(p);
-    });
-  }
+      panel.appendChild(p);
+    }
+  });
 
   // ---------- Helpers ----------
   // Font for canvas tick labels (matches the KaTeX math in the page)

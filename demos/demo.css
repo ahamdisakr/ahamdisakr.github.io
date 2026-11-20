@@ -92,6 +92,21 @@ canvas.short { height: 200px; }
 .predict details[open] summary::after { content: "Hide answer"; }
 .predict details p { margin: 8px 0 0; color: #374151; }
 
+/* Previous / All demos / Next at the end of each demo (added by demo.js).
+   Phones: previous and next side by side, "All demos" under them; tablet and up: one row. */
+.demo-nav { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-top: 20px; padding-top: 14px; border-top: 1px solid #e5e7eb; }
+.demo-nav-all { grid-column: 1 / -1; grid-row: 2; justify-self: center; align-self: center; font-size: 14px; color: #2563eb; text-decoration: underline; }
+@media (min-width: 768px) {
+  .demo-nav { grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); }
+  .demo-nav-all { grid-column: auto; grid-row: auto; }
+}
+.demo-nav-link { display: flex; flex-direction: column; gap: 2px; padding: 8px 12px; border-radius: 8px; background: #f1f5f9; color: #1f2937; text-decoration: none; }
+.demo-nav-link:hover { background: #e2e8f0; }
+.demo-nav-link:focus-visible, .demo-nav-all:focus-visible { outline: 2px solid #2563eb; outline-offset: 2px; }
+.demo-nav-link.next { align-items: flex-end; text-align: right; }
+.demo-nav-dir { font-size: 13px; font-weight: 600; color: #2563eb; }
+.demo-nav-title { font-size: 14px; }
+
 /* Embed mode (?embed=1, set by a one-line script in each page's head): no site menu or footer,
    so a demo sits cleanly inside another page such as Brightspace */
 .embed #site-nav, .embed .site-header, .embed .site-footer { display: none; }   /* app.js swaps #site-nav for the header */
