@@ -5,16 +5,7 @@
 <head>
 <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <script>/* ?embed=1: hide the site menu and footer (e.g. inside a Brightspace page) and credit the source */
-      if (/[?&]embed=1(&|$)/.test(location.search)) {
-        document.documentElement.classList.add('embed');
-        document.addEventListener('DOMContentLoaded', function () {
-          var p = document.createElement('p'); p.className = 'embed-credit';
-          p.innerHTML = 'Interactive demo &copy; 2021&ndash;2026 <a href="/teaching.html" target="_blank" rel="noopener">Ahmed Hamdi Sakr</a> &middot; <a href="' + location.pathname + '" target="_blank" rel="noopener">Open the full page &#8599;</a>';
-          var panel = document.querySelector('main .panel'); (panel || document.body).appendChild(p);
-        });
-      }
-    </script>
+    <script src="/demos/demo.js"></script>
 <title>Convolution: Flip and Slide | Ahmed Hamdi Sakr</title>
 <meta name="description" content="Interactive demo of convolution in continuous and discrete time: flip one signal, slide it across the other, multiply, and add up the area under the product to get each output value." />
     <script defer src="https://cdn.jsdelivr.net/npm/feather-icons@4.29.2/dist/feather.min.js"></script>
@@ -125,6 +116,7 @@
 
 <script>
 (function(){
+  const {MATH_FONT, fitCanvas, fmtTick, niceTicks, renderTeX, setTeX} = window.Demo;   // shared helpers (demos/demo.js)
   // ---------- Config ----------
   const TWO_PI = Math.PI * 2;
   const T0 = -15, T1 = 40;                       // plotted range of τ (and of t)
@@ -160,35 +152,7 @@
   const ctxC = document.getElementById('cC').getContext('2d');
 
   // ---------- Plot helpers (style matches the other demos) ----------
-  const MATH_FONT = '13px KaTeX_Main, "Times New Roman", Times, serif';   // canvas tick labels
-  function fitCanvas(canvas){
-    const d = window.devicePixelRatio || 1;
-    const w = canvas.clientWidth, h = canvas.clientHeight;
-    const pw = Math.round(w*d), ph = Math.round(h*d);
-    if (canvas.width !== pw || canvas.height !== ph){ canvas.width = pw; canvas.height = ph; }
-    canvas.getContext('2d').setTransform(d,0,0,d,0,0);
-    return {width: w, height: h};
-  }
-  function fmtTick(u){
-    if (Math.abs(u) < 1e-12) return "0";
-    return String(Number(u.toPrecision(3)));
-  }
   const fmt = (v) => (Math.abs(v) < 5e-4 ? 0 : v).toFixed(3);
-  // Round tick values (steps of 1, 2, 2.5 or 5 times a power of ten), about `target` of them
-  function niceTicks(lo, hi, target = 5){
-    if (!(hi > lo)) return [lo];
-    const e = Math.floor(Math.log10((hi - lo) / target));
-    let best = null;
-    for (const p of [e - 1, e, e + 1]) for (const m of [1, 2, 2.5, 5]){
-      const s = m * Math.pow(10, p);
-      const n = Math.floor(hi / s + 1e-9) - Math.ceil(lo / s - 1e-9) + 1;
-      const score = Math.abs(n - target);
-      if (!best || score < best.score || (score === best.score && s > best.s)) best = {s, score};
-    }
-    const out = [];
-    for (let k = Math.ceil(lo / best.s - 1e-9); k * best.s <= hi + 1e-9 * best.s; k++) out.push(k === 0 ? 0 : k * best.s);
-    return out;
-  }
 
   // Background, grid, ticks and zero axis. Returns the mappers used by the drawing helpers.
   function frame(ctx, xr, yr, xt){
@@ -282,16 +246,6 @@
   }
 
   // ---------- Math rendering (KaTeX; plain-text fallback is already in the markup) ----------
-  function renderTeX(el, tex, display){
-    if (!window.katex) return false;
-    try { katex.render(tex, el, {throwOnError:false, displayMode:!!display}); return true; }
-    catch(e){ return false; }
-  }
-  function setTeX(el, tex, fallback){
-    if (!el) return;
-    el.dataset.tex = tex;
-    if (!renderTeX(el, tex, false)) el.textContent = fallback;
-  }
   window.addEventListener('load', () => {
     document.querySelectorAll('[data-tex]').forEach(el => renderTeX(el, el.dataset.tex, el.hasAttribute('data-display')));
     drawAll();

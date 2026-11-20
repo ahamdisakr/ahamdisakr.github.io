@@ -5,16 +5,7 @@
 <head>
 <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <script>/* ?embed=1: hide the site menu and footer (e.g. inside a Brightspace page) and credit the source */
-      if (/[?&]embed=1(&|$)/.test(location.search)) {
-        document.documentElement.classList.add('embed');
-        document.addEventListener('DOMContentLoaded', function () {
-          var p = document.createElement('p'); p.className = 'embed-credit';
-          p.innerHTML = 'Interactive demo &copy; 2021&ndash;2026 <a href="/teaching.html" target="_blank" rel="noopener">Ahmed Hamdi Sakr</a> &middot; <a href="' + location.pathname + '" target="_blank" rel="noopener">Open the full page &#8599;</a>';
-          var panel = document.querySelector('main .panel'); (panel || document.body).appendChild(p);
-        });
-      }
-    </script>
+    <script src="/demos/demo.js"></script>
 <title>Linearity and Time Invariance | Ahmed Hamdi Sakr</title>
 <meta name="description" content="Interactive demo of linearity and time invariance: scale, shift and add two inputs, send them through an LTI, a nonlinear or a time-varying system, and check whether the outputs follow the LTI prediction." />
     <script defer src="https://cdn.jsdelivr.net/npm/feather-icons@4.29.2/dist/feather.min.js"></script>
@@ -120,6 +111,7 @@
 
 <script>
 (function(){
+  const {MATH_FONT, fitCanvas, fmtTick, niceTicks, renderTeX, setTeX} = window.Demo;   // shared helpers (demos/demo.js)
   // ---------- Config ----------
   const W0 = -8, W1 = 8;                     // plotted time range
   const PAD = 5;                             // largest |τ|: signals are computed on [W0-PAD, W1+PAD]
@@ -179,19 +171,6 @@
   const ctxY1 = ctx('cy1'), ctxY2 = ctx('cy2'), ctxY3 = ctx('cy3');
 
   // ---------- Plot helpers (style matches the other demos) ----------
-  const MATH_FONT = '13px KaTeX_Main, "Times New Roman", Times, serif';   // canvas tick labels
-  function fitCanvas(canvas){
-    const d = window.devicePixelRatio || 1;
-    const w = canvas.clientWidth, h = canvas.clientHeight;
-    const pw = Math.round(w*d), ph = Math.round(h*d);
-    if (canvas.width !== pw || canvas.height !== ph){ canvas.width = pw; canvas.height = ph; }
-    canvas.getContext('2d').setTransform(d,0,0,d,0,0);
-    return {width: w, height: h};
-  }
-  function fmtTick(u){
-    if (Math.abs(u) < 1e-12) return "0";
-    return String(Number(u.toPrecision(3)));
-  }
   // yt: the y tick values (fixed per plot, so the scale does not jump while the sliders move)
   function frame(ctx, xr, yr, xt, yt){
     const {width, height} = fitCanvas(ctx.canvas);
@@ -240,16 +219,6 @@
   }
 
   // ---------- Math rendering (KaTeX; plain-text fallback is already in the markup) ----------
-  function renderTeX(el, tex, display){
-    if (!window.katex) return false;
-    try { katex.render(tex, el, {throwOnError:false, displayMode:!!display}); return true; }
-    catch(e){ return false; }
-  }
-  function setTeX(el, tex, fallback){
-    if (!el) return;
-    el.dataset.tex = tex;
-    if (!renderTeX(el, tex, false)) el.textContent = fallback;
-  }
   window.addEventListener('load', () => {
     document.querySelectorAll('[data-tex]').forEach(el => renderTeX(el, el.dataset.tex, el.hasAttribute('data-display')));
     drawAll();

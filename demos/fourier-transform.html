@@ -5,16 +5,7 @@
 <head>
 <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <script>/* ?embed=1: hide the site menu and footer (e.g. inside a Brightspace page) and credit the source */
-      if (/[?&]embed=1(&|$)/.test(location.search)) {
-        document.documentElement.classList.add('embed');
-        document.addEventListener('DOMContentLoaded', function () {
-          var p = document.createElement('p'); p.className = 'embed-credit';
-          p.innerHTML = 'Interactive demo &copy; 2021&ndash;2026 <a href="/teaching.html" target="_blank" rel="noopener">Ahmed Hamdi Sakr</a> &middot; <a href="' + location.pathname + '" target="_blank" rel="noopener">Open the full page &#8599;</a>';
-          var panel = document.querySelector('main .panel'); (panel || document.body).appendChild(p);
-        });
-      }
-    </script>
+    <script src="/demos/demo.js"></script>
 <title>Frequency Response: A Sinusoid Through a Filter | Ahmed Hamdi Sakr</title>
 <meta name="description" content="Interactive demo of frequency response: how a first-order low-pass filter scales and delays a cosine of adjustable frequency, in the time and frequency domains." />
     <script defer src="https://cdn.jsdelivr.net/npm/feather-icons@4.29.2/dist/feather.min.js"></script>
@@ -128,6 +119,7 @@
 
 <script>
 (function(){
+  const {MATH_FONT, fitCanvas, fmtTick, niceTicks, renderTeX, setTeX} = window.Demo;   // shared helpers (demos/demo.js)
   // ---------- Config ----------
   const TWO_PI = Math.PI * 2;
   const T_WINDOW = 0.1;        // time window for x(t) and y(t) (seconds), the same for every f0
@@ -154,36 +146,6 @@
   const cY = document.getElementById('cY').getContext('2d');
 
   // ---------- Helpers ----------
-  const MATH_FONT = '13px KaTeX_Main, "Times New Roman", Times, serif';   // canvas tick labels
-  // Size the canvas backing store to CSS size x devicePixelRatio; returns logical size.
-  function fitCanvas(canvas){
-    const d = window.devicePixelRatio || 1;
-    const w = canvas.clientWidth, h = canvas.clientHeight;
-    const pw = Math.round(w*d), ph = Math.round(h*d);
-    if (canvas.width !== pw || canvas.height !== ph){ canvas.width = pw; canvas.height = ph; }
-    canvas.getContext('2d').setTransform(d,0,0,d,0,0);
-    return {width: w, height: h};
-  }
-  function fmtTick(u){
-    if (Math.abs(u) < 1e-12) return "0";
-    if (Math.abs(u) >= 1000) return Number((u/1000).toPrecision(3)) + "k";
-    return String(Number(u.toPrecision(3)));
-  }
-  // Round tick values (steps of 1, 2, 2.5 or 5 times a power of ten), about `target` of them
-  function niceTicks(lo, hi, target = 5){
-    if (!(hi > lo)) return [lo];
-    const e = Math.floor(Math.log10((hi - lo) / target));
-    let best = null;
-    for (const p of [e - 1, e, e + 1]) for (const m of [1, 2, 2.5, 5]){
-      const s = m * Math.pow(10, p);
-      const n = Math.floor(hi / s + 1e-9) - Math.ceil(lo / s - 1e-9) + 1;
-      const score = Math.abs(n - target);
-      if (!best || score < best.score || (score === best.score && s > best.s)) best = {s, score};
-    }
-    const out = [];
-    for (let k = Math.ceil(lo / best.s - 1e-9); k * best.s <= hi + 1e-9 * best.s; k++) out.push(k === 0 ? 0 : k * best.s);
-    return out;
-  }
   function plotXY(ctx, X, Y, opts={}){
     const {width, height} = fitCanvas(ctx.canvas);
     const margin = {left: 56, right: 12, top: 10, bottom: 28};
@@ -327,17 +289,6 @@
   }
   
   // ---------- Math rendering (KaTeX; plain-text fallback is already in the markup) ----------
-  function renderTeX(el, tex, display){
-    if (!window.katex) return false;
-    try { katex.render(tex, el, {throwOnError:false, displayMode:!!display}); return true; }
-    catch(e){ return false; }
-  }
-  // Set an element to a KaTeX string (re-rendered on load if KaTeX was not ready yet); plain text as fallback
-  function setTeX(el, tex, fallback){
-    if (!el) return;
-    el.dataset.tex = tex;
-    if (!renderTeX(el, tex, false)) el.textContent = fallback;
-  }
   let lastLive = null;
   function updateLive(f0, A0, phi0){
     lastLive = [f0, A0, phi0];
