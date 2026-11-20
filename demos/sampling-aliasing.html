@@ -29,7 +29,7 @@
   <div class="panel panel--static">
   <h1 class="title-lg mb-4">Sampling and Aliasing</h1>
   <p>Sampling a signal <span class="m" data-tex="x(t)">x(t)</span> every <span class="m" data-tex="T_s=1/F_s">T<sub>s</sub> = 1/F<sub>s</sub></span> seconds keeps only the values <span class="m" data-tex="x[n]=x(nT_s)">x[n] = x(nT<sub>s</sub>)</span>. In frequency, sampling makes copies of the spectrum at every multiple of <span class="m" data-tex="F_s">F<sub>s</sub></span>. An ideal reconstruction filter keeps only the band from <span class="m" data-tex="-F_s/2">&minus;F<sub>s</sub>/2</span> to <span class="m" data-tex="F_s/2">F<sub>s</sub>/2</span>. If the signal fits inside that band, it comes back unchanged. If it does not, a copy lands in the band instead and the samples look like a lower frequency: <strong>aliasing</strong>. The sampling theorem says a sinusoid at <span class="m" data-tex="f_0">f<sub>0</sub></span> is recovered when <span class="m" data-tex="F_s&gt;2f_0">F<sub>s</sub> &gt; 2f<sub>0</sub></span>.</p>
-  <p class="mb-4"><strong>Try it:</strong> start with <span class="m" data-tex="f_0=3\ \text{Hz}">f<sub>0</sub> = 3 Hz</span>: the samples trace the signal and the reconstruction (blue) lies on top of it. Press Sweep. Once <span class="m" data-tex="f_0">f<sub>0</sub></span> passes <span class="m" data-tex="F_s/2=10\ \text{Hz}">F<sub>s</sub>/2 = 10 Hz</span>, the reconstruction shows a lower frequency than the signal: in the spectrum, a copy has entered the shaded band. As the sweep goes on, the apparent frequency in the readout falls back to 0 at <span class="m" data-tex="f_0=F_s=20\ \text{Hz}">f<sub>0</sub> = F<sub>s</sub> = 20 Hz</span> (where every sample has the same value), then climbs again. Then set <span class="m" data-tex="f_0=8\ \text{Hz}">f<sub>0</sub> = 8 Hz</span>, move <span class="m" data-tex="F_s">F<sub>s</sub></span> to its lowest value and press Sweep <span class="m" data-tex="F_s">F<sub>s</sub></span>: the band widens, and the aliasing stops once <span class="m" data-tex="F_s&gt;2f_0=16\ \text{Hz}">F<sub>s</sub> &gt; 2f<sub>0</sub> = 16 Hz</span>.</p>
+  <p class="mb-4"><strong>Try it:</strong> start with <span class="m" data-tex="f_0=3\ \text{Hz}">f<sub>0</sub> = 3 Hz</span>: the samples trace the signal and the reconstruction (blue) lies on top of it. Press Sweep. Once <span class="m" data-tex="f_0">f<sub>0</sub></span> passes <span class="m" data-tex="F_s/2=10\ \text{Hz}">F<sub>s</sub>/2 = 10 Hz</span>, the reconstruction shows a lower frequency than the signal: in the spectrum, a copy has entered the shaded band. As the sweep goes on, the apparent frequency in the readout falls back to 0 at <span class="m" data-tex="f_0=F_s=20\ \text{Hz}">f<sub>0</sub> = F<sub>s</sub> = 20 Hz</span> (where every sample has the same value), then climbs again. Then set <span class="m" data-tex="f_0=8\ \text{Hz}">f<sub>0</sub> = 8 Hz</span>, move <span class="m" data-tex="F_s">F<sub>s</sub></span> to its lowest value and press Sweep <span class="m" data-tex="F_s">F<sub>s</sub></span>: the band widens, and the aliasing stops once <span class="m" data-tex="F_s&gt;2f_0=16\ \text{Hz}">F<sub>s</sub> &gt; 2f<sub>0</sub> = 16 Hz</span>. To look closely at the samples or the spectrum lines, zoom into either plot (Ctrl + scroll or pinch, drag to pan, double-click to reset).</p>
   <div class="predict">
     <h2 class="predict-title">Predict, then check</h2>
     <details><summary>With <span class="m" data-tex="F_s=20\ \text{Hz}">F<sub>s</sub> = 20 Hz</span>, a 13 Hz cosine is sampled. What frequency does the reconstruction show?</summary><p>7 Hz. 13 Hz is 3 Hz above the Nyquist frequency of 10 Hz, so it folds back to 10 &minus; 3 = 7 Hz (equivalently, <span class="m" data-tex="|13-20|=7">|13 &minus; 20| = 7</span>).</p></details>
@@ -98,7 +98,7 @@
 
 <script>
 (function(){
-  const {MATH_FONT, fitCanvas, fmtTick, niceTicks, renderTeX, setTeX} = window.Demo;   // shared helpers (demos/demo.js)
+  const {MATH_FONT, fitCanvas, fmtTick, niceTicks, renderTeX, setTeX, zoomX} = window.Demo;   // shared helpers (demos/demo.js)
   // ---------- Config ----------
   const TWO_PI = Math.PI * 2;
   const T_WIN = 1;                               // time plot: 0 to 1 s
@@ -210,6 +210,10 @@
     return (t) => Math.cos(TWO_PI * Math.abs(fr) * t + s * phi);
   }
 
+  // Zoom and pan on each plot (demos/demo.js; margins match frame)
+  const zoomT = zoomX([ctxT.canvas], {range: [0, T_WIN], left: 56, right: 12, onChange: drawAll});
+  const zoomF = zoomX([ctxF.canvas], {range: [-F_SPAN, F_SPAN], left: 56, right: 12, onChange: drawAll});
+
   // ---------- Main draw ----------
   function drawAll(){
     const f0 = parseFloat(elF0.value), Fs = parseFloat(elFs.value);
@@ -223,7 +227,8 @@
     const fa = apparent(f0, Fs), nyq = Fs / 2;
 
     // 1) time: reconstruction (blue, underneath), signal (amber), samples (white)
-    let F = frame(ctxT, [0, T_WIN], [-1.3, 1.3], niceTicks(0, T_WIN, 6), [-1, -0.5, 0, 0.5, 1]);
+    const tr = zoomT.range(), fr = zoomF.range();
+    let F = frame(ctxT, tr, [-1.3, 1.3], niceTicks(tr[0], tr[1], 6), [-1, -0.5, 0, 0.5, 1]);
     line(F, TT, TT.map(xr), C_Y, 3, 0.9);
     line(F, TT, TT.map(x), C_X, 1.5);
     const N = Math.floor(T_WIN * Fs + 1e-9);
@@ -233,7 +238,7 @@
     }
 
     // 2) spectrum: reconstruction band, copies (purple), the signal (amber), kept lines (blue)
-    F = frame(ctxF, [-F_SPAN, F_SPAN], [0, 0.6], niceTicks(-F_SPAN, F_SPAN, 7), [0, 0.25, 0.5]);
+    F = frame(ctxF, fr, [0, 0.6], niceTicks(fr[0], fr[1], 7), [0, 0.25, 0.5]);
     band(F, -nyq, nyq, 'rgba(96, 165, 250, 0.12)');
     vline(F, -nyq, '#64748b'); vline(F, nyq, '#64748b');
     const K = Math.ceil((F_SPAN + f0) / Fs);

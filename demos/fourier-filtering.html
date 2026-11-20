@@ -99,7 +99,7 @@
       <div class="small"><span id="fsBadge"></span></div>
       <div class="small"><span id="TBadge"></span></div>
       <div class="small"><span id="NBadge"></span> (Hann window, averaged)</div>
-      <div class="small" style="margin-top:6px">Plots: scroll to zoom, drag to pan, double-click to reset.</div>
+      <div class="small" style="margin-top:6px">Plots: Ctrl + scroll or pinch to zoom, drag to pan, double-click to reset.</div>
     </div>
 
     <div class="control">
@@ -146,7 +146,7 @@
 
 <script>
 (function(){
-  const {MATH_FONT, fitCanvas, fmtTick, niceTicks, renderTeX, setTeX} = window.Demo;   // shared helpers (demos/demo.js)
+  const {MATH_FONT, fitCanvas, fmtTick, niceTicks, renderTeX, setTeX, zoomX} = window.Demo;   // shared helpers (demos/demo.js)
   const TWO_PI = Math.PI*2;
   const Fs = 44100;            // synthetic-signal sampling rate
   const T  = 1.0;              // plotted time window (s)
@@ -461,60 +461,6 @@
     return { type, fcEff: fc, QEff };
   }
 
-  // ---------- Zoom & pan (pointer events, shared across a group of canvases) ----------
-  const PLOT_L = 56, PLOT_R = 12;   // must match plotXY margins
-  function attachZoomPan(canvases, {initRange, hardBounds}, redraw){
-    let xRange = initRange.slice();
-    const [H0, H1] = hardBounds;
-    let panning = false, panStartX = 0, panStartRange = xRange, panCanvas = null;
-
-    const clampRange = (r) => {
-      let w = Math.min(r[1]-r[0], H1-H0);
-      w = Math.max(w, (H1-H0)*1e-3);
-      let a = r[0];
-      if (a < H0) a = H0;
-      if (a + w > H1) a = H1 - w;      // shift, never change the width while panning
-      return [a, a+w];
-    };
-    const plotWidth = (c) => Math.max(1, c.getBoundingClientRect().width - PLOT_L - PLOT_R);
-
-    canvases.forEach((canvas) => {
-      canvas.style.touchAction = 'pan-y';
-      canvas.style.cursor = 'grab';
-      canvas.addEventListener('wheel', (e) => {
-        e.preventDefault();
-        const rect = canvas.getBoundingClientRect();
-        const u = Math.min(1, Math.max(0, (e.clientX - rect.left - PLOT_L) / plotWidth(canvas)));
-        const [a, b] = xRange;
-        const xm = a + u*(b-a);
-        const zf = (e.deltaY < 0) ? 0.9 : 1.1;
-        xRange = clampRange([xm - (xm-a)*zf, xm + (b-xm)*zf]);
-        redraw();
-      }, {passive:false});
-      canvas.addEventListener('pointerdown', (e) => {
-        panning = true; panCanvas = canvas; panStartX = e.clientX; panStartRange = xRange.slice();
-        canvas.setPointerCapture(e.pointerId);
-        canvas.style.cursor = 'grabbing';
-      });
-      canvas.addEventListener('pointermove', (e) => {
-        if (!panning || panCanvas !== canvas) return;
-        const w = panStartRange[1] - panStartRange[0];
-        const dx = -(e.clientX - panStartX) / plotWidth(canvas) * w;
-        xRange = clampRange([panStartRange[0] + dx, panStartRange[1] + dx]);
-        redraw();
-      });
-      const end = () => { panning = false; panCanvas = null; canvas.style.cursor = 'grab'; };
-      canvas.addEventListener('pointerup', end);
-      canvas.addEventListener('pointercancel', end);
-      canvas.addEventListener('dblclick', () => { xRange = initRange.slice(); redraw(); });
-    });
-    return {
-      getRange: () => xRange.slice(),
-      // change the default (reset) window and jump to it
-      setInit: (r) => { initRange = r.slice(); xRange = clampRange(r.slice()); }
-    };
-  }
-
   // ---------- Compute (only when inputs change) / render (also on zoom) ----------
   function compute(){
     const kind = elSignal.value;
@@ -536,7 +482,7 @@
       let win = T;
       if (hasF0 || kind === 'demo') win = 0.02;
       else if (kind === 'noise') win = 0.01;
-      zoomTime.setInit([0, Math.min(T, win)]);
+      zoomTime.setDefault([0, Math.min(T, win)]); zoomTime.reset();
     }
 
     const rate = (isFile && uploadedBuffer) ? uploadedBuffer.sampleRate : Fs;
@@ -597,7 +543,7 @@
 
   function render(){
     if (!S) return;
-    const tr = zoomTime.getRange(), fr = zoomFreq.getRange();
+    const tr = zoomTime.range(), fr = zoomFreq.range();
     const X = col("--xcolor"), Hc = col("--hcolor"), Yc = col("--ycolor");
     plotXY(cx, S.tDisp, S.xDisp, {color:X,  xRange:tr});
     // |X(f)| and |Y(f)| share one auto-scaled y-limit so they can be compared directly
@@ -611,8 +557,9 @@
     plotXY(cY, S.faxis, S.Ymag,  {color:Yc, xRange:fr, yRange:[0,specMax]});
   }
 
-  const zoomTime = attachZoomPan([cx.canvas, cy.canvas], {initRange:[0,T], hardBounds:[0,T]}, render);
-  const zoomFreq = attachZoomPan([cX.canvas, cH.canvas, cY.canvas], {initRange:[-Fs/2,Fs/2], hardBounds:[-Fs/2,Fs/2]}, render);
+  // zoom and pan (demos/demo.js); margins match plotXY, the deepest zoom is 1/1000 of the bounds
+  const zoomTime = zoomX([cx.canvas, cy.canvas], {range:[0,T], bounds:[0,T], left:56, right:12, minFrac:1e-3, onChange:render});
+  const zoomFreq = zoomX([cX.canvas, cH.canvas, cY.canvas], {range:[-Fs/2,Fs/2], left:56, right:12, minFrac:1e-3, onChange:render});
 
   // ---------- Input / recording ----------
   async function loadAudio(arrayBuf){

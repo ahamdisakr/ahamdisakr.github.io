@@ -29,7 +29,7 @@
   <div class="panel panel--static">
   <h1 class="title-lg mb-4">Fourier Transform Properties</h1>
   <p>Simple changes to a signal change its Fourier transform <span class="m" data-tex="X(f)">X(f)</span> in predictable ways. <strong>Scaling</strong> time by <span class="m" data-tex="a">a</span> scales frequency by <span class="m" data-tex="1/a">1/a</span>, and <span class="m" data-tex="a=-1">a = &minus;1</span> reverses time. A <strong>time shift</strong> only adds a phase that grows linearly with frequency. Multiplying by a complex exponential <strong>shifts the spectrum</strong>; multiplying by a cosine (<strong>modulation</strong>) makes two half-height copies. <strong>Convolution</strong> in time is multiplication in frequency, and <strong>differentiation</strong> multiplies the spectrum by <span class="m" data-tex="j2\pi f">j2&pi;f</span>, boosting high frequencies. Through all of them, <strong>Parseval&rsquo;s theorem</strong> says the energy is the same in both domains.</p>
-  <p class="mb-4"><strong>Try it:</strong> with the rectangular pulse and time scaling, raise <span class="m" data-tex="a">a</span> to 2: the pulse becomes half as wide and its spectrum twice as wide and half as tall. Move <span class="m" data-tex="a">a</span> to <span class="m" data-tex="-1">&minus;1</span> with the exponential: the signal is reversed, <span class="m" data-tex="|Y(f)|">|Y(f)|</span> stays the same and the phase flips sign. Switch to time shift and press Play: <span class="m" data-tex="|Y(f)|">|Y(f)|</span> does not move, while the phase becomes a steeper and steeper ramp. Compare frequency shift with modulation: the complex exponential moves the whole spectrum to <span class="m" data-tex="f_c">f<sub>c</sub></span>, while the cosine, half of <span class="m" data-tex="e^{j2\pi f_c t}">e<sup>j2&pi;f<sub>c</sub>t</sup></span> plus half of <span class="m" data-tex="e^{-j2\pi f_c t}">e<sup>&minus;j2&pi;f<sub>c</sub>t</sup></span>, makes two half-height copies. With convolution, widen the averaging pulse: <span class="m" data-tex="y(t)">y(t)</span> gets smoother and its spectrum narrower. Finally, differentiate the triangle: the result is two rectangular pulses, and the spectrum is boosted at high frequencies. Watch the two energies in the Parseval readout stay equal throughout.</p>
+  <p class="mb-4"><strong>Try it:</strong> with the rectangular pulse and time scaling, raise <span class="m" data-tex="a">a</span> to 2: the pulse becomes half as wide and its spectrum twice as wide and half as tall. Move <span class="m" data-tex="a">a</span> to <span class="m" data-tex="-1">&minus;1</span> with the exponential: the signal is reversed, <span class="m" data-tex="|Y(f)|">|Y(f)|</span> stays the same and the phase flips sign. Switch to time shift and press Play: <span class="m" data-tex="|Y(f)|">|Y(f)|</span> does not move, while the phase becomes a steeper and steeper ramp. Compare frequency shift with modulation: the complex exponential moves the whole spectrum to <span class="m" data-tex="f_c">f<sub>c</sub></span>, while the cosine, half of <span class="m" data-tex="e^{j2\pi f_c t}">e<sup>j2&pi;f<sub>c</sub>t</sup></span> plus half of <span class="m" data-tex="e^{-j2\pi f_c t}">e<sup>&minus;j2&pi;f<sub>c</sub>t</sup></span>, makes two half-height copies. With convolution, widen the averaging pulse: <span class="m" data-tex="y(t)">y(t)</span> gets smoother and its spectrum narrower. Finally, differentiate the triangle: the result is two rectangular pulses, and the spectrum is boosted at high frequencies. Watch the two energies in the Parseval readout stay equal throughout. To look at the side lobes or the phase closely, zoom into the spectrum plots (Ctrl + scroll or pinch, drag to pan, double-click to reset).</p>
   <div class="predict">
     <h2 class="predict-title">Predict, then check</h2>
     <details><summary>The rectangular pulse (1 s wide) has its first spectral zeros at <span class="m" data-tex="\pm 1\ \text{Hz}">&plusmn;1 Hz</span>. With <span class="m" data-tex="a=4">a = 4</span>, where are the first zeros, and how tall is <span class="m" data-tex="|Y(0)|">|Y(0)|</span>?</summary><p>At <span class="m" data-tex="\pm 4\ \text{Hz}">&plusmn;4 Hz</span>, and <span class="m" data-tex="|Y(0)|=1/4">|Y(0)| = 1/4</span>. The pulse is 4 times shorter, so its spectrum is 4 times wider and, since <span class="m" data-tex="Y(0)">Y(0)</span> is the area under <span class="m" data-tex="y(t)">y(t)</span>, 4 times lower.</p></details>
@@ -112,7 +112,7 @@
 
 <script>
 (function(){
-  const {MATH_FONT, fitCanvas, fmtTick, niceTicks, renderTeX, setTeX} = window.Demo;   // shared helpers (demos/demo.js)
+  const {MATH_FONT, fitCanvas, fmtTick, niceTicks, renderTeX, setTeX, zoomX} = window.Demo;   // shared helpers (demos/demo.js)
   // ---------- Config ----------
   const TWO_PI = Math.PI * 2;
   const T0 = -4, T1 = 4, NT = 1601;
@@ -297,6 +297,9 @@
     if (p.par){ elPar.min = p.par.min; elPar.max = p.par.max; elPar.step = p.par.step; elPar.value = p.par.def; }
     drawAll();
   }
+  // Zoom and pan on the magnitude and phase plots, sharing one frequency axis (demos/demo.js; margins match frame)
+  const zoomF = zoomX([ctxM.canvas, ctxP.canvas], {range: [F0, F1], left: 56, right: 12, onChange: drawAll});
+
   function drawAll(){
     const key = elProp.value, p = PROPS[key], s = SIGNALS[elSig.value], v = p.par ? parseFloat(elPar.value) : 0;
     const n2 = (x) => x.toFixed(2);
@@ -330,12 +333,12 @@
     // 2) magnitude and 3) phase
     const Xc = Array.from(FF, s.X), Yc = Array.from(FF, (f) => p.Y(s, v, f));
     const Xm = Xc.map((c) => Math.hypot(c.re, c.im)), Ym = Yc.map((c) => Math.hypot(c.re, c.im));
-    const ft = niceTicks(F0, F1, 7);
-    F = frame(ctxM, [F0, F1], [-0.05 * p.magMax, 1.1 * p.magMax], ft);
+    const fr = zoomF.range(), ft = niceTicks(fr[0], fr[1], 7);
+    F = frame(ctxM, fr, [-0.05 * p.magMax, 1.1 * p.magMax], ft);
     line(F, FF, Xm, C_X, 1.5, 0.8, [6, 5]);
     if (key === 'conv') line(F, FF, FF.map((f) => p.Wf(v, f)), C_W, 1.5, 0.9, [6, 5]);
     line(F, FF, Ym, C_Y, 2.5);
-    F = frame(ctxP, [F0, F1], [-200, 200], ft, [-180, -90, 0, 90, 180], (d) => Math.round(d) + '°');
+    F = frame(ctxP, fr, [-200, 200], ft, [-180, -90, 0, 90, 180], (d) => Math.round(d) + '°');
     line(F, FF, phaseOf(Xc, Xm), C_X, 1.5, 0.8, [6, 5], 180);
     line(F, FF, phaseOf(Yc, Ym), C_Y, 2, 1, null, 180);
 

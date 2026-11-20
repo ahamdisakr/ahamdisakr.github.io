@@ -30,7 +30,7 @@
   <h1 class="title-lg mb-4">Fourier Series Coefficients</h1>
   <p>Choose a signal, the number of coefficients and a time shift. You can also overlay the error <span class="m" data-tex="e(t)=x(t)-y(t)">e(t) = x(t) - y(t)</span>. Shifting the signal in time leaves <span class="m" data-tex="|a_k|">|a<sub>k</sub>|</span> unchanged and only changes the phase, by an amount proportional to <span class="m" data-tex="k">k</span>: <span class="m" data-tex="a_k \to a_k\,e^{-j2\pi k\tau/T}">a<sub>k</sub> &rarr; a<sub>k</sub> e<sup>-j2&pi;k&tau;/T</sup></span>.</p>
   <p>Change the period <span class="m" data-tex="T">T</span> and switch the spectrum axis to frequency: the coefficients <span class="m" data-tex="a_k">a<sub>k</sub></span> do not depend on <span class="m" data-tex="T">T</span>, but they sit at the harmonic frequencies <span class="m" data-tex="f_k = k/T">f<sub>k</sub> = k/T</span>, spaced <span class="m" data-tex="1/T">1/T</span> apart, so a longer period puts the spectral lines closer together in frequency.</p>
-  <p class="mb-4"><strong>Try it:</strong> with the square wave, raise <span class="m" data-tex="N">N</span> one step at a time. Only the odd harmonics are nonzero, and each one brings the reconstruction closer to the square wave. Near the jumps, though, the overshoot stays at about 9% of the jump however large <span class="m" data-tex="N">N</span> gets (the Gibbs phenomenon). Switch to the triangle wave: it has no jumps, its coefficients fall off much faster, and a few terms already look right. Then move the time shift and watch only the phase spectrum change. Finally, select the frequency axis and change <span class="m" data-tex="T">T</span>: the coefficients stay the same, but the frequencies they sit at change, since the lines are <span class="m" data-tex="1/T">1/T</span> Hz apart.</p>
+  <p class="mb-4"><strong>Try it:</strong> with the square wave, raise <span class="m" data-tex="N">N</span> one step at a time. Only the odd harmonics are nonzero, and each one brings the reconstruction closer to the square wave. Near the jumps, though, the overshoot stays at about 9% of the jump however large <span class="m" data-tex="N">N</span> gets (the Gibbs phenomenon). Switch to the triangle wave: it has no jumps, its coefficients fall off much faster, and a few terms already look right. Then move the time shift and watch only the phase spectrum change. Finally, select the frequency axis and change <span class="m" data-tex="T">T</span>: the coefficients stay the same, but the frequencies they sit at change, since the lines are <span class="m" data-tex="1/T">1/T</span> Hz apart. To see the overshoot closely, zoom into the time plot near a jump (Ctrl + scroll or pinch, drag to pan, double-click to reset).</p>
   <div class="predict">
     <h2 class="predict-title">Predict, then check</h2>
     <details><summary>Square wave or triangle wave: which needs more coefficients to look right, and why?</summary><p>The square wave. Its jumps make its coefficients fall off only like <span class="m" data-tex="1/k">1/k</span>, while the continuous triangle&rsquo;s fall off like <span class="m" data-tex="1/k^2">1/k&sup2;</span>, so the triangle&rsquo;s higher harmonics matter much less.</p></details>
@@ -117,7 +117,7 @@
 
 <script>
 (function(){
-  const {MATH_FONT, fitCanvas, fmtTick, niceTicks, renderTeX, setTeX} = window.Demo;   // shared helpers (demos/demo.js)
+  const {MATH_FONT, fitCanvas, fmtTick, niceTicks, renderTeX, setTeX, zoomX} = window.Demo;   // shared helpers (demos/demo.js)
   // Core config
   const T = 1.0;               // period [s]
   const Ts = 1e-4;             // sampling time [s] for coefficient integration
@@ -328,7 +328,8 @@ function plotSignalWithAxes(ctx, tArray, seriesList, opts){
   const plot = {x0: margin.left, y0: margin.top, w: width - margin.left - margin.right, h: height - margin.top - margin.bottom};
 
   // --- compute ranges ---
-  const xmin = tArray[0], xmax = tArray[tArray.length-1];
+  // x range: opts.xRange (the zoomed view) or the whole time array
+  const [xmin, xmax] = (opts && opts.xRange) || [tArray[0], tArray[tArray.length-1]];
   const yRange = opts && opts.yRange;
   let ymin, ymax;
   if (yRange) {
@@ -364,12 +365,8 @@ function plotSignalWithAxes(ctx, tArray, seriesList, opts){
     ctx.beginPath(); ctx.moveTo(plot.x0, y); ctx.lineTo(plot.x0 + plot.w, y); ctx.stroke();
   });
 
-  // vertical grid at x-ticks (mark each period; subdivide if you want)
-  const T = 1.0;
-  const cycles = Math.round((xmax - xmin) / T);
-  const xTickVals = [];
-  for (let c = 0; c <= cycles; c++) xTickVals.push(c*T);
-  // Optional: minor ticks every T/2 or T/4
+  // vertical grid at round x-ticks (every second on the full 8 s window)
+  const xTickVals = niceTicks(xmin, xmax, 9);
   xTickVals.forEach(xv => {
     const x = xToPx(xv);
     if (x >= plot.x0 && x <= plot.x0 + plot.w) {
@@ -396,14 +393,16 @@ function plotSignalWithAxes(ctx, tArray, seriesList, opts){
     ctx.beginPath(); ctx.moveTo(plot.x0, y0); ctx.lineTo(plot.x0 + plot.w, y0); ctx.stroke();
   }
 
-  // x labels at whole cycles
+  // x labels at the same ticks
   ctx.fillStyle = "#94a3b8"; ctx.textAlign = "center"; ctx.textBaseline = "top";
-  for (let c = 0; c <= cycles; c++){
-    const x = xToPx(c*T);
-    if (x >= plot.x0 && x <= plot.x0 + plot.w) ctx.fillText(String(c), x, plot.y0 + plot.h + 4);
-  }
+  xTickVals.forEach(xv => {
+    const x = xToPx(xv);
+    if (x >= plot.x0 - 0.5 && x <= plot.x0 + plot.w + 0.5) ctx.fillText(fmtTick(xv), x, plot.y0 + plot.h + 4);
+  });
 
-  // --- plot series (unchanged) ---
+  // --- plot series (clipped to the plot area, so a zoomed view stays inside it) ---
+  ctx.save();
+  ctx.beginPath(); ctx.rect(plot.x0, plot.y0, plot.w, plot.h); ctx.clip();
   seriesList.forEach(s => {
     ctx.strokeStyle = s.color; ctx.lineWidth = s.width || 2; ctx.beginPath();
     for(let i=0;i<tArray.length;i++){
@@ -413,6 +412,7 @@ function plotSignalWithAxes(ctx, tArray, seriesList, opts){
     }
     ctx.stroke();
   });
+  ctx.restore();
 }
 
 
@@ -706,6 +706,9 @@ function plotAllHarmonics(ctx, tArray, coeffs, N, opts = {}) {
     if (!renderTeX(elC, texC, true) && elC) elC.textContent = 'N = ' + N + ', a0 = ' + a0.toFixed(3) + ', MSE = ' + mse.toFixed(4);
   }
 
+  // Zoom and pan on the time plot (demos/demo.js; margins match plotSignalWithAxes)
+  const zoomT = zoomX([timeCanvas], {range: [0, T_WINDOW], left: 48, right: 12, onChange: drawAll});
+
   function drawAll(){
     const wave = elWave.value;
     const N = parseInt(elNcoef.value,10);
@@ -747,7 +750,7 @@ function plotAllHarmonics(ctx, tArray, coeffs, N, opts = {}) {
     if (showE) series.push({y:ePlot, color:"#ef4444", width:2});
     // if (showH) series.push(...harmonicSeries); // else combined.push({ y: yPlot, color: "#60a5fa", width: 2 });
 
-    plotSignalWithAxes(ctxT, tSec, series, { yRange: [-1.2, 1.2] });
+    plotSignalWithAxes(ctxT, tSec, series, { yRange: [-1.2, 1.2], xRange: zoomT.range() });
 
     // magnitude and phase arrays for -span..span
     const {f, span} = makeComplexCoeffs(coeffs.a0, coeffs.a, coeffs.b, N, 15);

@@ -29,7 +29,7 @@
   <div class="panel panel--static">
   <h1 class="title-lg mb-4">Frequency Response: A Sinusoid Through a Filter</h1>
   <p>A cosine of frequency <span class="m" data-tex="f_0">f<sub>0</sub></span> passes through a first-order low-pass filter with a 50 Hz cutoff. Because the filter is LTI, the output is a cosine at the same frequency, scaled by the magnitude response <span class="m" data-tex="|H(f_0)|">|H(f<sub>0</sub>)|</span> and shifted by the phase response <span class="m" data-tex="\phi(f_0)">&phi;(f<sub>0</sub>)</span>. Use the slider to change <span class="m" data-tex="f_0">f<sub>0</sub></span>.</p>
-  <p class="mb-4"><strong>Try it:</strong> start at a low frequency: the output looks just like the input. Move <span class="m" data-tex="f_0">f<sub>0</sub></span> to the 50 Hz cutoff: the output drops to <span class="m" data-tex="1/\sqrt{2}\approx 0.71">1/&radic;2 &asymp; 0.71</span> of the input and lags it by <span class="m" data-tex="45^\circ">45&deg;</span>. At 400 Hz it is only about 0.12 of the input. Through all of this the output keeps the frequency of the input: an LTI system can only scale and delay a sinusoid, never change its frequency. That is why the output spectrum is the input spectrum multiplied by <span class="m" data-tex="|H(f)|">|H(f)|</span>.</p>
+  <p class="mb-4"><strong>Try it:</strong> start at a low frequency: the output looks just like the input. Move <span class="m" data-tex="f_0">f<sub>0</sub></span> to the 50 Hz cutoff: the output drops to <span class="m" data-tex="1/\sqrt{2}\approx 0.71">1/&radic;2 &asymp; 0.71</span> of the input and lags it by <span class="m" data-tex="45^\circ">45&deg;</span>. At 400 Hz it is only about 0.12 of the input. Through all of this the output keeps the frequency of the input: an LTI system can only scale and delay a sinusoid, never change its frequency. That is why the output spectrum is the input spectrum multiplied by <span class="m" data-tex="|H(f)|">|H(f)|</span>. To measure the delay, zoom into the time plots (Ctrl + scroll or pinch, drag to pan, double-click to reset).</p>
   <div class="predict">
     <h2 class="predict-title">Predict, then check</h2>
     <details><summary>At what input frequency is the output half as large as the input?</summary><p>Where <span class="m" data-tex="|H(f_0)|=1/\sqrt{1+(f_0/50)^2}=1/2">|H(f<sub>0</sub>)| = 1/&radic;(1 + (f<sub>0</sub>/50)&sup2;) = 1/2</span>, that is <span class="m" data-tex="f_0=50\sqrt{3}\approx 87\ \text{Hz}">f<sub>0</sub> = 50&radic;3 &asymp; 87 Hz</span>. Check it with the slider and the readout under the output.</p></details>
@@ -119,7 +119,7 @@
 
 <script>
 (function(){
-  const {MATH_FONT, fitCanvas, fmtTick, niceTicks, renderTeX, setTeX} = window.Demo;   // shared helpers (demos/demo.js)
+  const {MATH_FONT, fitCanvas, fmtTick, niceTicks, renderTeX, setTeX, zoomX} = window.Demo;   // shared helpers (demos/demo.js)
   // ---------- Config ----------
   const TWO_PI = Math.PI * 2;
   const T_WINDOW = 0.1;        // time window for x(t) and y(t) (seconds), the same for every f0
@@ -316,9 +316,13 @@
   window.addEventListener('load', renderStaticMath);   // KaTeX is loaded with `defer`
   window.addEventListener('load', () => { if (document.fonts && document.fonts.load) document.fonts.load(MATH_FONT).then(drawAll); });
 
+  // Zoom and pan on the two time plots, sharing one axis (demos/demo.js; margins match plotXY)
+  const zoomT = zoomX([cx.canvas, cy.canvas], {range: [0, T_WINDOW], left: 56, right: 12, onChange: drawAll});
+
   // ---------- Main draw ----------
   function drawAll(){
     const f0 = parseFloat(elF0.value);
+    const tr = zoomT.range();
     setTeX(elF0Val, String.raw`f_0=${f0.toFixed(0)}\ \text{Hz}`, 'f0 = ' + f0.toFixed(0) + ' Hz');
 
     // Fixed time window, so a higher f0 shows more cycles (Fs = 20 kHz keeps 50 samples per cycle at 400 Hz)
@@ -351,7 +355,7 @@
     ];
 
     // ---- Plot all six ----
-    plotXY(cx, t, x,   { color: col("--xcolor"), width:2, xRange:[0, Tw], yRange:[-1.1, 1.1] });
+    plotXY(cx, t, x,   { color: col("--xcolor"), width:2, xRange:tr, yRange:[-1.1, 1.1] });
     plotImpulses(cX, -500, 500, Xstems, { yMax: 0.6, color: col("--xcolor") });
 
     // Impulse response on its own dense grid (0..20 ms)
@@ -392,7 +396,7 @@
 	  ]
 	});
 
-    plotXY(cy, t, y,   { color: col("--ycolor"), width:2, xRange:[0, Tw], yRange:[-1.1, 1.1] });
+    plotXY(cy, t, y,   { color: col("--ycolor"), width:2, xRange:tr, yRange:[-1.1, 1.1] });
     plotImpulses(cY, -500, 500, Ystems, { yMax: 0.6, color: col("--ycolor") });
   }
 

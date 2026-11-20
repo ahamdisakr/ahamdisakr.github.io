@@ -4,7 +4,7 @@
      <script src="/demos/demo.js"></script>
    - Embed mode: ?embed=1 hides the site menu and footer and adds a credit line
    - window.Demo: small helpers every demo uses (canvas sizing, tick values,
-     tick labels, KaTeX rendering)
+     tick labels, KaTeX rendering, zoom and pan along x)
    Page-specific plotting (frame, line, stems, ...) stays in each page.
    ========================================================================== */
 (function () {
@@ -77,8 +77,92 @@
     if (!renderTeX(el, tex, false)) el.textContent = fallback;
   }
 
+  // ---------- Zoom and pan along x, shared by a group of canvases with one x-axis ----------
+  // Ctrl + scroll (a trackpad pinch sends the same) or a two-finger pinch zooms; plain scrolling
+  // still scrolls the page, so a plot never traps the scroll inside an embed. Drag pans,
+  // double-click resets. The view stays inside `bounds` (default: the default range itself).
+  //   var z = Demo.zoomX([canvasA, canvasB], {range: [0, 1], left: 56, right: 12, onChange: draw});
+  //   in draw(): var xr = z.range();
+  //   z.setDefault([0, T]) when the page's default range changes (keeps the view otherwise)
+  // left/right: the plot margins in CSS px, so the zoom centres on the point under the cursor.
+  var ZOOM_HINT = 'Ctrl + scroll or pinch to zoom, drag to pan, double-click to reset';
+  function zoomX(canvases, opts) {
+    var left = opts.left || 0, right = opts.right || 0, minFrac = opts.minFrac || 0.02;
+    var def = opts.range.slice(), view = def.slice(), fixedBounds = opts.bounds ? opts.bounds.slice() : null;
+    var pending = false;
+    function changed() {                       // redraw once per frame however many events arrive
+      if (pending) return;
+      pending = true;
+      requestAnimationFrame(function () { pending = false; opts.onChange(); });
+    }
+    function clamp(a, w) {
+      var B = fixedBounds || def, full = B[1] - B[0];
+      w = Math.max(Math.min(w, full), full * minFrac);      // minFrac: the deepest zoom, as a fraction of the bounds
+      a = Math.min(Math.max(a, B[0]), B[1] - w);
+      return [a, a + w];
+    }
+    function where(canvas, clientX) {         // position across the plot area, 0..1
+      var r = canvas.getBoundingClientRect(), w = Math.max(1, r.width - left - right);
+      return { u: Math.min(1, Math.max(0, (clientX - r.left - left) / w)), w: w };
+    }
+    canvases.forEach(function (c) {
+      c.style.touchAction = 'pan-y';           // vertical swipes still scroll the page
+      c.style.cursor = 'grab';
+      c.title = ZOOM_HINT;
+      var pts = {}, start = null;
+      function begin() {                       // (re)start a pan or pinch from the current pointers
+        var ids = Object.keys(pts);
+        start = { view: view.slice(), x: pts[ids[0]] };
+        if (ids.length > 1) { start.d = Math.abs(pts[ids[1]] - pts[ids[0]]); start.mid = (pts[ids[0]] + pts[ids[1]]) / 2; }
+      }
+      c.addEventListener('wheel', function (e) {
+        if (!e.ctrlKey && !e.metaKey) return;  // plain scroll: leave it to the page
+        e.preventDefault();
+        var u = where(c, e.clientX).u, a = view[0], w = view[1] - view[0], xm = a + u * w;
+        var k = Math.min(2, Math.max(0.5, Math.exp(e.deltaY * 0.002)));
+        view = clamp(xm - u * w * k, w * k); changed();
+      }, { passive: false });
+      c.addEventListener('pointerdown', function (e) {
+        pts[e.pointerId] = e.clientX;
+        try { c.setPointerCapture(e.pointerId); } catch (err) { /* ignore */ }
+        c.style.cursor = 'grabbing';
+        begin();
+      });
+      c.addEventListener('pointermove', function (e) {
+        if (!(e.pointerId in pts) || !start) return;
+        pts[e.pointerId] = e.clientX;
+        var ids = Object.keys(pts), a = start.view[0], w = start.view[1] - start.view[0];
+        if (ids.length > 1 && start.d > 20) {  // pinch: keep the point under the fingers' midpoint fixed
+          var d = Math.abs(pts[ids[1]] - pts[ids[0]]), mid = (pts[ids[1]] + pts[ids[0]]) / 2;
+          var p0 = where(c, start.mid), p1 = where(c, mid), xm = a + p0.u * w, w2 = w * start.d / Math.max(1, d);
+          view = clamp(xm - p1.u * w2, w2);
+        } else {                               // pan
+          var ww = where(c, 0).w;
+          view = clamp(a - (e.clientX - start.x) / ww * w, w);
+        }
+        changed();
+      });
+      function end(e) {
+        delete pts[e.pointerId];
+        if (Object.keys(pts).length) begin(); else { start = null; c.style.cursor = 'grab'; }
+      }
+      c.addEventListener('pointerup', end);
+      c.addEventListener('pointercancel', end);
+      c.addEventListener('dblclick', function () { view = def.slice(); changed(); });
+    });
+    return {
+      range: function () { return view.slice(); },
+      // new default range: the view resets only when it actually changes
+      setDefault: function (r) {
+        if (r[0] === def[0] && r[1] === def[1]) return;
+        def = r.slice(); view = clamp(def[0], def[1] - def[0]);
+      },
+      reset: function () { view = clamp(def[0], def[1] - def[0]); }
+    };
+  }
+
   window.Demo = {
     MATH_FONT: MATH_FONT, fitCanvas: fitCanvas, fmtTick: fmtTick, niceTicks: niceTicks,
-    renderTeX: renderTeX, setTeX: setTeX
+    renderTeX: renderTeX, setTeX: setTeX, zoomX: zoomX, ZOOM_HINT: ZOOM_HINT
   };
 })();
