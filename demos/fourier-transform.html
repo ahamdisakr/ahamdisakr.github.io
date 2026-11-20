@@ -5,8 +5,8 @@
 <head>
 <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-<title>Fourier Transform | Ahmed Hamdi Sakr</title>
-<meta name="description" content="Interactive demo of the Fourier transform: how a first-order low-pass filter scales and delays a cosine of adjustable frequency, in the time and frequency domains." />
+<title>Frequency Response: A Sinusoid Through a Filter | Ahmed Hamdi Sakr</title>
+<meta name="description" content="Interactive demo of frequency response: how a first-order low-pass filter scales and delays a cosine of adjustable frequency, in the time and frequency domains." />
     <script defer src="https://cdn.jsdelivr.net/npm/feather-icons@4.29.2/dist/feather.min.js"></script>
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css" />
@@ -26,8 +26,9 @@
         <div class="site-container">
         <main class="page fade-in" id="main">
   <div class="panel panel--static">
-  <h1 class="title-lg mb-4">Interactive Fourier Transform Demo</h1>
+  <h1 class="title-lg mb-4">Frequency Response: A Sinusoid Through a Filter</h1>
   <p>Slider changes the frequency <span class="m" data-tex="f_0">f<sub>0</sub></span> of the input cosine. It passes through a first-order low-pass filter, so the output is the input scaled by <span class="m" data-tex="|H(f_0)|">|H(f<sub>0</sub>)|</span> and phase-shifted by <span class="m" data-tex="\phi(f_0)">&phi;(f<sub>0</sub>)</span>.</p>
+  <p class="mb-4"><strong>Try it:</strong> start at a low frequency: the output looks just like the input. Move <span class="m" data-tex="f_0">f<sub>0</sub></span> to the 50 Hz cutoff: the output drops to <span class="m" data-tex="1/\sqrt{2}\approx 0.71">1/&radic;2 &asymp; 0.71</span> of the input and lags it by <span class="m" data-tex="45^\circ">45&deg;</span>. At 400 Hz it is only about 0.12 of the input. Through all of this the output keeps the frequency of the input: an LTI system can only scale and delay a sinusoid, never change its frequency. That is why the output spectrum is the input spectrum multiplied by <span class="m" data-tex="|H(f)|">|H(f)|</span>.</p>
 
 <div class="controls controls--sticky">
     <div class="control">

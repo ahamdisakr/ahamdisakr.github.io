@@ -5,8 +5,8 @@
 <head>
 <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-<title>Fourier Transform Filtering | Ahmed Hamdi Sakr</title>
-<meta name="description" content="Interactive demo of Fourier transform filtering: apply low-pass, high-pass, band-pass and notch filters to test signals or your own audio and compare the time and frequency domains." />
+<title>Filtering Signals and Audio | Ahmed Hamdi Sakr</title>
+<meta name="description" content="Interactive filtering demo: apply low-pass, high-pass, band-pass and notch filters to test signals or your own audio and compare the time and frequency domains." />
     <script defer src="https://cdn.jsdelivr.net/npm/feather-icons@4.29.2/dist/feather.min.js"></script>
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css" />
@@ -25,8 +25,9 @@
         <div class="site-container">
         <main class="page fade-in" id="main">
   <div class="panel panel--static">
-  <h1 class="title-lg mb-4">Interactive Fourier Transform Filtering Demo</h1>
+  <h1 class="title-lg mb-4">Filtering Signals and Audio</h1>
     <p>Pick a signal and filter. For BPF/Notch, <span class="m" data-tex="Q=f_c/\mathrm{BW}">Q = f<sub>c</sub>/BW</span>. Upload/record audio and A/B play.</p>
+    <p class="mb-4"><strong>Try it:</strong> choose the square wave at <span class="m" data-tex="f_0=200\ \text{Hz}">f<sub>0</sub> = 200 Hz</span> and the low-pass filter. Its harmonics sit at 200, 600, 1000 Hz and so on. Lower <span class="m" data-tex="f_c">f<sub>c</sub></span> toward 300 Hz: the higher harmonics are removed, and the output becomes close to a 200 Hz sine. Play the original and the filtered signal to hear the difference. Then choose the demo tones (440 + 880 Hz) with a notch filter at <span class="m" data-tex="f_c=880\ \text{Hz}">f<sub>c</sub> = 880 Hz</span> and a narrow bandwidth (about 100 Hz): the 880 Hz line disappears from <span class="m" data-tex="|Y(f)|">|Y(f)|</span> and only the lower tone is left. You can also upload or record your own audio and try each filter on it.</p>
 
 <div class="controls controls--sticky">
         <div class="control">

@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+<meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+<title>Convolution: Flip and Slide | Ahmed Hamdi Sakr</title>
+<meta name="description" content="Interactive demo of convolution in continuous and discrete time: flip one signal, slide it across the other, multiply, and add up the area under the product to get each output value." />
+    <script defer src="https://cdn.jsdelivr.net/npm/feather-icons@4.29.2/dist/feather.min.js"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css" />
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+
+    <link href="/styles.css" rel="stylesheet" />
+    <link href="/demos/demo.css" rel="stylesheet" />
+    <link rel="icon" type="image/x-icon" href="/images/icon.ico" />
+    <script defer src="/app.js"></script>
+
+</head>
+
+<body data-page="teaching">
+
+    <div id="site-nav"></div>
+
+        <div class="site-container">
+        <main class="page fade-in" id="main">
+  <div class="panel panel--static">
+  <h1 class="title-lg mb-4">Convolution: Flip and Slide</h1>
+  <p>The output of an LTI system is the convolution of the input with the impulse response, <span class="m" data-tex="y(t)=\int_{-\infty}^{\infty}x(\tau)\,h(t-\tau)\,d\tau">y(t) = &int; x(&tau;) h(t-&tau;) d&tau;</span>. To find one value <span class="m" data-tex="y(t)">y(t)</span>: flip <span class="m" data-tex="h(\tau)">h(&tau;)</span> to get <span class="m" data-tex="h(-\tau)">h(-&tau;)</span>, slide it by <span class="m" data-tex="t">t</span>, multiply it by <span class="m" data-tex="x(\tau)">x(&tau;)</span>, and add up the area under the product. Doing this for every <span class="m" data-tex="t">t</span> traces out the whole output. In discrete time the area becomes a sum, <span class="m" data-tex="y[n]=\sum_{k}x[k]\,h[n-k]">y[n] = &Sigma; x[k] h[n-k]</span>.</p>
+  <p class="mb-4"><strong>Try it:</strong> press Play and watch the output change only while the two signals overlap. A pulse convolved with a pulse gives a triangle, and the output lasts as long as the two durations added together. Then flip <span class="m" data-tex="x">x</span> instead of <span class="m" data-tex="h">h</span>: the picture changes, but the output does not, because <span class="m" data-tex="x*h=h*x">x*h = h*x</span>. Finally, switch to discrete time to see the same steps with samples.</p>
+
+  <div class="controls controls--sticky controls--3">
+    <div class="control">
+      <label for="dom">Time</label>
+      <select id="dom" class="sig-select">
+        <option value="ct">Continuous time</option>
+        <option value="dt">Discrete time</option>
+      </select>
+      <label for="flip">Flip and slide</label>
+      <select id="flip" class="sig-select">
+        <option value="h">h (keep x fixed)</option>
+        <option value="x">x (keep h fixed)</option>
+      </select>
+    </div>
+    <div class="control">
+      <label for="xsel">Input <span class="m" data-tex="x">x</span></label>
+      <select id="xsel" class="sig-select">
+        <option value="pulse">Pulse</option>
+        <option value="triangle">Triangle</option>
+        <option value="sawtooth">Sawtooth</option>
+        <option value="exp">Decaying exponential</option>
+      </select>
+      <label for="hsel">Impulse response <span class="m" data-tex="h">h</span></label>
+      <select id="hsel" class="sig-select">
+        <option value="pulse">Pulse</option>
+        <option value="triangle">Triangle</option>
+        <option value="sawtooth">Sawtooth</option>
+        <option value="exp" selected>Decaying exponential</option>
+      </select>
+    </div>
+    <div class="control">
+      <div class="control-head">
+        <label for="tpos">Shift <span id="tval" class="m">t = -5.0</span></label>
+        <button class="btn btn-primary sweep-btn" id="btnPlay" type="button">&#9654;&#xFE0E; Play</button>
+      </div>
+      <input id="tpos" type="range" min="-15" max="40" step="0.1" value="-5"/>
+    </div>
+  </div>
+
+  <div class="canvas-row">
+    <div class="card">
+      <h2 id="titleA" data-tex="x(\tau)\ \text{and the flipped, shifted}\ h(t-\tau)">x(&tau;) and the flipped, shifted h(t-&tau;)</h2>
+      <canvas id="cA" class="short" role="img" aria-label="The fixed signal and the flipped, shifted signal"></canvas>
+      <div class="axis-label" id="axA" data-tex="\tau\ (\mathrm{s})">&tau; (s)</div>
+      <div class="chip-row">
+        <span class="chip"><span class="dot x"></span><span class="m" id="chipX" data-tex="x(\tau)">x(&tau;)</span></span>
+        <span class="chip"><span class="dot h"></span><span class="m" id="chipH" data-tex="h(t-\tau)">h(t-&tau;)</span></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="canvas-row group">
+    <div class="card">
+      <h2 id="titleB" data-tex="\text{Product: }x(\tau)\,h(t-\tau)">Product: x(&tau;) h(t-&tau;)</h2>
+      <canvas id="cB" class="short" role="img" aria-label="Product of the two signals, with the area under it shaded"></canvas>
+      <div class="axis-label" id="axB" data-tex="\tau\ (\mathrm{s})">&tau; (s)</div>
+      <div class="readout" aria-live="polite">
+        <span class="net" id="net">y(t) = 0</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="canvas-row group">
+    <div class="card">
+      <h2 id="titleC" data-tex="\text{Output: }y(t)=(x*h)(t)">Output: y(t) = (x*h)(t)</h2>
+      <canvas id="cC" class="short" role="img" aria-label="Output of the convolution, traced up to the current shift"></canvas>
+      <div class="axis-label" id="axC" data-tex="t\ (\mathrm{s})">t (s)</div>
+    </div>
+  </div>
+
+</div>
+
+        </main>
+        <footer class="site-footer fade-in">
+            <p>&copy; 2021&ndash;2026 Ahmed Hamdi Sakr. All rights reserved.</p>
+        </footer>
+        </div>
+
+
+<script>
+(function(){
+  // ---------- Config ----------
+  const TWO_PI = Math.PI * 2;
+  const T0 = -15, T1 = 40;                       // plotted range of τ (and of t)
+  const X_TICKS = [-15, -10, -5, 0, 5, 10, 15, 20, 25, 30, 35, 40];
+  const H = 0.02;                                // continuous time: integration step (midpoint rule)
+  const NT = Math.round((T1 - T0) / H);
+  const TAU = Float64Array.from({length: NT}, (_, j) => T0 + (j + 0.5) * H);
+  const TG_STEP = 0.05;                          // continuous time: output curve resolution
+  const TG = Float64Array.from({length: Math.round((T1 - T0) / TG_STEP) + 1}, (_, i) => T0 + i * TG_STEP);
+  const KS = Float64Array.from({length: T1 - T0 + 1}, (_, i) => T0 + i);   // discrete time: samples
+  const PLAY_RATE = 5;                           // units of t (or samples) per second while playing
+  const css = getComputedStyle(document.documentElement);
+  const col = (name, fb) => css.getPropertyValue(name).trim() || fb;
+  const C_X = col('--xcolor', '#f59e0b'), C_H = col('--hcolor', '#22c55e'), C_Y = col('--ycolor', '#60a5fa');
+  const C_POS = col('--poscolor', '#22c55e'), C_NEG = col('--negcolor', '#ef4444');
+  const C_GRID = col('--grid', '#15223e'), C_AXIS = '#223356', C_TICK = '#94a3b8', C_BG = '#0a1326', C_PROD = '#e2e8f0';
+
+  // ---------- Signals (all start at 0; the finite ones last 10 units, endpoints included) ----------
+  const A_EXP = 0.2;
+  const SIG = {
+    pulse:    (v) => (v >= 0 && v <= 10) ? 1 : 0,
+    triangle: (v) => (v >= 0 && v <= 10) ? 1 - Math.abs(v - 5) / 5 : 0,
+    sawtooth: (v) => (v >= 0 && v <= 10) ? (v - 5) / 5 : 0,
+    exp:      (v) => (v >= 0) ? Math.exp(-A_EXP * v) : 0,
+  };
+
+  // DOM
+  const elDom = document.getElementById('dom'), elFlip = document.getElementById('flip');
+  const elX = document.getElementById('xsel'), elH = document.getElementById('hsel');
+  const elT = document.getElementById('tpos'), elPlay = document.getElementById('btnPlay');
+  const ctxA = document.getElementById('cA').getContext('2d');
+  const ctxB = document.getElementById('cB').getContext('2d');
+  const ctxC = document.getElementById('cC').getContext('2d');
+
+  // ---------- Plot helpers (style matches the other demos) ----------
+  const MATH_FONT = '13px KaTeX_Main, "Times New Roman", Times, serif';   // canvas tick labels
+  function fitCanvas(canvas){
+    const d = window.devicePixelRatio || 1;
+    const w = canvas.clientWidth, h = canvas.clientHeight;
+    const pw = Math.round(w*d), ph = Math.round(h*d);
+    if (canvas.width !== pw || canvas.height !== ph){ canvas.width = pw; canvas.height = ph; }
+    canvas.getContext('2d').setTransform(d,0,0,d,0,0);
+    return {width: w, height: h};
+  }
+  function fmtTick(u){
+    if (Math.abs(u) < 1e-12) return "0";
+    return String(Number(u.toPrecision(3)));
+  }
+  const fmt = (v) => (Math.abs(v) < 5e-4 ? 0 : v).toFixed(3);
+
+  // Background, grid, ticks and zero axis. Returns the mappers used by the drawing helpers.
+  function frame(ctx, xr, yr, xt){
+    const {width, height} = fitCanvas(ctx.canvas);
+    const m = {left: 56, right: 12, top: 10, bottom: 28};
+    const P = {x0: m.left, y0: m.top, w: width - m.left - m.right, h: height - m.top - m.bottom};
+    const [xmin, xmax] = xr, [ymin, ymax] = yr;
+    const X = (v) => P.x0 + (v - xmin) * (P.w / (xmax - xmin));
+    const Y = (v) => P.y0 + P.h - ((v - ymin) / (ymax - ymin)) * P.h;
+    const yTicks = 5;
+
+    ctx.clearRect(0, 0, width, height);
+    ctx.fillStyle = C_BG; ctx.fillRect(0, 0, width, height);
+
+    ctx.save(); ctx.beginPath(); ctx.rect(P.x0, P.y0, P.w, P.h); ctx.clip();
+    ctx.strokeStyle = C_GRID; ctx.lineWidth = 1;
+    for (let i = 0; i < yTicks; i++){ const y = Y(ymin + i*(ymax-ymin)/(yTicks-1)); ctx.beginPath(); ctx.moveTo(P.x0, y); ctx.lineTo(P.x0 + P.w, y); ctx.stroke(); }
+    for (const u of xt){ const x = X(u); ctx.beginPath(); ctx.moveTo(x, P.y0); ctx.lineTo(x, P.y0 + P.h); ctx.stroke(); }
+    ctx.restore();
+
+    ctx.fillStyle = C_TICK; ctx.font = MATH_FONT; ctx.textAlign = "right"; ctx.textBaseline = "middle";
+    for (let i = 0; i < yTicks; i++){
+      const v = ymin + i*(ymax-ymin)/(yTicks-1), y = Y(v);
+      ctx.fillText((Math.abs(v) < 5e-3 ? 0 : v).toFixed(2), P.x0 - 8, y);
+      ctx.strokeStyle = C_AXIS; ctx.beginPath(); ctx.moveTo(P.x0-4, y); ctx.lineTo(P.x0, y); ctx.stroke();
+    }
+    ctx.textAlign = "center"; ctx.textBaseline = "top";
+    for (const u of xt) ctx.fillText(fmtTick(u), X(u), P.y0 + P.h + 6);
+
+    if (ymin <= 0 && ymax >= 0){
+      ctx.strokeStyle = C_AXIS; ctx.lineWidth = 1.5;
+      ctx.beginPath(); ctx.moveTo(P.x0, Y(0)); ctx.lineTo(P.x0 + P.w, Y(0)); ctx.stroke();
+    }
+    return {ctx, P, X, Y};
+  }
+  function clipped(F, fn){
+    const {ctx, P} = F;
+    ctx.save(); ctx.beginPath(); ctx.rect(P.x0, P.y0, P.w, P.h); ctx.clip(); fn(ctx); ctx.restore();
+  }
+  function line(F, xs, ys, color, width = 2, alpha = 1){
+    clipped(F, (ctx) => {
+      ctx.strokeStyle = color; ctx.lineWidth = width; ctx.globalAlpha = alpha; ctx.lineJoin = 'round';
+      ctx.beginPath();
+      for (let i = 0; i < xs.length; i++){ const x = F.X(xs[i]), y = F.Y(ys[i]); if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y); }
+      ctx.stroke();
+    });
+  }
+  // Shade between the curve and y = 0: positive part in one colour, negative part in another.
+  function fillArea(F, xs, ys, cPos, cNeg, alpha = 0.4){
+    const {P, X, Y} = F, y0 = Y(0);
+    const path = () => {
+      const ctx = F.ctx;
+      ctx.beginPath(); ctx.moveTo(X(xs[0]), y0);
+      for (let i = 0; i < xs.length; i++) ctx.lineTo(X(xs[i]), Y(ys[i]));
+      ctx.lineTo(X(xs[xs.length - 1]), y0); ctx.closePath();
+    };
+    for (const [top, h, c] of [[P.y0, y0 - P.y0, cPos], [y0, P.y0 + P.h - y0, cNeg]]){
+      const ctx = F.ctx;
+      ctx.save(); ctx.beginPath(); ctx.rect(P.x0, top, P.w, h); ctx.clip();
+      ctx.globalAlpha = alpha; ctx.fillStyle = c; path(); ctx.fill();
+      ctx.restore();
+    }
+  }
+  // Stem plot; `hollow` draws ring markers so a second set of stems can sit on top of a first one
+  function stems(F, xs, ys, color, {r = 4, hollow = false, alpha = 1, width = 2} = {}){
+    clipped(F, (ctx) => {
+      ctx.globalAlpha = alpha; ctx.strokeStyle = color; ctx.lineWidth = width;
+      const y0 = F.Y(0);
+      for (let i = 0; i < xs.length; i++){
+        const x = F.X(xs[i]), y = F.Y(ys[i]);
+        ctx.beginPath(); ctx.moveTo(x, y0); ctx.lineTo(x, y); ctx.stroke();
+        ctx.beginPath(); ctx.arc(x, y, r, 0, TWO_PI);
+        if (hollow){ ctx.fillStyle = C_BG; ctx.fill(); ctx.stroke(); } else { ctx.fillStyle = color; ctx.fill(); }
+      }
+    });
+  }
+  function dot(F, x, y, color, r = 6){
+    clipped(F, (ctx) => {
+      ctx.fillStyle = color; ctx.strokeStyle = C_BG; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.arc(F.X(x), F.Y(y), r, 0, TWO_PI); ctx.fill(); ctx.stroke();
+    });
+  }
+  function vline(F, x, color){
+    clipped(F, (ctx) => {
+      ctx.strokeStyle = color; ctx.lineWidth = 1; ctx.setLineDash([4, 4]);
+      ctx.beginPath(); ctx.moveTo(F.X(x), F.P.y0); ctx.lineTo(F.X(x), F.P.y0 + F.P.h); ctx.stroke();
+    });
+  }
+
+  // ---------- Math rendering (KaTeX; plain-text fallback is already in the markup) ----------
+  function renderTeX(el, tex, display){
+    if (!window.katex) return false;
+    try { katex.render(tex, el, {throwOnError:false, displayMode:!!display}); return true; }
+    catch(e){ return false; }
+  }
+  function setTeX(el, tex, fallback){
+    if (!el) return;
+    el.dataset.tex = tex;
+    if (!renderTeX(el, tex, false)) el.textContent = fallback;
+  }
+  window.addEventListener('load', () => {
+    document.querySelectorAll('[data-tex]').forEach(el => renderTeX(el, el.dataset.tex, el.hasAttribute('data-display')));
+    drawAll();
+  });
+  window.addEventListener('load', () => { if (document.fonts && document.fonts.load) document.fonts.load(MATH_FONT).then(drawAll); });
+
+  // ---------- State: the output for the whole range is computed once per choice of signals ----------
+  let S = null;
+  function setup(){
+    const dt = elDom.value === 'dt';
+    const x = SIG[elX.value], h = SIG[elH.value];
+    let yAll;
+    if (dt){
+      const xk = KS.map(x);
+      yAll = KS.map((n) => { let s = 0; for (let i = 0; i < KS.length; i++) s += xk[i] * h(n - KS[i]); return s; });
+    } else {
+      const xv = TAU.map(x);
+      yAll = TG.map((t) => { let s = 0; for (let j = 0; j < NT; j++) if (xv[j] !== 0) s += xv[j] * h(t - TAU[j]); return s * H; });
+    }
+    let lo = 0, hi = 0;
+    for (const v of yAll){ lo = Math.min(lo, v); hi = Math.max(hi, v); }
+    const pad = 0.15 * Math.max(hi - lo, 1e-9);
+    S = {dt, x, h, yAll, yr: [lo < 0 ? lo - pad : 0, hi > 0 ? hi + pad : 1]};
+
+    elT.step = dt ? '1' : '0.1';
+    if (dt) elT.value = Math.round(parseFloat(elT.value));
+    updateLabels();
+    drawAll();
+  }
+
+  function updateLabels(){
+    const dt = S.dt, flipX = elFlip.value === 'x';
+    const v = dt ? 'k' : '\\tau', o = dt ? 'n' : 't';
+    const br = (s) => dt ? `[${s}]` : `(${s})`;
+    const fixedName = flipX ? 'h' : 'x', slideName = flipX ? 'x' : 'h';
+    const fixedTex = `${fixedName}${br(v)}`, slideTex = `${slideName}${br(o + '-' + v)}`;
+    const plain = (s) => s.replace('\\tau', 'τ');
+    setTeX(document.getElementById('titleA'), String.raw`${fixedTex}\ \text{and the flipped, shifted}\ ${slideTex}`, `${plain(fixedTex)} and the flipped, shifted ${plain(slideTex)}`);
+    setTeX(document.getElementById('titleB'), String.raw`\text{Product: }${fixedTex}\,${slideTex}`, `Product: ${plain(fixedTex)} ${plain(slideTex)}`);
+    setTeX(document.getElementById('titleC'), String.raw`\text{Output: }y${br(o)}=(x*h)${br(o)}`, `Output: y${br(o)} = (x*h)${br(o)}`);
+    // x-axis units: seconds in continuous time; k and n are sample indices in discrete time
+    const unitTex = dt ? String.raw`\ (\text{samples})` : String.raw`\ (\mathrm{s})`, unitTxt = dt ? ' (samples)' : ' (s)';
+    setTeX(document.getElementById('axA'), v + unitTex, plain(v) + unitTxt);
+    setTeX(document.getElementById('axB'), v + unitTex, plain(v) + unitTxt);
+    setTeX(document.getElementById('axC'), o + unitTex, o + unitTxt);
+    // chips are coloured by signal (x amber, h green), whichever one slides
+    setTeX(document.getElementById('chipX'), flipX ? `x${br(o + '-' + v)}` : `x${br(v)}`, flipX ? plain(`x(${o}-${v})`) : plain(`x(${v})`));
+    setTeX(document.getElementById('chipH'), flipX ? `h${br(v)}` : `h${br(o + '-' + v)}`, flipX ? plain(`h(${v})`) : plain(`h(${o}-${v})`));
+  }
+
+  // ---------- Main draw ----------
+  function drawAll(){
+    if (!S) return;
+    const dt = S.dt, flipX = elFlip.value === 'x';
+    const t = dt ? Math.round(parseFloat(elT.value)) : parseFloat(elT.value);
+    setTeX(document.getElementById('tval'), dt ? `n=${t}` : `t=${t.toFixed(1)}`, dt ? `n = ${t}` : `t = ${t.toFixed(1)}`);
+
+    // fixed(v) stays put; slide(t - v) is the flipped, shifted copy. x is amber and h is green either way.
+    const fixedFn = flipX ? S.h : S.x, slideFn = flipX ? S.x : S.h;
+    const cFixed = flipX ? C_H : C_X, cSlide = flipX ? C_X : C_H;
+    const grid = dt ? KS : TAU;
+    const fv = grid.map(fixedFn), sv = grid.map((v) => slideFn(t - v));
+    const prod = fv.map((a, i) => a * sv[i]);
+    let sum = 0;
+    for (const p of prod) sum += p;
+    const yNow = sum * (dt ? 1 : H);
+
+    // 1) fixed signal and the flipped, shifted one
+    let F = frame(ctxA, [T0, T1], [-1.25, 1.25], X_TICKS);
+    if (dt){
+      stems(F, grid, fv, cFixed);
+      stems(F, grid, sv, cSlide, {hollow: true});
+    } else {
+      line(F, grid, fv, cFixed, 2);
+      line(F, grid, sv, cSlide, 2);
+    }
+    vline(F, t, '#64748b');
+
+    // 2) product with its area (sum) shaded by sign
+    F = frame(ctxB, [T0, T1], [-1.25, 1.25], X_TICKS);
+    if (dt){
+      const pi = [], pp = [], ni = [], np = [];
+      prod.forEach((p, i) => { if (p > 0){ pi.push(grid[i]); pp.push(p); } else if (p < 0){ ni.push(grid[i]); np.push(p); } });
+      stems(F, pi, pp, C_POS);
+      stems(F, ni, np, C_NEG);
+    } else {
+      fillArea(F, grid, prod, C_POS, C_NEG);
+      line(F, grid, prod, C_PROD, 1.5);
+    }
+    vline(F, t, '#64748b');
+    const fixedName = flipX ? 'h' : 'x', slideName = flipX ? 'x' : 'h';
+    const netTex = dt
+      ? String.raw`y[${t}]=\sum_k ${fixedName}[k]\,${slideName}[${t}-k]=${fmt(yNow)}`
+      : String.raw`y(${t.toFixed(1)})=\int ${fixedName}(\tau)\,${slideName}(${t.toFixed(1)}-\tau)\,d\tau=${fmt(yNow)}`;
+    setTeX(document.getElementById('net'), netTex, (dt ? `y[${t}]` : `y(${t.toFixed(1)})`) + ` = ${fmt(yNow)}`);
+
+    // 3) output: faint over the whole range, bright up to the current shift
+    F = frame(ctxC, [T0, T1], S.yr, X_TICKS);
+    vline(F, t, '#64748b');
+    if (dt){
+      stems(F, KS, S.yAll, C_Y, {alpha: 0.3});
+      const n = KS.filter((v) => v <= t), yn = n.map((v) => S.yAll[v - T0]);
+      stems(F, n, yn, C_Y);
+      dot(F, t, yNow, '#f8fafc', 6);
+    } else {
+      line(F, TG, S.yAll, C_Y, 2, 0.3);
+      const iEnd = Math.min(TG.length - 1, Math.round((t - T0) / TG_STEP));
+      line(F, TG.subarray(0, iEnd + 1), S.yAll.subarray(0, iEnd + 1), C_Y, 2.5);
+      dot(F, t, yNow, '#f8fafc', 6);
+    }
+  }
+
+  // ---------- Play animation ----------
+  let raf = null, lastTs = 0, playT = 0;
+  function stopPlay(){
+    if (raf) cancelAnimationFrame(raf);
+    raf = null; elPlay.innerHTML = '&#9654;&#xFE0E; Play';
+  }
+  function step(ts){
+    const d = lastTs ? Math.min(0.1, (ts - lastTs) / 1000) : 0;
+    lastTs = ts;
+    playT = Math.min(T1, playT + PLAY_RATE * d);
+    elT.value = S.dt ? Math.floor(playT) : playT;
+    drawAll();
+    if (playT >= T1) { stopPlay(); return; }
+    raf = requestAnimationFrame(step);
+  }
+  elPlay.addEventListener('click', () => {
+    if (raf) { stopPlay(); return; }
+    playT = parseFloat(elT.value);
+    if (playT >= T1 - 1e-9) playT = T0;
+    lastTs = 0; elPlay.innerHTML = '&#10074;&#10074;&#xFE0E; Pause';
+    raf = requestAnimationFrame(step);
+  });
+
+  // listeners
+  elT.addEventListener('input', () => { stopPlay(); drawAll(); });
+  [elDom, elX, elH].forEach((el) => el.addEventListener('change', setup));
+  elFlip.addEventListener('change', () => { updateLabels(); drawAll(); });
+  window.addEventListener('resize', drawAll);
+
+  // initial
+  setup();
+})();
+</script>
+</body>
+</html>

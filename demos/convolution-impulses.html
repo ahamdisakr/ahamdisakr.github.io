@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+<meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+<title>Convolution from Impulse Responses | Ahmed Hamdi Sakr</title>
+<meta name="description" content="Interactive demo of where the convolution integral comes from: approximate the input by narrow pulses, add up the system's response to each pulse, and watch the sum approach the exact output as the pulses get narrower." />
+    <script defer src="https://cdn.jsdelivr.net/npm/feather-icons@4.29.2/dist/feather.min.js"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css" />
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+
+    <link href="/styles.css" rel="stylesheet" />
+    <link href="/demos/demo.css" rel="stylesheet" />
+    <link rel="icon" type="image/x-icon" href="/images/icon.ico" />
+    <script defer src="/app.js"></script>
+
+</head>
+
+<body data-page="teaching">
+
+    <div id="site-nav"></div>
+
+        <div class="site-container">
+        <main class="page fade-in" id="main">
+  <div class="panel panel--static">
+  <h1 class="title-lg mb-4">Convolution from Impulse Responses</h1>
+  <p>An LTI system is completely described by its impulse response <span class="m" data-tex="h(t)">h(t)</span>. To see why, cut the input <span class="m" data-tex="x(t)">x(t)</span> into narrow pulses of width <span class="m" data-tex="\Delta">&Delta;</span>. Each pulse is a scaled, shifted copy of one basic pulse, so by linearity and time invariance its output is the same scaled, shifted copy of the basic pulse response. Adding up the responses to all the pulses gives the output. As <span class="m" data-tex="\Delta\to 0">&Delta; &rarr; 0</span>, each pulse acts like an impulse of area <span class="m" data-tex="x(k\Delta)\,\Delta">x(k&Delta;)&Delta;</span>, and the sum becomes the convolution integral:</p>
+  <div class="math-block mb-4" data-display data-tex="y(t)\approx\sum_k x(k\Delta)\,h(t-k\Delta)\,\Delta\ \xrightarrow{\ \Delta\to 0\ }\ y(t)=\int_{-\infty}^{\infty}x(\tau)\,h(t-\tau)\,d\tau">y(t) &asymp; &Sigma; x(k&Delta;) h(t-k&Delta;) &Delta; &rarr; y(t) = &int; x(&tau;) h(t-&tau;) d&tau;</div>
+  <p class="mb-4"><strong>Try it:</strong> press Play to add the pulses one at a time and watch each response join the running sum. Then move <span class="m" data-tex="\Delta">&Delta;</span> to the left to make the pulses narrower: the staircase hugs <span class="m" data-tex="x(t)">x(t)</span> more closely, and the sum of the responses (blue) lands on the exact output (dashed).</p>
+
+  <div class="controls controls--sticky controls--3">
+    <div class="control">
+      <label for="xsel">Input <span class="m" data-tex="x(t)">x(t)</span></label>
+      <select id="xsel" class="sig-select">
+        <option value="triangle">Triangle</option>
+        <option value="exp">Decaying exponential</option>
+        <option value="pulse">Pulse</option>
+      </select>
+      <label for="hsel">Impulse response <span class="m" data-tex="h(t)">h(t)</span></label>
+      <select id="hsel" class="sig-select">
+        <option value="exp">Decaying exponential</option>
+        <option value="triangle">Triangle</option>
+        <option value="pulse">Pulse</option>
+      </select>
+    </div>
+    <div class="control">
+      <label for="dsel">Pulse width <span id="dval" class="m">&Delta; = 0.5</span></label>
+      <input id="dsel" type="range" min="0" max="4" step="1" value="3"/>
+    </div>
+    <div class="control">
+      <div class="control-head">
+        <label for="t0">Pulses up to <span id="t0val" class="m">t = 0.00</span></label>
+        <button class="btn btn-primary sweep-btn" id="btnPlay" type="button">&#9654;&#xFE0E; Play</button>
+      </div>
+      <input id="t0" type="range" min="0" max="8" step="0.05" value="0"/>
+    </div>
+  </div>
+
+  <div class="canvas-row">
+    <div class="card">
+      <h2><span>Input <span class="m" data-tex="x(t)">x(t)</span> and its staircase approximation</span></h2>
+      <canvas id="cx" class="short" role="img" aria-label="Input signal and its approximation by pulses, with the pulses added so far filled in"></canvas>
+      <div class="axis-label" data-tex="t\ (\mathrm{s})">t (s)</div>
+      <div class="chip-row">
+        <span class="chip"><span class="dot x"></span>Input <span class="m" data-tex="x(t)">x(t)</span></span>
+        <span class="chip"><span class="dot" style="background:#f8fafc"></span>Newest pulse</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="plot-grid group">
+    <div class="card">
+      <h2><span>Impulse response <span class="m" data-tex="h(t)">h(t)</span></span></h2>
+      <canvas id="ch" class="short" role="img" aria-label="Impulse response of the system"></canvas>
+      <div class="axis-label" data-tex="t\ (\mathrm{s})">t (s)</div>
+    </div>
+    <div class="card">
+      <h2><span>Response to the newest pulse <span class="m" data-tex="\approx x(k\Delta)\,h(t-k\Delta)\,\Delta">&asymp; x(k&Delta;) h(t-k&Delta;) &Delta;</span></span></h2>
+      <canvas id="cp" class="short" role="img" aria-label="Response of the system to the newest pulse"></canvas>
+      <div class="axis-label" data-tex="t\ (\mathrm{s})">t (s)</div>
+    </div>
+  </div>
+
+  <div class="canvas-row group">
+    <div class="card">
+      <h2><span>Output: sum of the pulse responses and the exact <span class="m" data-tex="y(t)=(x*h)(t)">y(t) = (x*h)(t)</span></span></h2>
+      <canvas id="cy" role="img" aria-label="Responses to the pulses added so far, their sum, and the exact output"></canvas>
+      <div class="axis-label" data-tex="t\ (\mathrm{s})">t (s)</div>
+      <div class="chip-row">
+        <span class="chip"><span class="dot" style="background:linear-gradient(90deg,#f87171,#facc15,#4ade80,#60a5fa,#c084fc)"></span>One response per pulse</span>
+        <span class="chip"><span class="dot y"></span>Sum so far</span>
+        <span class="chip"><span class="dot" style="background:#f8fafc"></span>Exact <span class="m" data-tex="y(t)">y(t)</span> (dashed)</span>
+      </div>
+      <div class="readout" aria-live="polite">
+        <span class="part" id="countMsg">0 pulses added</span>
+        <span class="part" id="errMsg"></span>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+        </main>
+        <footer class="site-footer fade-in">
+            <p>&copy; 2021&ndash;2026 Ahmed Hamdi Sakr. All rights reserved.</p>
+        </footer>
+        </div>
+
+
+<script>
+(function(){
+  // ---------- Config ----------
+  const TWO_PI = Math.PI * 2;
+  const T0 = -1, T1 = 8;                    // plotted time range
+  const X_TICKS = [-1, 0, 1, 2, 3, 4, 5, 6, 7, 8];
+  const DT = 0.005;                         // time grid
+  const TT = Float64Array.from({length: Math.round((T1 - T0) / DT) + 1}, (_, i) => T0 + i * DT);
+  const DELTAS = [0.05, 0.1, 0.25, 0.5, 1];   // slider left to right: narrow to wide pulses
+  const PLAY_RATE = 1;                      // seconds of t per second while playing
+  const css = getComputedStyle(document.documentElement);
+  const col = (name, fb) => css.getPropertyValue(name).trim() || fb;
+  const C_X = col('--xcolor', '#f59e0b'), C_H = col('--hcolor', '#22c55e'), C_Y = col('--ycolor', '#60a5fa');
+  const C_GRID = col('--grid', '#15223e'), C_AXIS = '#223356', C_TICK = '#94a3b8', C_BG = '#0a1326', C_NEW = '#f8fafc';
+  const hue = (k, n) => `hsl(${Math.round(330 * k / Math.max(1, n - 1))}, 75%, 62%)`;
+
+  // ---------- Signals (all start at t = 0) ----------
+  const tri = (u) => Math.max(0, 1 - Math.abs(u));          // unit-height triangle on [-1, 1]
+  const INPUTS = {
+    triangle: (t) => tri((t - 2) / 2),                     // on [0, 4], peak 1 at t = 2
+    exp:      (t) => t >= 0 ? Math.exp(-t) : 0,
+    pulse:    (t) => (t >= 0 && t < 2) ? 1 : 0,             // on [0, 2)
+  };
+  // Impulse responses, with their step responses s(t) = ∫ h, used for the exact response to a pulse
+  const SYSTEMS = {
+    exp:      {h: (t) => t >= 0 ? Math.exp(-t) : 0,
+               s: (t) => t >= 0 ? 1 - Math.exp(-t) : 0},
+    triangle: {h: (t) => tri(t - 1),                       // on [0, 2], peak 1 at t = 1
+               s: (t) => t <= 0 ? 0 : t <= 1 ? t*t/2 : t <= 2 ? 1 - (2-t)*(2-t)/2 : 1},
+    pulse:    {h: (t) => (t >= 0 && t < 1) ? 1 : 0,         // on [0, 1)
+               s: (t) => Math.min(1, Math.max(0, t))},
+  };
+
+  // DOM
+  const elX = document.getElementById('xsel'), elH = document.getElementById('hsel');
+  const elD = document.getElementById('dsel'), elT0 = document.getElementById('t0');
+  const elPlay = document.getElementById('btnPlay');
+  const ctxX = document.getElementById('cx').getContext('2d');
+  const ctxH = document.getElementById('ch').getContext('2d');
+  const ctxP = document.getElementById('cp').getContext('2d');
+  const ctxY = document.getElementById('cy').getContext('2d');
+
+  // ---------- Plot helpers (style matches the other demos) ----------
+  const MATH_FONT = '13px KaTeX_Main, "Times New Roman", Times, serif';   // canvas tick labels
+  function fitCanvas(canvas){
+    const d = window.devicePixelRatio || 1;
+    const w = canvas.clientWidth, h = canvas.clientHeight;
+    const pw = Math.round(w*d), ph = Math.round(h*d);
+    if (canvas.width !== pw || canvas.height !== ph){ canvas.width = pw; canvas.height = ph; }
+    canvas.getContext('2d').setTransform(d,0,0,d,0,0);
+    return {width: w, height: h};
+  }
+  function fmtTick(u){
+    if (Math.abs(u) < 1e-12) return "0";
+    return String(Number(u.toPrecision(3)));
+  }
+  function frame(ctx, xr, yr, xt){
+    const {width, height} = fitCanvas(ctx.canvas);
+    const m = {left: 56, right: 12, top: 10, bottom: 28};
+    const P = {x0: m.left, y0: m.top, w: width - m.left - m.right, h: height - m.top - m.bottom};
+    const [xmin, xmax] = xr, [ymin, ymax] = yr;
+    const X = (v) => P.x0 + (v - xmin) * (P.w / (xmax - xmin));
+    const Y = (v) => P.y0 + P.h - ((v - ymin) / (ymax - ymin)) * P.h;
+    const yTicks = 5;
+
+    ctx.clearRect(0, 0, width, height);
+    ctx.fillStyle = C_BG; ctx.fillRect(0, 0, width, height);
+
+    ctx.save(); ctx.beginPath(); ctx.rect(P.x0, P.y0, P.w, P.h); ctx.clip();
+    ctx.strokeStyle = C_GRID; ctx.lineWidth = 1;
+    for (let i = 0; i < yTicks; i++){ const y = Y(ymin + i*(ymax-ymin)/(yTicks-1)); ctx.beginPath(); ctx.moveTo(P.x0, y); ctx.lineTo(P.x0 + P.w, y); ctx.stroke(); }
+    for (const u of xt){ const x = X(u); ctx.beginPath(); ctx.moveTo(x, P.y0); ctx.lineTo(x, P.y0 + P.h); ctx.stroke(); }
+    ctx.restore();
+
+    ctx.fillStyle = C_TICK; ctx.font = MATH_FONT; ctx.textAlign = "right"; ctx.textBaseline = "middle";
+    for (let i = 0; i < yTicks; i++){
+      const v = ymin + i*(ymax-ymin)/(yTicks-1), y = Y(v);
+      ctx.fillText((Math.abs(v) < 5e-3 ? 0 : v).toFixed(2), P.x0 - 8, y);
+      ctx.strokeStyle = C_AXIS; ctx.beginPath(); ctx.moveTo(P.x0-4, y); ctx.lineTo(P.x0, y); ctx.stroke();
+    }
+    ctx.textAlign = "center"; ctx.textBaseline = "top";
+    for (const u of xt) ctx.fillText(fmtTick(u), X(u), P.y0 + P.h + 6);
+
+    if (ymin <= 0 && ymax >= 0){
+      ctx.strokeStyle = C_AXIS; ctx.lineWidth = 1.5;
+      ctx.beginPath(); ctx.moveTo(P.x0, Y(0)); ctx.lineTo(P.x0 + P.w, Y(0)); ctx.stroke();
+    }
+    return {ctx, P, X, Y};
+  }
+  function clipped(F, fn){
+    const {ctx, P} = F;
+    ctx.save(); ctx.beginPath(); ctx.rect(P.x0, P.y0, P.w, P.h); ctx.clip(); fn(ctx); ctx.restore();
+  }
+  function line(F, xs, ys, color, width = 2, alpha = 1, dash = null){
+    clipped(F, (ctx) => {
+      ctx.strokeStyle = color; ctx.lineWidth = width; ctx.globalAlpha = alpha; ctx.lineJoin = 'round';
+      if (dash) ctx.setLineDash(dash);
+      ctx.beginPath();
+      for (let i = 0; i < xs.length; i++){ const x = F.X(xs[i]), y = F.Y(ys[i]); if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y); }
+      ctx.stroke();
+    });
+  }
+  // One pulse of the staircase: a bar from t = a to t = b with height v
+  function bar(F, a, b, v, color, fillAlpha, strokeAlpha = 1){
+    clipped(F, (ctx) => {
+      const x0 = F.X(a), x1 = F.X(b), y0 = F.Y(0), y1 = F.Y(v);
+      ctx.globalAlpha = fillAlpha; ctx.fillStyle = color;
+      ctx.fillRect(x0, Math.min(y0, y1), x1 - x0, Math.abs(y1 - y0));
+      ctx.globalAlpha = strokeAlpha; ctx.strokeStyle = color; ctx.lineWidth = 1;
+      ctx.strokeRect(x0, Math.min(y0, y1), x1 - x0, Math.abs(y1 - y0));
+    });
+  }
+
+  // ---------- Math rendering (KaTeX; plain-text fallback is already in the markup) ----------
+  function renderTeX(el, tex, display){
+    if (!window.katex) return false;
+    try { katex.render(tex, el, {throwOnError:false, displayMode:!!display}); return true; }
+    catch(e){ return false; }
+  }
+  function setTeX(el, tex, fallback){
+    if (!el) return;
+    el.dataset.tex = tex;
+    if (!renderTeX(el, tex, false)) el.textContent = fallback;
+  }
+  window.addEventListener('load', () => {
+    document.querySelectorAll('[data-tex]').forEach(el => renderTeX(el, el.dataset.tex, el.hasAttribute('data-display')));
+    drawAll();
+  });
+  window.addEventListener('load', () => { if (document.fonts && document.fonts.load) document.fonts.load(MATH_FONT).then(drawAll); });
+
+  // ---------- State ----------
+  // Pulses: [kΔ, (k+1)Δ) with height x((k+½)Δ). The response to each one is computed exactly from the
+  // step response: x_k [s(t - kΔ) - s(t - (k+1)Δ)], so the sum is the exact response to the staircase.
+  let S = null;
+  function setup(){
+    const x = INPUTS[elX.value], sys = SYSTEMS[elH.value];
+    const D = DELTAS[parseInt(elD.value, 10)];
+    setTeX(document.getElementById('dval'), String.raw`\Delta=${D}`, `Δ = ${D}`);
+
+    const xv = TT.map(x), hv = TT.map(sys.h);
+    // exact y = x*h on the grid (midpoint rule over τ ≥ 0, where x is nonzero)
+    const i0 = Math.round(-T0 / DT);
+    const exact = new Float64Array(TT.length);
+    for (let i = 0; i < TT.length; i++){
+      let s = 0;
+      for (let j = i0; j < TT.length - 1; j++){
+        const tau = TT[j] + DT / 2;
+        if (tau > TT[i]) break;
+        s += x(tau) * sys.h(TT[i] - tau);
+      }
+      exact[i] = s * DT;
+    }
+
+    const pulses = [];
+    for (let k = 0; k * D < T1 - 1e-9; k++){
+      const a = k * D, b = (k + 1) * D, v = x((k + 0.5) * D);
+      const resp = TT.map((t) => v * (sys.s(t - a) - sys.s(t - b)));
+      pulses.push({a, b, v, resp});
+    }
+    const total = new Float64Array(TT.length);
+    for (const p of pulses) for (let i = 0; i < TT.length; i++) total[i] += p.resp[i];
+    let err = 0;
+    for (let i = 0; i < TT.length; i++) err = Math.max(err, Math.abs(total[i] - exact[i]));
+
+    let yHi = 0.5;
+    for (const v of exact) yHi = Math.max(yHi, v);
+    for (const v of total) yHi = Math.max(yHi, v);
+    let pHi = 0;
+    for (const p of pulses) for (const v of p.resp) pHi = Math.max(pHi, v);
+
+    S = {D, xv, hv, exact, pulses, err, yHi: 1.15 * yHi, pHi: 1.15 * Math.max(pHi, 1e-6)};
+    drawAll();
+  }
+
+  // ---------- Main draw ----------
+  function drawAll(){
+    if (!S) return;
+    const t0 = parseFloat(elT0.value);
+    setTeX(document.getElementById('t0val'), String.raw`t=${t0.toFixed(2)}`, `t = ${t0.toFixed(2)}`);
+    const n = S.pulses.filter((p) => p.a < t0 - 1e-9).length;     // pulses that have started by t0
+    const cur = n > 0 ? S.pulses[n - 1] : null;
+
+    // 1) input and its staircase: added pulses filled, the rest outlined, the newest one highlighted
+    let F = frame(ctxX, [T0, T1], [-0.15, 1.2], X_TICKS);
+    S.pulses.forEach((p, k) => {
+      if (k < n - 1) bar(F, p.a, p.b, p.v, hue(k, S.pulses.length), 0.45, 0.9);
+      else if (k >= n) bar(F, p.a, p.b, p.v, '#64748b', 0, 0.5);
+    });
+    if (cur) bar(F, cur.a, cur.b, cur.v, C_NEW, 0.8, 1);
+    line(F, TT, S.xv, C_X, 2);
+
+    // 2) impulse response, and the response to the newest pulse
+    F = frame(ctxH, [T0, T1], [-0.15, 1.2], X_TICKS);
+    line(F, TT, S.hv, C_H, 2);
+    F = frame(ctxP, [T0, T1], [-0.15 * S.pHi, S.pHi], X_TICKS);
+    if (cur) line(F, TT, cur.resp, C_NEW, 2);
+
+    // 3) output: each added response (thin, coloured), their running sum (blue), exact y (dashed)
+    F = frame(ctxY, [T0, T1], [-0.1 * S.yHi, S.yHi], X_TICKS);
+    const sum = new Float64Array(TT.length);
+    for (let k = 0; k < n; k++){
+      const r = S.pulses[k].resp;
+      for (let i = 0; i < TT.length; i++) sum[i] += r[i];
+      line(F, TT, r, k === n - 1 ? C_NEW : hue(k, S.pulses.length), k === n - 1 ? 1.8 : 1.1, k === n - 1 ? 1 : 0.85);
+    }
+    line(F, TT, S.exact, '#f8fafc', 1.8, 0.9, [6, 5]);
+    line(F, TT, sum, C_Y, 2.5);
+
+    document.getElementById('countMsg').innerHTML = `<b>${n}</b> of ${S.pulses.length} pulses added`;
+    setTeX(document.getElementById('errMsg'),
+      String.raw`\text{with all pulses: }\max_t\,|\hat y(t)-y(t)|=${S.err.toFixed(3)}`,
+      `with all pulses: max error = ${S.err.toFixed(3)}`);
+  }
+
+  // ---------- Play animation ----------
+  let raf = null, lastTs = 0, playT = 0;
+  function stopPlay(){
+    if (raf) cancelAnimationFrame(raf);
+    raf = null; elPlay.innerHTML = '&#9654;&#xFE0E; Play';
+  }
+  function step(ts){
+    const d = lastTs ? Math.min(0.1, (ts - lastTs) / 1000) : 0;
+    lastTs = ts;
+    playT = Math.min(T1, playT + PLAY_RATE * d);
+    elT0.value = playT;
+    drawAll();
+    if (playT >= T1) { stopPlay(); return; }
+    raf = requestAnimationFrame(step);
+  }
+  elPlay.addEventListener('click', () => {
+    if (raf) { stopPlay(); return; }
+    playT = parseFloat(elT0.value);
+    if (playT >= T1 - 1e-9) playT = 0;
+    lastTs = 0; elPlay.innerHTML = '&#10074;&#10074;&#xFE0E; Pause';
+    raf = requestAnimationFrame(step);
+  });
+
+  // listeners
+  elT0.addEventListener('input', () => { stopPlay(); drawAll(); });
+  [elX, elH].forEach((el) => el.addEventListener('change', setup));
+  elD.addEventListener('input', setup);
+  window.addEventListener('resize', drawAll);
+
+  // initial
+  setup();
+})();
+</script>
+</body>
+</html>

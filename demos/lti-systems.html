@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+<meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+<title>Linearity and Time Invariance | Ahmed Hamdi Sakr</title>
+<meta name="description" content="Interactive demo of linearity and time invariance: scale, shift and add two inputs, send them through an LTI, a nonlinear or a time-varying system, and check whether the outputs follow the LTI prediction." />
+    <script defer src="https://cdn.jsdelivr.net/npm/feather-icons@4.29.2/dist/feather.min.js"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css" />
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+
+    <link href="/styles.css" rel="stylesheet" />
+    <link href="/demos/demo.css" rel="stylesheet" />
+    <link rel="icon" type="image/x-icon" href="/images/icon.ico" />
+    <script defer src="/app.js"></script>
+
+</head>
+
+<body data-page="teaching">
+
+    <div id="site-nav"></div>
+
+        <div class="site-container">
+        <main class="page fade-in" id="main">
+  <div class="panel panel--static">
+  <h1 class="title-lg mb-4">Linearity and Time Invariance</h1>
+  <p>A system is <strong>linear</strong> if scaling the input scales the output and the response to a sum of inputs is the sum of the responses. It is <strong>time-invariant</strong> if delaying the input only delays the output. For an LTI system, knowing the responses <span class="m" data-tex="\hat y_1(t)">&ycirc;<sub>1</sub>(t)</span> and <span class="m" data-tex="\hat y_2(t)">&ycirc;<sub>2</sub>(t)</span> to two basic inputs <span class="m" data-tex="\hat x_1(t)">x&#770;<sub>1</sub>(t)</span> (a triangle) and <span class="m" data-tex="\hat x_2(t)">x&#770;<sub>2</sub>(t)</span> (a pulse) is enough to predict the output for any scaled, shifted sum of them:</p>
+  <div class="math-block mb-4" data-display data-tex="a_1\hat x_1(t-\tau_1)+a_2\hat x_2(t-\tau_2)\ \longrightarrow\ a_1\hat y_1(t-\tau_1)+a_2\hat y_2(t-\tau_2)">a<sub>1</sub>x&#770;<sub>1</sub>(t-&tau;<sub>1</sub>) + a<sub>2</sub>x&#770;<sub>2</sub>(t-&tau;<sub>2</sub>) &rarr; a<sub>1</sub>&ycirc;<sub>1</sub>(t-&tau;<sub>1</sub>) + a<sub>2</sub>&ycirc;<sub>2</sub>(t-&tau;<sub>2</sub>)</div>
+  <p class="mb-4"><strong>Try it:</strong> each output plot shows the actual output (solid) and the LTI prediction (dashed). With the RC filter they always agree. With the squarer, change <span class="m" data-tex="a_1">a<sub>1</sub></span>: the output grows like <span class="m" data-tex="a_1^2">a<sub>1</sub><sup>2</sup></span>, and where the inputs overlap the output of the sum is not the sum of the outputs, so the squarer is not linear. Shifting still works, though (keep <span class="m" data-tex="a_1=1">a<sub>1</sub> = 1</span>). With <span class="m" data-tex="y(t)=t\,x(t)">y(t) = t x(t)</span>, scaling and adding work but shifting does not: that system is linear but time-varying.</p>
+
+  <div class="controls controls--sticky controls--3">
+    <div class="control">
+      <label for="sys">System</label>
+      <select id="sys" class="sig-select">
+        <option value="rc">RC low-pass filter (LTI)</option>
+        <option value="square">Squarer (nonlinear)</option>
+        <option value="tgain">Time-varying gain</option>
+      </select>
+      <div class="math-block live" id="sysMath" aria-live="polite" style="margin-top:8px"></div>
+    </div>
+    <div class="control">
+      <label for="a1">Input 1 (triangle): <span id="a1val" class="m">a&#8321; = 1.0</span></label>
+      <input id="a1" type="range" min="0" max="2.5" step="0.1" value="1"/>
+      <label for="tau1"><span id="tau1val" class="m">&tau;&#8321; = 0.0</span></label>
+      <input id="tau1" type="range" min="-5" max="5" step="0.1" value="0"/>
+    </div>
+    <div class="control">
+      <label for="a2">Input 2 (pulse): <span id="a2val" class="m">a&#8322; = 1.0</span></label>
+      <input id="a2" type="range" min="0" max="2.5" step="0.1" value="1"/>
+      <label for="tau2"><span id="tau2val" class="m">&tau;&#8322; = 2.0</span></label>
+      <input id="tau2" type="range" min="-5" max="5" step="0.1" value="2"/>
+    </div>
+  </div>
+
+  <div class="plot-grid">
+    <div class="card">
+      <h2><span>Input 1: <span class="m" data-tex="x_1(t)=a_1\hat x_1(t-\tau_1)">x<sub>1</sub>(t) = a<sub>1</sub>x&#770;<sub>1</sub>(t-&tau;<sub>1</sub>)</span></span></h2>
+      <canvas id="cx1" class="short" role="img" aria-label="Input 1: scaled, shifted triangle"></canvas>
+      <div class="axis-label" data-tex="t\ (\mathrm{s})">t (s)</div>
+    </div>
+    <div class="card">
+      <h2><span>Output 1: <span class="m" data-tex="y_1(t)">y<sub>1</sub>(t)</span> <span class="probe-note">(dashed: LTI prediction <span class="m" data-tex="a_1\hat y_1(t-\tau_1)">a<sub>1</sub>&ycirc;<sub>1</sub>(t-&tau;<sub>1</sub>)</span>)</span></span></h2>
+      <canvas id="cy1" class="short" role="img" aria-label="Output 1 and its LTI prediction"></canvas>
+      <div class="axis-label" data-tex="t\ (\mathrm{s})">t (s)</div>
+      <div class="readout" aria-live="polite"><span class="part" id="chk1"></span></div>
+    </div>
+    <div class="card">
+      <h2><span>Input 2: <span class="m" data-tex="x_2(t)=a_2\hat x_2(t-\tau_2)">x<sub>2</sub>(t) = a<sub>2</sub>x&#770;<sub>2</sub>(t-&tau;<sub>2</sub>)</span></span></h2>
+      <canvas id="cx2" class="short" role="img" aria-label="Input 2: scaled, shifted pulse"></canvas>
+      <div class="axis-label" data-tex="t\ (\mathrm{s})">t (s)</div>
+    </div>
+    <div class="card">
+      <h2><span>Output 2: <span class="m" data-tex="y_2(t)">y<sub>2</sub>(t)</span> <span class="probe-note">(dashed: LTI prediction <span class="m" data-tex="a_2\hat y_2(t-\tau_2)">a<sub>2</sub>&ycirc;<sub>2</sub>(t-&tau;<sub>2</sub>)</span>)</span></span></h2>
+      <canvas id="cy2" class="short" role="img" aria-label="Output 2 and its LTI prediction"></canvas>
+      <div class="axis-label" data-tex="t\ (\mathrm{s})">t (s)</div>
+      <div class="readout" aria-live="polite"><span class="part" id="chk2"></span></div>
+    </div>
+    <div class="card">
+      <h2><span>Input 3: <span class="m" data-tex="x_3(t)=x_1(t)+x_2(t)">x<sub>3</sub>(t) = x<sub>1</sub>(t) + x<sub>2</sub>(t)</span></span></h2>
+      <canvas id="cx3" class="short" role="img" aria-label="Input 3: the sum of inputs 1 and 2"></canvas>
+      <div class="axis-label" data-tex="t\ (\mathrm{s})">t (s)</div>
+    </div>
+    <div class="card">
+      <h2><span>Output 3: <span class="m" data-tex="y_3(t)">y<sub>3</sub>(t)</span> <span class="probe-note">(dashed: sum of outputs <span class="m" data-tex="y_1(t)+y_2(t)">y<sub>1</sub>(t) + y<sub>2</sub>(t)</span>)</span></span></h2>
+      <canvas id="cy3" class="short" role="img" aria-label="Output 3 and the sum of outputs 1 and 2"></canvas>
+      <div class="axis-label" data-tex="t\ (\mathrm{s})">t (s)</div>
+      <div class="readout" aria-live="polite"><span class="part" id="chk3"></span></div>
+    </div>
+  </div>
+
+</div>
+
+        </main>
+        <footer class="site-footer fade-in">
+            <p>&copy; 2021&ndash;2026 Ahmed Hamdi Sakr. All rights reserved.</p>
+        </footer>
+        </div>
+
+
+<script>
+(function(){
+  // ---------- Config ----------
+  const W0 = -8, W1 = 8;                     // plotted time range
+  const PAD = 5;                             // largest |τ|: signals are computed on [W0-PAD, W1+PAD]
+  const X_TICKS = [-8, -6, -4, -2, 0, 2, 4, 6, 8];
+  const DT = 0.01;
+  const TE = Float64Array.from({length: Math.round((W1 - W0 + 2*PAD) / DT) + 1}, (_, i) => W0 - PAD + i * DT);
+  const IW0 = Math.round(PAD / DT), IW1 = IW0 + Math.round((W1 - W0) / DT);   // plotted window inside TE
+  const TW = TE.subarray(IW0, IW1 + 1);
+  const css = getComputedStyle(document.documentElement);
+  const col = (name, fb) => css.getPropertyValue(name).trim() || fb;
+  const C_X = col('--xcolor', '#f59e0b'), C_Y = col('--ycolor', '#60a5fa'), C_PRED = col('--scolor', '#c084fc');
+  const C_OK = col('--poscolor', '#22c55e'), C_BAD = col('--negcolor', '#ef4444');
+  const C_GRID = col('--grid', '#15223e'), C_AXIS = '#223356', C_TICK = '#94a3b8', C_BG = '#0a1326';
+
+  // ---------- Basic inputs ----------
+  const xb1 = (t) => Math.max(0, 1 - Math.abs(t - 2) / 2);      // triangle on [0, 4], peak 1 at t = 2
+  const xb2 = (t) => (t >= 0 && t < 2) ? 1 : 0;                 // pulse on [0, 2)
+  const XB1 = TE.map((t) => xb1(Math.round(t / DT) * DT)), XB2 = TE.map((t) => xb2(Math.round(t / DT) * DT));
+
+  // ---------- Systems: each maps an input sampled on TE to an output sampled on TE ----------
+  // Fixed scale for each plot: it fits the largest value that plot can reach with the sliders
+  // (a1, a2 up to 2.5 and shifts up to ±5), so it never changes while the sliders move.
+  const sc = (yr, yt) => ({yr, yt});
+  const S_25 = sc([-0.25, 2.75], [0, 0.5, 1, 1.5, 2, 2.5]);
+  const IN_SCALES = [S_25, S_25, sc([-0.5, 5.5], [0, 1, 2, 3, 4, 5])];        // x1, x2, x3 = x1 + x2
+  const SYSTEMS = {
+    rc: {
+      scales: [S_25, S_25, sc([-0.4, 4.4], [0, 1, 2, 3, 4])],                // the filter never exceeds its input
+      tex: String.raw`y=h*x,\quad h(t)=e^{-t}u(t)`,
+      plain: 'y = h * x, h(t) = e^(−t) u(t)',
+      run: (x) => {                         // exact for an input held constant over each step
+        const y = new Float64Array(x.length), g = Math.exp(-DT);
+        for (let i = 1; i < x.length; i++) y[i] = g * y[i-1] + (1 - g) * x[i];
+        return y;
+      }
+    },
+    square: {
+      scales: [sc([-0.65, 7.15], [0, 2, 4, 6]), sc([-0.65, 7.15], [0, 2, 4, 6]),   // up to 2.5² = 6.25
+               sc([-2.5, 27.5], [0, 5, 10, 15, 20, 25])],                           // up to 5² = 25
+      tex: String.raw`y(t)=x^2(t)`, plain: 'y(t) = x²(t)',
+      run: (x) => x.map((v) => v * v)
+    },
+    tgain: {
+      scales: [sc([-10, 20], [-10, -5, 0, 5, 10, 15, 20]),       // t·x1(t): -7.5 to 17.5
+               sc([-15, 20], [-15, -10, -5, 0, 5, 10, 15, 20]),  // t·x2(t): -12.5 to 17.5
+               sc([-20, 40], [-20, -10, 0, 10, 20, 30, 40])],    // t·x3(t): -15 to 35
+      tex: String.raw`y(t)=t\,x(t)`, plain: 'y(t) = t x(t)',
+      run: (x) => x.map((v, i) => TE[i] * v)
+    },
+  };
+
+  // DOM
+  const el = (id) => document.getElementById(id);
+  const elSys = el('sys'), elA1 = el('a1'), elA2 = el('a2'), elT1 = el('tau1'), elT2 = el('tau2');
+  const ctx = (id) => el(id).getContext('2d');
+  const ctxX1 = ctx('cx1'), ctxX2 = ctx('cx2'), ctxX3 = ctx('cx3');
+  const ctxY1 = ctx('cy1'), ctxY2 = ctx('cy2'), ctxY3 = ctx('cy3');
+
+  // ---------- Plot helpers (style matches the other demos) ----------
+  const MATH_FONT = '13px KaTeX_Main, "Times New Roman", Times, serif';   // canvas tick labels
+  function fitCanvas(canvas){
+    const d = window.devicePixelRatio || 1;
+    const w = canvas.clientWidth, h = canvas.clientHeight;
+    const pw = Math.round(w*d), ph = Math.round(h*d);
+    if (canvas.width !== pw || canvas.height !== ph){ canvas.width = pw; canvas.height = ph; }
+    canvas.getContext('2d').setTransform(d,0,0,d,0,0);
+    return {width: w, height: h};
+  }
+  function fmtTick(u){
+    if (Math.abs(u) < 1e-12) return "0";
+    return String(Number(u.toPrecision(3)));
+  }
+  // yt: the y tick values (fixed per plot, so the scale does not jump while the sliders move)
+  function frame(ctx, xr, yr, xt, yt){
+    const {width, height} = fitCanvas(ctx.canvas);
+    const m = {left: 56, right: 12, top: 10, bottom: 28};
+    const P = {x0: m.left, y0: m.top, w: width - m.left - m.right, h: height - m.top - m.bottom};
+    const [xmin, xmax] = xr, [ymin, ymax] = yr;
+    const X = (v) => P.x0 + (v - xmin) * (P.w / (xmax - xmin));
+    const Y = (v) => P.y0 + P.h - ((v - ymin) / (ymax - ymin)) * P.h;
+
+    ctx.clearRect(0, 0, width, height);
+    ctx.fillStyle = C_BG; ctx.fillRect(0, 0, width, height);
+
+    ctx.save(); ctx.beginPath(); ctx.rect(P.x0, P.y0, P.w, P.h); ctx.clip();
+    ctx.strokeStyle = C_GRID; ctx.lineWidth = 1;
+    for (const v of yt){ const y = Y(v); ctx.beginPath(); ctx.moveTo(P.x0, y); ctx.lineTo(P.x0 + P.w, y); ctx.stroke(); }
+    for (const u of xt){ const x = X(u); ctx.beginPath(); ctx.moveTo(x, P.y0); ctx.lineTo(x, P.y0 + P.h); ctx.stroke(); }
+    ctx.restore();
+
+    ctx.fillStyle = C_TICK; ctx.font = MATH_FONT; ctx.textAlign = "right"; ctx.textBaseline = "middle";
+    for (const v of yt){
+      const y = Y(v);
+      ctx.fillText(fmtTick(v), P.x0 - 8, y);
+      ctx.strokeStyle = C_AXIS; ctx.beginPath(); ctx.moveTo(P.x0-4, y); ctx.lineTo(P.x0, y); ctx.stroke();
+    }
+    ctx.textAlign = "center"; ctx.textBaseline = "top";
+    for (const u of xt) ctx.fillText(fmtTick(u), X(u), P.y0 + P.h + 6);
+
+    if (ymin <= 0 && ymax >= 0){
+      ctx.strokeStyle = C_AXIS; ctx.lineWidth = 1.5;
+      ctx.beginPath(); ctx.moveTo(P.x0, Y(0)); ctx.lineTo(P.x0 + P.w, Y(0)); ctx.stroke();
+    }
+    return {ctx, P, X, Y};
+  }
+  function line(F, xs, ys, color, width = 2, alpha = 1, dash = null){
+    const {ctx, P} = F;
+    ctx.save(); ctx.beginPath(); ctx.rect(P.x0, P.y0, P.w, P.h); ctx.clip();
+    ctx.strokeStyle = color; ctx.lineWidth = width; ctx.globalAlpha = alpha; ctx.lineJoin = 'round';
+    if (dash) ctx.setLineDash(dash);
+    ctx.beginPath();
+    for (let i = 0; i < xs.length; i++){ const x = F.X(xs[i]), y = F.Y(ys[i]); if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y); }
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  // ---------- Math rendering (KaTeX; plain-text fallback is already in the markup) ----------
+  function renderTeX(el, tex, display){
+    if (!window.katex) return false;
+    try { katex.render(tex, el, {throwOnError:false, displayMode:!!display}); return true; }
+    catch(e){ return false; }
+  }
+  function setTeX(el, tex, fallback){
+    if (!el) return;
+    el.dataset.tex = tex;
+    if (!renderTeX(el, tex, false)) el.textContent = fallback;
+  }
+  window.addEventListener('load', () => {
+    document.querySelectorAll('[data-tex]').forEach(el => renderTeX(el, el.dataset.tex, el.hasAttribute('data-display')));
+    drawAll();
+  });
+  window.addEventListener('load', () => { if (document.fonts && document.fonts.load) document.fonts.load(MATH_FONT).then(drawAll); });
+
+  // ---------- Main draw ----------
+  const shiftBy = (arr, n) => arr.map((_, i) => (i - n >= 0 && i - n < arr.length) ? arr[i - n] : 0);   // arr(t - n·DT)
+  function verdict(elId, diff, scale, what){
+    const ok = diff <= 1e-3 * Math.max(1, scale);
+    const node = el(elId);
+    node.style.color = ok ? C_OK : C_BAD;
+    node.textContent = ok ? `✓ ${what}` : `✗ ${what.replace('matches', 'does not match')} (largest gap ${diff.toFixed(3)})`;
+  }
+
+  function drawAll(){
+    const sys = SYSTEMS[elSys.value];
+    const a1 = parseFloat(elA1.value), a2 = parseFloat(elA2.value);
+    const t1 = parseFloat(elT1.value), t2 = parseFloat(elT2.value);
+    setTeX(el('a1val'), `a_1=${a1.toFixed(1)}`, `a₁ = ${a1.toFixed(1)}`);
+    setTeX(el('a2val'), `a_2=${a2.toFixed(1)}`, `a₂ = ${a2.toFixed(1)}`);
+    setTeX(el('tau1val'), String.raw`\tau_1=${t1.toFixed(1)}`, `τ₁ = ${t1.toFixed(1)}`);
+    setTeX(el('tau2val'), String.raw`\tau_2=${t2.toFixed(1)}`, `τ₂ = ${t2.toFixed(1)}`);
+    const sm = el('sysMath');
+    if (!renderTeX(sm, sys.tex, false)) sm.textContent = sys.plain;
+
+    // inputs and actual outputs (shifts are whole numbers of samples, so the comparisons are exact)
+    const n1 = Math.round(t1 / DT), n2 = Math.round(t2 / DT);
+    const x1 = shiftBy(XB1, n1).map((v) => a1 * v), x2 = shiftBy(XB2, n2).map((v) => a2 * v);
+    const x3 = x1.map((v, i) => v + x2[i]);
+    const y1 = sys.run(x1), y2 = sys.run(x2), y3 = sys.run(x3);
+    // LTI predictions from the responses to the basic (unscaled, unshifted) inputs
+    const yb1 = sys.run(XB1), yb2 = sys.run(XB2);
+    const p1 = shiftBy(yb1, n1).map((v) => a1 * v);
+    const p2 = shiftBy(yb2, n2).map((v) => a2 * v);
+    const p3 = y1.map((v, i) => v + y2[i]);
+
+    const win = (a) => a.subarray(IW0, IW1 + 1);
+    const maxDiff = (a, b) => { let d = 0; for (let i = IW0; i <= IW1; i++) d = Math.max(d, Math.abs(a[i] - b[i])); return d; };
+
+    // fixed scales: one per input plot, and one per output plot for the chosen system
+    const [XS1, XS2, XS3] = IN_SCALES, [YS1, YS2, YS3] = sys.scales;
+    let F = frame(ctxX1, [W0, W1], XS1.yr, X_TICKS, XS1.yt); line(F, TW, win(x1), C_X, 2);
+    F = frame(ctxX2, [W0, W1], XS2.yr, X_TICKS, XS2.yt); line(F, TW, win(x2), C_X, 2);
+    F = frame(ctxX3, [W0, W1], XS3.yr, X_TICKS, XS3.yt);
+    line(F, TW, win(x1), C_X, 1.2, 0.45, [4, 4]); line(F, TW, win(x2), C_X, 1.2, 0.45, [4, 4]);
+    line(F, TW, win(x3), C_X, 2);
+
+    F = frame(ctxY1, [W0, W1], YS1.yr, X_TICKS, YS1.yt); line(F, TW, win(y1), C_Y, 2.5); line(F, TW, win(p1), C_PRED, 2, 1, [7, 5]);
+    F = frame(ctxY2, [W0, W1], YS2.yr, X_TICKS, YS2.yt); line(F, TW, win(y2), C_Y, 2.5); line(F, TW, win(p2), C_PRED, 2, 1, [7, 5]);
+    F = frame(ctxY3, [W0, W1], YS3.yr, X_TICKS, YS3.yt); line(F, TW, win(y3), C_Y, 2.5); line(F, TW, win(p3), C_PRED, 2, 1, [7, 5]);
+
+    let lo = 0, hi = 0;
+    for (const a of [y1, y2, y3, p1, p2, p3]) for (let i = IW0; i <= IW1; i++){ lo = Math.min(lo, a[i]); hi = Math.max(hi, a[i]); }
+    const scale = hi - lo;
+    verdict('chk1', maxDiff(y1, p1), scale, 'Output matches the scaled, shifted basic response');
+    verdict('chk2', maxDiff(y2, p2), scale, 'Output matches the scaled, shifted basic response');
+    verdict('chk3', maxDiff(y3, p3), scale, 'Output of the sum matches the sum of the outputs');
+  }
+
+  // listeners
+  [elA1, elA2, elT1, elT2].forEach((e) => e.addEventListener('input', drawAll));
+  elSys.addEventListener('change', drawAll);
+  window.addEventListener('resize', drawAll);
+
+  // initial
+  drawAll();
+})();
+</script>
+</body>
+</html>
