@@ -30,8 +30,8 @@
 .control > input[type="range"] + .control-head { margin-top: 10px; }
 label { font-weight: 600; display: block; margin-bottom: 6px; color: #cbd5e1; }
 select, input[type="number"], input[type="range"] { width: 100%; padding: 8px 10px; border-radius: 8px; background: #cbd5e1; color: var(--fg); border: 1px solid #1f2a44; }
-/* The compact select the page has always had: padding is set on number/range inputs only */
-select { padding: 0; color: inherit; }
+/* Every drop-down menu: compact height, with the text kept off the left edge */
+select { height: 28px; padding: 0 8px; color: inherit; }
 input[type="range"] { padding: 0; height: 28px; }
 .small{font-size:12px;color:#9fb1d1}
 .canvas-row { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; }
@@ -67,7 +67,7 @@ canvas.short { height: 200px; }
 .sweep-btn { flex: none; padding: .3rem .8rem; font-weight: 600; font-size: 14px; border: 0; cursor: pointer; }
 .control-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 6px; }
 .control-head label { margin-bottom: 0; }
-.sig-select { height: 28px; padding: 0 6px; }
+.sig-select { height: 28px; padding: 0 8px; }
 @media (min-width: 768px) {
   .controls--3, .plot-grid--3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   /* titles of different lengths: the title takes up the spare height, so the three plots line up */

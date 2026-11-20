@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+<meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <script src="/demos/demo.js"></script>
+<title>Region of Convergence | Ahmed Hamdi Sakr</title>
+<meta name="description" content="Interactive demo of the region of convergence: one Laplace or z-transform, three possible ROCs, and the right-sided, two-sided or left-sided signal that goes with each, with causality and stability." />
+    <script defer src="https://cdn.jsdelivr.net/npm/feather-icons@4.29.2/dist/feather.min.js"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css" />
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+
+    <link href="/styles.css" rel="stylesheet" />
+    <link href="/demos/demo.css" rel="stylesheet" />
+    <link rel="icon" type="image/x-icon" href="/images/icon.ico" />
+    <script defer src="/app.js"></script>
+
+</head>
+
+<body data-page="teaching">
+
+    <div id="site-nav"></div>
+
+        <div class="site-container">
+        <main class="page fade-in" id="main">
+  <div class="panel panel--static">
+  <h1 class="title-lg mb-4">Region of Convergence</h1>
+  <p>A Laplace or z-transform is not complete without its <strong>region of convergence</strong> (ROC): the values of <span class="m" data-tex="s">s</span> or <span class="m" data-tex="z">z</span> where the sum or integral converges. The ROC never contains a pole, so with two poles there are three choices, and the same formula belongs to three different signals. Each pole contributes a right-sided term if the ROC lies outside it (to its right, or outside its circle) and a left-sided term if the ROC lies inside it. The system is <strong>causal</strong> when the ROC lies outside every pole, and <strong>stable</strong> when the ROC contains the <span class="m" data-tex="j\omega">j&omega;</span> axis, or the unit circle in discrete time.</p>
+  <div class="math-block mb-4" data-display id="formula"></div>
+  <p class="mb-4"><strong>Try it:</strong> with the poles at <span class="m" data-tex="-1">&minus;1</span> and <span class="m" data-tex="-2">&minus;2</span>, choose the ROC to the right of both: <span class="m" data-tex="x(t)">x(t)</span> is right-sided and decays, so the system is causal and stable. Choose the other two ROCs: the same formula now gives a two-sided and then a left-sided signal, which grow as <span class="m" data-tex="t\to-\infty">t &rarr; &minus;&infin;</span>. Now move one pole to <span class="m" data-tex="+1">+1</span>: the right-sided choice grows without bound, and the only stable choice is the strip between the poles, which contains the <span class="m" data-tex="j\omega">j&omega;</span> axis but gives a two-sided, non-causal signal. Then switch to the z-plane, where the unit circle plays the role of the <span class="m" data-tex="j\omega">j&omega;</span> axis. Finally, choose the complex pair and drag it: both poles share a real part (or a radius), so only two ROCs remain, and the signal becomes an oscillation that decays or grows.</p>
+  <div class="predict">
+    <h2 class="predict-title">Predict, then check</h2>
+    <details><summary>Can a system with a pole at <span class="m" data-tex="s=2">s = 2</span> be both causal and stable?</summary><p>No. Causal means the ROC lies to the right of every pole, so it is <span class="m" data-tex="\mathrm{Re}\,s&gt;2">Re s &gt; 2</span> or further right, which leaves out the <span class="m" data-tex="j\omega">j&omega;</span> axis. It can be stable (with an ROC that includes the axis) only if it gives up causality.</p></details>
+    <details><summary>In the z-plane, poles at <span class="m" data-tex="0.5">0.5</span> and <span class="m" data-tex="-0.5">&minus;0.5</span>. How many ROCs are there?</summary><p>Two. Both poles lie on the circle <span class="m" data-tex="|z|=0.5">|z| = 0.5</span>, so there is no ring between them: the ROC is either <span class="m" data-tex="|z|&gt;0.5">|z| &gt; 0.5</span> (right-sided, and stable since it contains the unit circle) or <span class="m" data-tex="|z|&lt;0.5">|z| &lt; 0.5</span> (left-sided).</p></details>
+  </div>
+
+  <div class="controls controls--sticky controls--3">
+    <div class="control">
+      <label for="dom">Domain</label>
+      <select id="dom" class="sig-select">
+        <option value="s">Laplace (s-plane)</option>
+        <option value="z">z-transform (z-plane)</option>
+      </select>
+      <label for="roc">Region of convergence</label>
+      <select id="roc" class="sig-select">
+        <option value="right">Outside both poles</option>
+        <option value="mid">Between the poles</option>
+        <option value="left">Inside both poles</option>
+      </select>
+    </div>
+    <div class="control">
+      <label for="ptype">Poles <span class="probe-note">(or drag them on the plot)</span></label>
+      <select id="ptype" class="sig-select">
+        <option value="real">Two real poles</option>
+        <option value="pair">A complex-conjugate pair</option>
+      </select>
+      <label for="p1" style="margin-top:10px"><span id="p1val" class="m">p&#8321; = &minus;1</span></label>
+      <input id="p1" type="range" min="-3" max="3" step="0.1" value="-1"/>
+      <label for="p2" style="margin-top:10px"><span id="p2val" class="m">p&#8322; = &minus;2</span></label>
+      <input id="p2" type="range" min="-3" max="3" step="0.1" value="-2"/>
+    </div>
+    <div class="control">
+      <label>What the ROC says</label>
+      <div class="readout" aria-live="polite" style="padding-top:0">
+        <span class="part" id="rSide"></span>
+        <span class="part" id="rCausal"></span>
+        <span class="part" id="rStable"></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="plot-grid">
+    <div class="card">
+      <h2 id="titlePlane"><span>Pole plot and ROC <span class="probe-note">(shaded: the ROC; drag the poles)</span></span></h2>
+      <canvas id="cpl" role="img" aria-label="The poles, which can be dragged, and the shaded region of convergence" style="touch-action:none;cursor:grab"></canvas>
+      <div class="axis-label" id="axPl" data-tex="\mathrm{Re}\,s">Re s</div>
+    </div>
+    <div class="card">
+      <h2 id="titleSig"><span>Signal</span></h2>
+      <canvas id="csig" role="img" aria-label="The signal that goes with the chosen region of convergence"></canvas>
+      <div class="axis-label" id="axSig" data-tex="t\ (\mathrm{s})">t (s)</div>
+      <div class="math-block live" id="liveMath" aria-live="polite"></div>
+    </div>
+  </div>
+
+</div>
+
+        </main>
+        <footer class="site-footer fade-in">
+            <p>&copy; 2021&ndash;2026 Ahmed Hamdi Sakr. All rights reserved.</p>
+        </footer>
+        </div>
+
+
+<script>
+(function(){
+  const {MATH_FONT, fitCanvas, fmtTick, niceTicks, renderTeX, setTeX} = window.Demo;   // shared helpers (demos/demo.js)
+  // ---------- Config ----------
+  const TWO_PI = Math.PI * 2;
+  const DOM = {
+    s: {box: [-4, 4, -3, 3], tr: [-5, 5], yr: [-3, 3]},
+    z: {box: [-2.2, 2.2, -2.2, 2.2], tr: [-15, 15], yr: [-3, 3]},
+  };
+  // what the two sliders mean: two real poles, or one complex pair (s: σ ± jω; z: r e^{±jθ}, θ in degrees)
+  const SLIDERS = {
+    'real|s': [{min: -3, max: 3, step: 0.1, def: -1}, {min: -3, max: 3, step: 0.1, def: -2}],
+    'real|z': [{min: -1.8, max: 1.8, step: 0.05, def: 0.5}, {min: -1.8, max: 1.8, step: 0.05, def: -0.8}],
+    'pair|s': [{min: -3, max: 3, step: 0.1, def: -0.5}, {min: 0.2, max: 2.8, step: 0.1, def: 2}],
+    'pair|z': [{min: 0.05, max: 1.8, step: 0.05, def: 0.8}, {min: 5, max: 175, step: 1, def: 45}],
+  };
+  const css = getComputedStyle(document.documentElement);
+  const col = (name, fb) => css.getPropertyValue(name).trim() || fb;
+  const C_POLE = col('--xcolor', '#f59e0b'), C_Y = col('--ycolor', '#60a5fa'), C_ROC = 'rgba(96, 165, 250, 0.20)';
+  const C_GRID = col('--grid', '#15223e'), C_AXIS = '#223356', C_TICK = '#94a3b8', C_BG = '#0a1326', C_REF = '#e2e8f0';
+  const C_OK = col('--poscolor', '#2dd4bf'), C_BAD = col('--negcolor', '#fb923c');
+
+  // DOM
+  const el = (id) => document.getElementById(id);
+  const elDom = el('dom'), elRoc = el('roc'), elType = el('ptype'), elP1 = el('p1'), elP2 = el('p2');
+  const ctxPl = el('cpl').getContext('2d'), ctxSig = el('csig').getContext('2d');
+
+  // ---------- Plot helpers (style matches the other demos) ----------
+  function frame(ctx, xr, yr, opts = {}){
+    const {width, height} = fitCanvas(ctx.canvas);
+    const m = {left: 56, right: 12, top: 10, bottom: 28};
+    const P = {x0: m.left, y0: m.top, w: width - m.left - m.right, h: height - m.top - m.bottom};
+    let [xmin, xmax] = xr, [ymin, ymax] = yr;
+    if (opts.equal){                                  // the same scale on both axes, so circles stay round
+      const s = Math.min(P.w / (xmax - xmin), P.h / (ymax - ymin)), cx = (xmin + xmax) / 2, cy = (ymin + ymax) / 2;
+      xmin = cx - P.w / s / 2; xmax = cx + P.w / s / 2; ymin = cy - P.h / s / 2; ymax = cy + P.h / s / 2;
+    }
+    const X = (v) => P.x0 + (v - xmin) * (P.w / (xmax - xmin));
+    const Y = (v) => P.y0 + P.h - ((v - ymin) / (ymax - ymin)) * P.h;
+    const xt = opts.xt || niceTicks(xmin, xmax, 8), yt = opts.yt || niceTicks(ymin, ymax, 6);
+    ctx.clearRect(0, 0, width, height);
+    ctx.fillStyle = C_BG; ctx.fillRect(0, 0, width, height);
+    ctx.save(); ctx.beginPath(); ctx.rect(P.x0, P.y0, P.w, P.h); ctx.clip();
+    if (opts.under) opts.under({ctx, P, X, Y});
+    ctx.strokeStyle = C_GRID; ctx.lineWidth = 1;
+    for (const v of yt){ const y = Y(v); ctx.beginPath(); ctx.moveTo(P.x0, y); ctx.lineTo(P.x0 + P.w, y); ctx.stroke(); }
+    for (const u of xt){ const x = X(u); ctx.beginPath(); ctx.moveTo(x, P.y0); ctx.lineTo(x, P.y0 + P.h); ctx.stroke(); }
+    ctx.restore();
+    ctx.fillStyle = C_TICK; ctx.font = MATH_FONT; ctx.textAlign = "right"; ctx.textBaseline = "middle";
+    for (const v of yt){
+      const y = Y(v);
+      ctx.fillText(fmtTick(v), P.x0 - 8, y);
+      ctx.strokeStyle = C_AXIS; ctx.beginPath(); ctx.moveTo(P.x0-4, y); ctx.lineTo(P.x0, y); ctx.stroke();
+    }
+    ctx.textAlign = "center"; ctx.textBaseline = "top";
+    const gap = xt.length > 1 ? Math.abs(X(xt[1]) - X(xt[0])) : Infinity, every = Math.max(1, Math.ceil(30 / gap));
+    const i0 = xt.reduce((b, u, i) => Math.abs(u) < Math.abs(xt[b]) ? i : b, 0);
+    xt.forEach((u, i) => { if ((((i - i0) % every) + every) % every === 0) ctx.fillText(fmtTick(u), X(u), P.y0 + P.h + 6); });
+    ctx.strokeStyle = C_AXIS; ctx.lineWidth = 1.5;
+    if (ymin <= 0 && ymax >= 0){ ctx.beginPath(); ctx.moveTo(P.x0, Y(0)); ctx.lineTo(P.x0 + P.w, Y(0)); ctx.stroke(); }
+    if (xmin <= 0 && xmax >= 0){ ctx.beginPath(); ctx.moveTo(X(0), P.y0); ctx.lineTo(X(0), P.y0 + P.h); ctx.stroke(); }
+    return {ctx, P, X, Y, xr: [xmin, xmax], yr: [ymin, ymax]};
+  }
+  function clipped(F, fn){ const {ctx, P} = F; ctx.save(); ctx.beginPath(); ctx.rect(P.x0, P.y0, P.w, P.h); ctx.clip(); fn(ctx); ctx.restore(); }
+  function cross(F, re, im, color){
+    clipped(F, (ctx) => {
+      const x = F.X(re), y = F.Y(im);
+      ctx.strokeStyle = color; ctx.lineWidth = 3;
+      ctx.beginPath(); ctx.moveTo(x - 7, y - 7); ctx.lineTo(x + 7, y + 7); ctx.moveTo(x + 7, y - 7); ctx.lineTo(x - 7, y + 7); ctx.stroke();
+    });
+  }
+
+  // ---------- Math rendering (KaTeX; plain-text fallback is already in the markup) ----------
+  window.addEventListener('load', () => {
+    document.querySelectorAll('[data-tex]').forEach(el => renderTeX(el, el.dataset.tex, el.hasAttribute('data-display')));
+    drawAll();
+  });
+  window.addEventListener('load', () => { if (document.fonts && document.fonts.load) document.fonts.load(MATH_FONT).then(drawAll); });
+
+  // ---------- The transform and its possible signals ----------
+  // s: X(s) = 1/(s - p1) + 1/(s - p2).  Term 1/(s - p): ROC right of p -> e^{pt} u(t); left of p -> -e^{pt} u(-t).
+  // z: X(z) = 1/(1 - p1 z^-1) + 1/(1 - p2 z^-1).  Term: ROC outside |p| -> p^n u[n]; inside -> -p^n u[-n-1].
+  // "Size" of a pole: its real part (s) or its magnitude (z); the ROC is outside a pole when it lies beyond that size.
+  // A complex pair gives two conjugate terms whose sum is real: 2 e^{σt} cos(ωt), or 2 r^n cos(θn).
+  let dom = 's';
+  const mode = () => elType.value + '|' + dom;
+  const size = (p) => dom === 's' ? p.re : Math.hypot(p.re, p.im);
+  // the two poles from the sliders, as complex numbers
+  function poleList(){
+    const a = parseFloat(elP1.value), b = parseFloat(elP2.value);
+    if (elType.value === 'real') return [{re: a, im: 0}, {re: b, im: 0}];
+    if (dom === 's') return [{re: a, im: b}, {re: a, im: -b}];
+    const th = b * Math.PI / 180;
+    return [{re: a * Math.cos(th), im: a * Math.sin(th)}, {re: a * Math.cos(th), im: -a * Math.sin(th)}];
+  }
+  // the ROC as an interval of size (Re s, or |z|): right/outside, between, left/inside (null if empty)
+  function rocInterval(a, b){
+    const c = elRoc.value;
+    if (c === 'right') return [b, Infinity];
+    if (c === 'left') return dom === 'z' && a <= 1e-9 ? null : [dom === 's' ? -Infinity : 0, a];
+    return b - a > 1e-9 ? [a, b] : null;
+  }
+  // one term (a complex number) at time t or sample n, given whether the ROC is outside that pole
+  function term(p, outside, t){
+    let re, im;
+    if (dom === 's'){
+      if (outside ? t < 0 : t >= 0) return {re: 0, im: 0};
+      const g = Math.exp(p.re * t); re = g * Math.cos(p.im * t); im = g * Math.sin(p.im * t);
+    } else {
+      if (outside ? t < 0 : t > -1) return {re: 0, im: 0};
+      const r = Math.hypot(p.re, p.im), th = Math.atan2(p.im, p.re);
+      if (r < 1e-12) return {re: t === 0 ? 1 : 0, im: 0};
+      const g = Math.pow(r, t); re = g * Math.cos(th * t); im = g * Math.sin(th * t);
+    }
+    return outside ? {re, im} : {re: -re, im: -im};
+  }
+
+  // ---------- Main draw ----------
+  const n1 = (v) => (Math.abs(v) < 5e-3 ? 0 : v).toFixed(dom === 's' ? 1 : 2);
+  let pzF = null;                                         // the pole plot's frame, for dragging
+  function drawAll(){
+    const D = DOM[dom], pair = elType.value === 'pair', P2 = poleList();
+    const a = parseFloat(elP1.value), b = parseFloat(elP2.value);
+    if (!pair){
+      setTeX(el('p1val'), `p_1=${n1(a)}`, `p₁ = ${n1(a)}`);
+      setTeX(el('p2val'), `p_2=${n1(b)}`, `p₂ = ${n1(b)}`);
+    } else if (dom === 's'){
+      setTeX(el('p1val'), String.raw`\text{Real part }\sigma=${n1(a)}`, `Real part σ = ${n1(a)}`);
+      setTeX(el('p2val'), String.raw`\text{Imaginary part }\omega=${n1(b)}`, `Imaginary part ω = ${n1(b)}`);
+    } else {
+      setTeX(el('p1val'), String.raw`\text{Radius }r=|p|=${n1(a)}`, `Radius r = |p| = ${n1(a)}`);
+      setTeX(el('p2val'), String.raw`\text{Angle }\theta=\pm${b.toFixed(0)}^\circ`, `Angle θ = ±${b.toFixed(0)}°`);
+    }
+    const sizes = P2.map(size), sLo = Math.min(...sizes), sHi = Math.max(...sizes), roc = rocInterval(sLo, sHi);
+    // the "between" choice does not exist when both poles have the same size (always for a pair)
+    elRoc.options[1].disabled = !(sHi - sLo > 1e-9);
+    elRoc.options[2].disabled = dom === 'z' && sLo <= 1e-9;
+
+    // 1) pole plot with the ROC shaded and the stability boundary drawn
+    const [bx0, bx1, by0, by1] = D.box;
+    const F = frame(ctxPl, [bx0, bx1], [by0, by1], {equal: dom === 'z', under: ({ctx, P, X, Y}) => {
+      if (!roc) return;
+      ctx.fillStyle = C_ROC;
+      if (dom === 's'){
+        const xa = Math.max(P.x0, roc[0] === -Infinity ? P.x0 : X(roc[0])), xb = Math.min(P.x0 + P.w, roc[1] === Infinity ? P.x0 + P.w : X(roc[1]));
+        ctx.fillRect(xa, P.y0, xb - xa, P.h);
+      } else {
+        const R = (r) => X(r) - X(0), big = Math.hypot(P.w, P.h);
+        ctx.beginPath(); ctx.arc(X(0), Y(0), roc[1] === Infinity ? big : R(roc[1]), 0, TWO_PI);
+        if (roc[0] > 0){ ctx.arc(X(0), Y(0), R(roc[0]), 0, TWO_PI, true); }
+        ctx.fill('evenodd');
+      }
+    }});
+    pzF = F;
+    clipped(F, (ctx) => {                                 // jω axis or unit circle
+      ctx.strokeStyle = C_REF; ctx.lineWidth = 2; ctx.setLineDash([6, 5]);
+      ctx.beginPath();
+      if (dom === 's'){ ctx.moveTo(F.X(0), F.P.y0); ctx.lineTo(F.X(0), F.P.y0 + F.P.h); }
+      else ctx.arc(F.X(0), F.Y(0), F.X(1) - F.X(0), 0, TWO_PI);
+      ctx.stroke();
+      ctx.setLineDash([3, 4]); ctx.lineWidth = 1; ctx.strokeStyle = '#94a3b8';   // the ROC boundaries through each pole
+      for (const sz of [sLo, sHi]){
+        ctx.beginPath();
+        if (dom === 's'){ ctx.moveTo(F.X(sz), F.P.y0); ctx.lineTo(F.X(sz), F.P.y0 + F.P.h); }
+        else ctx.arc(F.X(0), F.Y(0), Math.abs(F.X(sz) - F.X(0)), 0, TWO_PI);
+        ctx.stroke();
+      }
+    });
+    for (const p of P2) cross(F, p.re, p.im, C_POLE);
+
+    // 2) the signal for this ROC: the real part of the sum of the two terms
+    const [t0, t1] = D.tr, G = frame(ctxSig, [t0 - (dom === 'z' ? 0.5 : 0), t1 + (dom === 'z' ? 0.5 : 0)], D.yr);
+    const outside = P2.map((p) => roc ? roc[0] >= size(p) - 1e-9 : true);
+    const value = (t) => P2.reduce((s, p, i) => s + term(p, outside[i], t).re, 0);
+    if (roc){
+      clipped(G, (ctx) => {
+        ctx.strokeStyle = C_Y; ctx.fillStyle = C_Y; ctx.lineWidth = dom === 's' ? 2.5 : 2;
+        if (dom === 's'){
+          // draw each side separately so the jump at t = 0 stays vertical
+          for (const [ta, tb] of [[t0, -1e-9], [0, t1]]){
+            ctx.beginPath();
+            for (let i = 0; i <= 800; i++){ const t = ta + (tb - ta) * i / 800, y = Math.max(-1e4, Math.min(1e4, G.Y(value(t)))); if (i) ctx.lineTo(G.X(t), y); else ctx.moveTo(G.X(t), y); }
+            ctx.stroke();
+          }
+        } else {
+          for (let n = t0; n <= t1; n++){
+            const v = value(n), y = Math.max(-1e4, Math.min(1e4, G.Y(v)));
+            ctx.beginPath(); ctx.moveTo(G.X(n), G.Y(0)); ctx.lineTo(G.X(n), y); ctx.stroke();
+            if (Math.abs(v) < 1e3){ ctx.beginPath(); ctx.arc(G.X(n), y, 3.5, 0, TWO_PI); ctx.fill(); }
+          }
+        }
+      });
+    } else {
+      const c = G.ctx; c.fillStyle = '#cbd5e1'; c.font = MATH_FONT; c.textAlign = 'center'; c.textBaseline = 'middle';
+      c.fillText('This ROC is empty for these poles: choose another one.', G.P.x0 + G.P.w / 2, G.P.y0 + G.P.h / 2);
+    }
+
+    // formula, signal formula and the three readouts
+    const v = dom === 's' ? 't' : 'n', U = (r) => dom === 's' ? (r ? 'u(t)' : 'u(-t)') : (r ? 'u[n]' : 'u[-n-1]');
+    let sigTex = '';
+    if (roc && !pair){
+      const piece = (p, out) => {
+        const pp = n1(p), base = dom === 's' ? String.raw`e^{${pp}${v}}` : String.raw`(${pp})^{${v}}`;
+        return {sign: out ? 1 : -1, tex: base + U(out)};
+      };
+      const A = piece(a, outside[0]), B = piece(b, outside[1]);      // x = term(p1) + term(p2)
+      sigTex = (dom === 's' ? 'x(t)=' : 'x[n]=') + (A.sign < 0 ? '-' : '') + A.tex + (B.sign < 0 ? '-' : '+') + B.tex;
+    } else if (roc){                                     // a pair: both terms on the same side
+      const out = outside[0], sg = out ? '' : '-';
+      sigTex = dom === 's'
+        ? String.raw`x(t)=${sg}2e^{${n1(a)}t}\cos(${n1(b)}t)\,${U(out)}`
+        : String.raw`x[n]=${sg}2\,(${n1(a)})^{n}\cos(${(b * Math.PI / 180).toFixed(2)}n)\,${U(out)}`;
+    }
+    const lm = el('liveMath');
+    if (!roc) lm.textContent = '';
+    else if (!renderTeX(lm, sigTex, true)) lm.textContent = sigTex;
+    const fTex = dom === 's'
+      ? String.raw`X(s)=\frac{1}{s-p_1}+\frac{1}{s-p_2}`
+      : String.raw`X(z)=\frac{1}{1-p_1z^{-1}}+\frac{1}{1-p_2z^{-1}}`;
+    const fm = el('formula');
+    // render when the domain changes, or again once KaTeX has loaded (it is deferred)
+    if (fm.dataset.dom !== dom || !fm.querySelector('.katex')){
+      fm.dataset.dom = dom;
+      if (!renderTeX(fm, fTex, true)) fm.textContent = dom === 's' ? 'X(s) = 1/(s − p₁) + 1/(s − p₂)' : 'X(z) = 1/(1 − p₁ z⁻¹) + 1/(1 − p₂ z⁻¹)';
+    }
+
+    const put = (id, ok, text) => { const e = el(id); e.textContent = text; e.style.color = ok === null ? '#cbd5e1' : ok ? C_OK : C_BAD; };
+    if (!roc){ put('rSide', null, 'Empty ROC'); put('rCausal', null, ''); put('rStable', null, ''); return; }
+    const right = roc[1] === Infinity, left = dom === 's' ? roc[0] === -Infinity : roc[0] === 0;
+    put('rSide', null, right ? 'Right-sided signal' : left ? 'Left-sided signal' : 'Two-sided signal');
+    put('rCausal', right, right ? '✓ Causal: the ROC is outside every pole' : '✗ Not causal: the ROC is inside a pole');
+    const stab = dom === 's' ? (roc[0] < 0 && roc[1] > 0) : (roc[0] < 1 && roc[1] > 1);
+    put('rStable', stab, stab ? (dom === 's' ? '✓ Stable: the ROC contains the jω axis' : '✓ Stable: the ROC contains the unit circle')
+                              : (dom === 's' ? '✗ Not stable: the ROC misses the jω axis' : '✗ Not stable: the ROC misses the unit circle'));
+  }
+
+  // set up the sliders for the current domain and pole type
+  function setMode(){
+    SLIDERS[mode()].forEach((c, i) => { const e = i ? elP2 : elP1; e.min = c.min; e.max = c.max; e.step = c.step; e.value = c.def; });
+    const pair = elType.value === 'pair';
+    elRoc.options[0].textContent = dom === 's' ? (pair ? 'Right of the poles' : 'Right of both poles') : (pair ? 'Outside the circle' : 'Outside both circles');
+    elRoc.options[1].textContent = dom === 's' ? 'Between the poles (a strip)' : 'Between the circles (a ring)';
+    elRoc.options[2].textContent = dom === 's' ? (pair ? 'Left of the poles' : 'Left of both poles') : (pair ? 'Inside the circle (a disc)' : 'Inside both circles (a disc)');
+    elRoc.value = 'right';
+    drawAll();
+  }
+  function setDomain(){
+    dom = elDom.value;
+    setTeX(el('axPl'), dom === 's' ? String.raw`\mathrm{Re}\,s\ \text{(dashed: the }j\omega\text{ axis)}` : String.raw`\mathrm{Re}\,z\ \text{(dashed: the unit circle)}`, dom === 's' ? 'Re s (dashed: the jω axis)' : 'Re z (dashed: the unit circle)');
+    setTeX(el('axSig'), dom === 's' ? String.raw`t\ (\mathrm{s})` : String.raw`n\ (\text{samples})`, dom === 's' ? 't (s)' : 'n (samples)');
+    el('titleSig').innerHTML = dom === 's' ? '<span>Signal <span class="m"></span> <span class="probe-note">(for the chosen ROC)</span></span>' : '<span>Sequence <span class="m"></span> <span class="probe-note">(for the chosen ROC)</span></span>';
+    setTeX(el('titleSig').querySelector('.m'), dom === 's' ? 'x(t)' : 'x[n]', dom === 's' ? 'x(t)' : 'x[n]');
+    setMode();
+  }
+
+  // a pole moved: redraw; if the chosen ROC became empty, fall back to the one outside the poles
+  function moved(){ drawAll(); if (elRoc.selectedOptions[0].disabled){ elRoc.value = 'right'; drawAll(); } }
+
+  // ---------- Dragging the poles on the plot (the sliders follow) ----------
+  const cvPl = el('cpl');
+  let drag = null;
+  const toCoord = (e) => {
+    const r = cvPl.getBoundingClientRect(), px = e.clientX - r.left, py = e.clientY - r.top, F = pzF;
+    return {re: F.xr[0] + (px - F.P.x0) / F.P.w * (F.xr[1] - F.xr[0]), im: F.yr[0] + (F.P.y0 + F.P.h - py) / F.P.h * (F.yr[1] - F.yr[0])};
+  };
+  cvPl.addEventListener('pointerdown', (e) => {
+    if (!pzF) return;
+    const r = cvPl.getBoundingClientRect(), x = e.clientX - r.left, y = e.clientY - r.top;
+    let best = -1, bestD = 18;
+    poleList().forEach((p, i) => { const d = Math.hypot(pzF.X(p.re) - x, pzF.Y(p.im) - y); if (d < bestD){ bestD = d; best = i; } });
+    if (best < 0) return;
+    drag = best; cvPl.setPointerCapture(e.pointerId); cvPl.style.cursor = 'grabbing';
+  });
+  cvPl.addEventListener('pointermove', (e) => {
+    if (drag === null) return;
+    const c = toCoord(e);
+    if (elType.value === 'real') (drag ? elP2 : elP1).value = c.re;            // a real pole moves along the axis
+    else if (dom === 's'){ elP1.value = c.re; elP2.value = Math.abs(c.im); }  // either pole of the pair: σ and |ω|
+    else { elP1.value = Math.hypot(c.re, c.im); elP2.value = Math.abs(Math.atan2(c.im, c.re)) * 180 / Math.PI; }
+    moved();
+  });
+  const endDrag = () => { drag = null; cvPl.style.cursor = 'grab'; };
+  cvPl.addEventListener('pointerup', endDrag);
+  cvPl.addEventListener('pointercancel', endDrag);
+
+  // listeners
+  elDom.addEventListener('change', setDomain);
+  elType.addEventListener('change', setMode);
+  elRoc.addEventListener('change', drawAll);
+  [elP1, elP2].forEach((e) => e.addEventListener('input', moved));
+  window.addEventListener('resize', drawAll);
+
+  setDomain();
+})();
+</script>
+</body>
+</html>

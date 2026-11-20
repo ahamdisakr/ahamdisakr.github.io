@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+<meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <script src="/demos/demo.js"></script>
+<title>System Properties | Ahmed Hamdi Sakr</title>
+<meta name="description" content="Interactive demo of system properties: test linearity, time invariance, causality, memory and stability for common continuous-time and discrete-time systems." />
+    <script defer src="https://cdn.jsdelivr.net/npm/feather-icons@4.29.2/dist/feather.min.js"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css" />
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+
+    <link href="/styles.css" rel="stylesheet" />
+    <link href="/demos/demo.css" rel="stylesheet" />
+    <link rel="icon" type="image/x-icon" href="/images/icon.ico" />
+    <script defer src="/app.js"></script>
+    <style>
+      /* Verdict table for the five properties (this page only) */
+      .verdicts { width: 100%; border-collapse: collapse; color: #cbd5e1; font-size: 14px; }
+      .verdicts th, .verdicts td { text-align: left; padding: 6px 8px; border-top: 1px solid #1f2a44; vertical-align: top; }
+      .verdicts th { font-weight: 600; white-space: nowrap; }
+      .verdicts td.v { white-space: nowrap; font-weight: 700; }
+      .verdicts .yes { color: var(--poscolor); }
+      .verdicts .no { color: var(--negcolor); }
+      .verdicts tr.on { background: rgba(96, 165, 250, 0.12); }
+      /* the student's own answers: Yes / No toggles, then a check */
+      .guess { display: inline-flex; gap: 4px; }
+      .guess button { padding: 2px 10px; border-radius: 999px; border: 1px solid #334155; background: #1e293b; color: #cbd5e1; font-size: 13px; cursor: pointer; }
+      .guess button[aria-pressed="true"] { background: #2563eb; border-color: #2563eb; color: #fff; }
+      .guess button:focus-visible, .check-row button:focus-visible { outline: 2px solid #93c5fd; outline-offset: 2px; }
+      .verdicts .mark { font-weight: 700; margin-left: 6px; }
+      .verdicts .hidden-ans { color: #64748b; }
+      @media (max-width: 480px) {                    /* phones: let the names wrap so the four columns fit */
+        .verdicts th { white-space: normal; }
+        .verdicts th, .verdicts td { padding: 5px 4px; font-size: 13px; }
+      }
+      .check-row { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; margin-top: 10px; color: #cbd5e1; font-size: 14px; }
+    </style>
+
+</head>
+
+<body data-page="teaching">
+
+    <div id="site-nav"></div>
+
+        <div class="site-container">
+        <main class="page fade-in" id="main">
+  <div class="panel panel--static">
+  <h1 class="title-lg mb-4">System Properties</h1>
+  <p>Five questions classify a system. <strong>Linear:</strong> does a weighted sum of inputs give the same weighted sum of outputs? <strong>Time-invariant:</strong> does delaying the input only delay the output? <strong>Causal:</strong> does the output depend only on present and past inputs? <strong>Memoryless:</strong> does the output at each instant depend only on the input at that instant? <strong>Stable (BIBO):</strong> does every bounded input give a bounded output? The same questions apply in continuous and in discrete time. Each test below tries one example. A single failing example proves that a property fails; a passing example only supports it, so the table gives the verdict from the definition.</p>
+  <p class="mb-4"><strong>Try it:</strong> choose the squarer and the linearity test: with <span class="m" data-tex="a=2">a = 2</span> the output of the combined input (solid) is far from the combination of the outputs (dashed). Set <span class="m" data-tex="a=1">a = 1</span> and <span class="m" data-tex="b=0">b = 0</span>: now they agree, which is why one passing example proves nothing. Choose <span class="m" data-tex="y(t)=t\,x(t)">y(t) = t x(t)</span> and the time-invariance test, and move <span class="m" data-tex="t_0">t<sub>0</sub></span>: the two outputs drift apart, because the gain depends on when the input arrives. With <span class="m" data-tex="y(t)=x(t+1)">y(t) = x(t + 1)</span> and the causality test, the inputs agree before <span class="m" data-tex="t=1">t = 1</span> but the outputs do not: the system reacts before the change happens. Try the integrator with the stability test: a bounded step gives a ramp that never stops growing. Then switch to discrete time and choose the downsampler <span class="m" data-tex="y[n]=x[2n]">y[n] = x[2n]</span> with the time-invariance test: delaying the input by one sample does not delay the output by one sample. For each system, mark your answers in the table at the bottom, then press Check.</p>
+  <div class="predict">
+    <h2 class="predict-title">Predict, then check</h2>
+    <details><summary>Is <span class="m" data-tex="y(t)=2x(t)+1">y(t) = 2x(t) + 1</span> linear? Its graph of <span class="m" data-tex="y">y</span> against <span class="m" data-tex="x">x</span> is a straight line.</summary><p>No. A linear system must give zero output for zero input, and this one gives <span class="m" data-tex="y=1">y = 1</span>. In the linearity test the two outputs differ by exactly <span class="m" data-tex="a+b-1">a + b &minus; 1</span>. (It is <em>incrementally</em> linear: the change in output is linear in the change in input.)</p></details>
+    <details><summary>Is <span class="m" data-tex="y(t)=x(2t)">y(t) = x(2t)</span> time-invariant? Causal?</summary><p>Neither. Delaying the input by <span class="m" data-tex="t_0">t<sub>0</sub></span> gives <span class="m" data-tex="x(2t-t_0)">x(2t &minus; t<sub>0</sub>)</span>, but delaying the output gives <span class="m" data-tex="x(2t-2t_0)">x(2t &minus; 2t<sub>0</sub>)</span>. And for <span class="m" data-tex="t&gt;0">t &gt; 0</span>, <span class="m" data-tex="y(t)=x(2t)">y(t) = x(2t)</span> uses an input value from the future.</p></details>
+    <details><summary>The upsampler sets <span class="m" data-tex="y[n]=x[n/2]">y[n] = x[n/2]</span> for even <span class="m" data-tex="n">n</span> (and 0 for odd <span class="m" data-tex="n">n</span>). For <span class="m" data-tex="n&gt;0">n &gt; 0</span> it only uses past samples. Is it causal?</summary><p>No. For negative <span class="m" data-tex="n">n</span>, <span class="m" data-tex="n/2">n/2</span> is later than <span class="m" data-tex="n">n</span>: <span class="m" data-tex="y[-4]=x[-2]">y[&minus;4] = x[&minus;2]</span> uses a future sample. Causality has to hold for every <span class="m" data-tex="n">n</span>, negative ones included.</p></details>
+  </div>
+
+  <div class="controls controls--sticky controls--3">
+    <div class="control">
+      <label for="dom">Time</label>
+      <select id="dom" class="sig-select">
+        <option value="ct">Continuous time</option>
+        <option value="dt">Discrete time</option>
+      </select>
+      <label for="sys">System</label>
+      <select id="sys" class="sig-select"></select>
+      <div class="math-block live" id="sysMath"></div>
+    </div>
+    <div class="control">
+      <label for="test">Test</label>
+      <select id="test" class="sig-select">
+        <option value="L">Linearity</option>
+        <option value="TI">Time invariance</option>
+        <option value="C">Causality</option>
+        <option value="M">Memory</option>
+        <option value="S">Stability (BIBO)</option>
+      </select>
+      <div class="small" id="testNote" style="margin-top:8px"></div>
+    </div>
+    <div class="control">
+      <div id="boxAB">
+        <label for="pa">Weights <span id="abval" class="m">a = 2, b = 1</span></label>
+        <input id="pa" type="range" min="-2" max="2" step="0.1" value="2" aria-label="Weight a"/>
+        <input id="pb" type="range" min="-2" max="2" step="0.1" value="1" aria-label="Weight b" style="margin-top:6px"/>
+      </div>
+      <div id="boxT0" style="display:none">
+        <label for="t0">Input delay <span id="t0val" class="m">t&#8320; = 1 s</span></label>
+        <input id="t0" type="range" min="-2" max="2" step="0.05" value="1"/>
+      </div>
+      <div id="boxNone" class="small" style="display:none">This test has no parameter.</div>
+    </div>
+  </div>
+
+  <div class="canvas-row">
+    <div class="card">
+      <h2 id="titleIn"><span>Inputs</span></h2>
+      <canvas id="cin" class="short" role="img" aria-label="The test inputs"></canvas>
+      <div class="axis-label" id="axIn" data-tex="t\ (\mathrm{s})">t (s)</div>
+    </div>
+  </div>
+  <div class="canvas-row group">
+    <div class="card">
+      <h2 id="titleOut"><span>Outputs</span></h2>
+      <canvas id="cout" role="img" aria-label="The outputs being compared"></canvas>
+      <div class="axis-label" id="axOut" data-tex="t\ (\mathrm{s})">t (s)</div>
+      <div class="readout" aria-live="polite"><span class="part" id="result"></span></div>
+    </div>
+  </div>
+  <div class="canvas-row group">
+    <div class="card">
+      <h2><span>Your verdict for this system <span class="probe-note">(decide each property, using the tests if you like, then check; the current test is highlighted)</span></span></h2>
+      <table class="verdicts" id="verdicts"></table>
+      <div class="check-row">
+        <button class="btn btn-primary sweep-btn" id="btnCheck" type="button">Check my answers</button>
+        <span id="score" aria-live="polite"></span>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+        </main>
+        <footer class="site-footer fade-in">
+            <p>&copy; 2021&ndash;2026 Ahmed Hamdi Sakr. All rights reserved.</p>
+        </footer>
+        </div>
+
+
+<script>
+(function(){
+  const {MATH_FONT, fitCanvas, fmtTick, niceTicks, renderTeX, setTeX} = window.Demo;   // shared helpers (demos/demo.js)
+  // ---------- Grids: continuous time (fine samples) and discrete time (integers) ----------
+  const T0 = -4, T1 = 6, DT = 0.005, NT = Math.round((T1 - T0) / DT) + 1;
+  const TT = Float64Array.from({length: NT}, (_, i) => T0 + i * DT);
+  const N0 = -10, N1 = 18, NN = Float64Array.from({length: N1 - N0 + 1}, (_, i) => N0 + i);
+  const LAG = Math.round(1 / DT);                       // samples in 1 s (moving average)
+  let dt = false;                                       // discrete time?
+  const grid = () => dt ? NN : TT;
+  const css = getComputedStyle(document.documentElement);
+  const col = (name, fb) => css.getPropertyValue(name).trim() || fb;
+  const C_X = col('--xcolor', '#f59e0b'), C_X2 = col('--scolor', '#c084fc'), C_Y = col('--ycolor', '#60a5fa'), C_P = '#f472b6';
+  const C_GRID = col('--grid', '#15223e'), C_AXIS = '#223356', C_TICK = '#94a3b8', C_BG = '#0a1326';
+
+  // ---------- Test inputs (zero before the start of the grid, so running integrals and sums start there) ----------
+  const tri = (t) => Math.max(0, 1 - Math.abs(t));
+  const rect = (t, a, b) => (t >= a && t < b) ? 1 : 0;
+  const isInt = (n) => Number.isInteger(n);
+  // continuous time
+  const CT_IN = {
+    X1: (t) => rect(t, 0, 1),                           // pulse on [0, 1)
+    X2: (t) => 0.8 * tri(t - 1.5),                      // triangle on [0.5, 2.5]
+    XC: (t) => 0.8 * tri(t + 1.5),                      // causality test: equal to this before tc ...
+    pulse: (tc) => (t) => rect(t, tc, tc + 1),          // ... and the second input adds this from tc
+    tc: 1, bump: 3, bw: 0.25, bumpF: (t) => tri((t - 3) / 0.25),
+    U: (t) => t >= 0 ? 1 : 0,
+  };
+  // discrete time (functions of an integer n; 0 between the integers, which the systems never ask for except x[n/2])
+  const DT_IN = {
+    X1: (n) => isInt(n) && n >= 0 && n <= 3 ? 1 : 0,
+    X2: (n) => isInt(n) ? 0.8 * tri((n - 4) / 3) : 0,
+    XC: (n) => isInt(n) ? 0.8 * tri((n + 6) / 2) : 0,
+    pulse: (tc) => (n) => isInt(n) && n >= tc && n <= tc + 1 ? 1 : 0,
+    tc: 4, bump: 8, bw: 0.5, bumpF: (n) => n === 8 ? 1 : 0,
+    U: (n) => isInt(n) && n >= 0 ? 1 : 0,
+  };
+  const IN = () => dt ? DT_IN : CT_IN;
+  const sample = (x) => Float64Array.from(grid(), x);
+  function cumint(v){ const out = new Float64Array(v.length); for (let i = 1; i < v.length; i++) out[i] = out[i-1] + 0.5 * (v[i] + v[i-1]) * DT; return out; }
+  function cumsum(v){ const out = new Float64Array(v.length); let s = 0; for (let i = 0; i < v.length; i++){ s += v[i]; out[i] = s; } return out; }
+  // y delayed by d on the grid, holding the edge values outside it
+  function shiftArr(y, d){ const k = dt ? Math.round(d) : Math.round(d / DT), n = y.length, out = new Float64Array(n); for (let i = 0; i < n; i++) out[i] = y[Math.min(n - 1, Math.max(0, i - k))]; return out; }
+
+  // ---------- Systems: apply(x) gives y on the grid; P: verdicts [holds?, reason] ----------
+  const SYSTEMS = {
+    // continuous time
+    delay:    {dom: 'ct', label: 'Delay: y(t) = x(t − 1)', tex: String.raw`y(t)=x(t-1)`, apply: (x) => sample((t) => x(t - 1)),
+               P: {L: [1, 'A delay of a weighted sum is the same weighted sum of delays.'], TI: [1, 'Delaying before or after the 1 s delay gives the same result.'],
+                   C: [1, 'y(t) uses x(t − 1), a past value.'], M: [0, 'y(t) needs the input from 1 s ago.'], S: [1, '|y(t)| ≤ max |x|.']}},
+    advance:  {dom: 'ct', label: 'Advance: y(t) = x(t + 1)', tex: String.raw`y(t)=x(t+1)`, apply: (x) => sample((t) => x(t + 1)),
+               P: {L: [1, 'An advance of a weighted sum is the same weighted sum of advances.'], TI: [1, 'Shifting before or after the advance gives the same result.'],
+                   C: [0, 'y(t) uses x(t + 1), a future value.'], M: [0, 'y(t) needs the input 1 s later.'], S: [1, '|y(t)| ≤ max |x|.']}},
+    compress: {dom: 'ct', label: 'Time compression: y(t) = x(2t)', tex: String.raw`y(t)=x(2t)`, apply: (x) => sample((t) => x(2 * t)),
+               P: {L: [1, 'Compressing a weighted sum is the same weighted sum of compressed signals.'], TI: [0, 'Delaying the input by t₀ gives x(2t − t₀); delaying the output gives x(2t − 2t₀).'],
+                   C: [0, 'For t > 0, y(t) = x(2t) uses a future value.'], M: [0, 'y(1) = x(2): another instant.'], S: [1, '|y(t)| ≤ max |x|.']}},
+    reverse:  {dom: 'ct', label: 'Time reversal: y(t) = x(−t)', tex: String.raw`y(t)=x(-t)`, apply: (x) => sample((t) => x(-t)),
+               P: {L: [1, 'Reversing a weighted sum is the same weighted sum of reversed signals.'], TI: [0, 'Delaying the input moves the output earlier, not later.'],
+                   C: [0, 'y(−1) = x(1), a future value.'], M: [0, 'y(t) uses the input at −t.'], S: [1, '|y(t)| ≤ max |x|.']}},
+    square:   {dom: 'ct', label: 'Squarer: y(t) = x²(t)', tex: String.raw`y(t)=x^2(t)`, apply: (x) => sample((t) => x(t) ** 2),
+               P: {L: [0, 'Doubling the input multiplies the output by 4.'], TI: [1, 'The rule is the same at every instant.'],
+                   C: [1, 'y(t) uses only x(t).'], M: [1, 'y(t) uses only x(t).'], S: [1, '|x| ≤ B gives |y| ≤ B².']}},
+    tgain:    {dom: 'ct', label: 'Time-varying gain: y(t) = t·x(t)', tex: String.raw`y(t)=t\,x(t)`, apply: (x) => sample((t) => t * x(t)),
+               P: {L: [1, 'Multiplying by t is linear in x.'], TI: [0, 'The gain t depends on when the input arrives.'],
+                   C: [1, 'y(t) uses only x(t).'], M: [1, 'y(t) uses only x(t).'], S: [0, 'x(t) = 1 is bounded, but y(t) = t grows without bound.']}},
+    affine:   {dom: 'ct', label: 'Affine: y(t) = 2x(t) + 1', tex: String.raw`y(t)=2x(t)+1`, apply: (x) => sample((t) => 2 * x(t) + 1),
+               P: {L: [0, 'A zero input gives y = 1, not 0 (the system is only incrementally linear).'], TI: [1, 'The rule is the same at every instant.'],
+                   C: [1, 'y(t) uses only x(t).'], M: [1, 'y(t) uses only x(t).'], S: [1, '|x| ≤ B gives |y| ≤ 2B + 1.']}},
+    integ:    {dom: 'ct', label: 'Integrator: y(t) = ∫ x(τ) dτ up to t', tex: String.raw`y(t)=\int_{-\infty}^{t} x(\tau)\,d\tau`, apply: (x) => cumint(sample(x)),
+               P: {L: [1, 'The integral of a weighted sum is the weighted sum of integrals.'], TI: [1, 'Shifting the input shifts the running integral.'],
+                   C: [1, 'Only inputs up to time t are integrated.'], M: [0, 'y(t) depends on all past inputs.'], S: [0, 'The bounded step u(t) gives the ramp t·u(t).']}},
+    mavg:     {dom: 'ct', label: 'Moving average over the last 1 s', tex: String.raw`y(t)=\int_{t-1}^{t} x(\tau)\,d\tau`, apply: (x) => { const I = cumint(sample(x)); return I.map((v, i) => v - (i >= LAG ? I[i - LAG] : 0)); },
+               P: {L: [1, 'The integral of a weighted sum is the weighted sum of integrals.'], TI: [1, 'The window [t − 1, t] moves with t.'],
+                   C: [1, 'Only the last second of input is used.'], M: [0, 'y(t) depends on the last second of input.'], S: [1, '|x| ≤ B gives |y| ≤ B (the window is 1 s long).']}},
+    // discrete time
+    d_diff:   {dom: 'dt', label: 'First difference: y[n] = x[n] − x[n − 1]', tex: String.raw`y[n]=x[n]-x[n-1]`, apply: (x) => sample((n) => x(n) - x(n - 1)),
+               P: {L: [1, 'The difference of a weighted sum is the weighted sum of differences.'], TI: [1, 'Shifting the input shifts both terms.'],
+                   C: [1, 'y[n] uses x[n] and x[n − 1].'], M: [0, 'y[n] needs the previous sample x[n − 1].'], S: [1, '|x| ≤ B gives |y| ≤ 2B.']}},
+    d_down:   {dom: 'dt', label: 'Downsampler: y[n] = x[2n]', tex: String.raw`y[n]=x[2n]`, apply: (x) => sample((n) => x(2 * n)),
+               P: {L: [1, 'Keeping every other sample of a weighted sum is the weighted sum of the kept samples.'], TI: [0, 'Delaying the input by n₀ gives x[2n − n₀]; delaying the output gives x[2n − 2n₀].'],
+                   C: [0, 'For n > 0, y[n] = x[2n] is a future sample.'], M: [0, 'y[1] = x[2]: another sample.'], S: [1, '|y| ≤ max |x|.']}},
+    d_up:     {dom: 'dt', label: 'Upsampler: y[n] = x[n/2] for even n, else 0', tex: String.raw`y[n]=\begin{cases}x[n/2] & n\text{ even}\\ 0 & n\text{ odd}\end{cases}`, tc: -2,
+               apply: (x) => sample((n) => n % 2 === 0 ? x(n / 2) : 0),
+               P: {L: [1, 'Spreading out a weighted sum is the weighted sum of the spread-out signals.'], TI: [0, 'Delaying the input by one sample delays the output by two.'],
+                   C: [0, 'For n < 0, y[n] = x[n/2] is a future sample: y[−4] = x[−2].'], M: [0, 'y[4] = x[2]: another sample.'], S: [1, '|y| ≤ max |x|.']}},
+    d_ngain:  {dom: 'dt', label: 'Time-varying gain: y[n] = n·x[n]', tex: String.raw`y[n]=n\,x[n]`, apply: (x) => sample((n) => n * x(n)),
+               P: {L: [1, 'Multiplying by n is linear in x.'], TI: [0, 'The gain n depends on when the input arrives.'],
+                   C: [1, 'y[n] uses only x[n].'], M: [1, 'y[n] uses only x[n].'], S: [0, 'x[n] = 1 is bounded, but y[n] = n grows without bound.']}},
+    d_accum:  {dom: 'dt', label: 'Accumulator: y[n] = Σ x[k] for k ≤ n', tex: String.raw`y[n]=\sum_{k=-\infty}^{n} x[k]`, apply: (x) => cumsum(sample(x)),
+               P: {L: [1, 'The running sum of a weighted sum is the weighted sum of running sums.'], TI: [1, 'Shifting the input shifts the running sum.'],
+                   C: [1, 'Only samples up to n are added.'], M: [0, 'y[n] depends on all past samples.'], S: [0, 'The bounded step u[n] gives y[n] = (n + 1) u[n].']}},
+    d_mavg:   {dom: 'dt', label: 'Moving average: y[n] = (x[n] + x[n − 1] + x[n − 2])/3', tex: String.raw`y[n]=\tfrac13\left(x[n]+x[n-1]+x[n-2]\right)`, apply: (x) => sample((n) => (x(n) + x(n - 1) + x(n - 2)) / 3),
+               P: {L: [1, 'The average of a weighted sum is the weighted sum of averages.'], TI: [1, 'The three-sample window moves with n.'],
+                   C: [1, 'y[n] uses x[n], x[n − 1] and x[n − 2].'], M: [0, 'y[n] needs the two previous samples.'], S: [1, '|x| ≤ B gives |y| ≤ B.']}},
+    d_square: {dom: 'dt', label: 'Squarer: y[n] = x²[n]', tex: String.raw`y[n]=x^2[n]`, apply: (x) => sample((n) => x(n) ** 2),
+               P: {L: [0, 'Doubling the input multiplies the output by 4.'], TI: [1, 'The rule is the same for every n.'],
+                   C: [1, 'y[n] uses only x[n].'], M: [1, 'y[n] uses only x[n].'], S: [1, '|x| ≤ B gives |y| ≤ B².']}},
+  };
+  const PROP_NAMES = {L: 'Linear', TI: 'Time-invariant', C: 'Causal', M: 'Memoryless', S: 'Stable (BIBO)'};
+
+  // DOM
+  const el = (id) => document.getElementById(id);
+  const elDom = el('dom'), elSys = el('sys'), elTest = el('test'), elA = el('pa'), elB = el('pb'), elT0 = el('t0');
+  const ctxIn = el('cin').getContext('2d'), ctxOut = el('cout').getContext('2d');
+
+  // ---------- Plot helpers (style matches the other demos) ----------
+  function frame(ctx, xr, yr, opts = {}){
+    const {width, height} = fitCanvas(ctx.canvas);
+    const m = {left: 56, right: 12, top: 10, bottom: 28};
+    const P = {x0: m.left, y0: m.top, w: width - m.left - m.right, h: height - m.top - m.bottom};
+    const [xmin, xmax] = xr, [ymin, ymax] = yr;
+    const X = (v) => P.x0 + (v - xmin) * (P.w / (xmax - xmin));
+    const Y = (v) => P.y0 + P.h - ((v - ymin) / (ymax - ymin)) * P.h;
+    // discrete time: ticks every 5 samples (whole numbers only)
+    const xt = dt ? Array.from({length: Math.floor(xmax / 5) - Math.ceil(xmin / 5) + 1}, (_, i) => (Math.ceil(xmin / 5) + i) * 5) : niceTicks(xmin, xmax, 10);
+    const yt = niceTicks(ymin, ymax, 5);
+    ctx.clearRect(0, 0, width, height);
+    ctx.fillStyle = C_BG; ctx.fillRect(0, 0, width, height);
+    ctx.save(); ctx.beginPath(); ctx.rect(P.x0, P.y0, P.w, P.h); ctx.clip();
+    if (opts.shade) for (const [a, b, c] of opts.shade){ ctx.fillStyle = c; ctx.fillRect(X(a), P.y0, X(b) - X(a), P.h); }
+    ctx.strokeStyle = C_GRID; ctx.lineWidth = 1;
+    for (const v of yt){ const y = Y(v); ctx.beginPath(); ctx.moveTo(P.x0, y); ctx.lineTo(P.x0 + P.w, y); ctx.stroke(); }
+    for (const u of xt){ const x = X(u); ctx.beginPath(); ctx.moveTo(x, P.y0); ctx.lineTo(x, P.y0 + P.h); ctx.stroke(); }
+    ctx.restore();
+    ctx.fillStyle = C_TICK; ctx.font = MATH_FONT; ctx.textAlign = "right"; ctx.textBaseline = "middle";
+    for (const v of yt){
+      const y = Y(v);
+      ctx.fillText(fmtTick(v), P.x0 - 8, y);
+      ctx.strokeStyle = C_AXIS; ctx.beginPath(); ctx.moveTo(P.x0-4, y); ctx.lineTo(P.x0, y); ctx.stroke();
+    }
+    ctx.textAlign = "center"; ctx.textBaseline = "top";
+    const gap = xt.length > 1 ? Math.abs(X(xt[1]) - X(xt[0])) : Infinity, every = Math.max(1, Math.ceil(30 / gap));
+    const i0 = xt.reduce((b, u, i) => Math.abs(u) < Math.abs(xt[b]) ? i : b, 0);
+    xt.forEach((u, i) => { if ((((i - i0) % every) + every) % every === 0) ctx.fillText(fmtTick(u), X(u), P.y0 + P.h + 6); });
+    ctx.strokeStyle = C_AXIS; ctx.lineWidth = 1.5;
+    if (ymin <= 0 && ymax >= 0){ ctx.beginPath(); ctx.moveTo(P.x0, Y(0)); ctx.lineTo(P.x0 + P.w, Y(0)); ctx.stroke(); }
+    if (xmin <= 0 && xmax >= 0){ ctx.beginPath(); ctx.moveTo(X(0), P.y0); ctx.lineTo(X(0), P.y0 + P.h); ctx.stroke(); }
+    return {ctx, P, X, Y};
+  }
+  // continuous time: a line (dashed when compared); discrete time: stems with dots, or rings for the dashed one
+  function line(F, ys, color, width = 2, dash = null, alpha = 1){
+    const {ctx, P} = F, xs = grid();
+    ctx.save(); ctx.beginPath(); ctx.rect(P.x0, P.y0, P.w, P.h); ctx.clip();
+    ctx.strokeStyle = color; ctx.fillStyle = color; ctx.globalAlpha = alpha; ctx.lineJoin = 'round';
+    const Yc = (v) => Math.max(-1e5, Math.min(1e5, F.Y(v)));
+    if (dt){
+      ctx.lineWidth = dash ? 2 : Math.min(width, 2.5);
+      for (let i = 0; i < xs.length; i++){
+        const x = F.X(xs[i]), y = Yc(ys[i]);
+        if (dash){ ctx.beginPath(); ctx.arc(x, y, 6, 0, 2 * Math.PI); ctx.stroke(); }
+        else { ctx.beginPath(); ctx.moveTo(x, F.Y(0)); ctx.lineTo(x, y); ctx.stroke(); ctx.beginPath(); ctx.arc(x, y, 3.5, 0, 2 * Math.PI); ctx.fill(); }
+      }
+    } else {
+      ctx.lineWidth = width;
+      if (dash) ctx.setLineDash(dash);
+      ctx.beginPath();
+      for (let i = 0; i < xs.length; i++){ const x = F.X(xs[i]), y = Yc(ys[i]); if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y); }
+      ctx.stroke();
+    }
+    ctx.restore();
+  }
+
+  // ---------- Math rendering (KaTeX; plain-text fallback is already in the markup) ----------
+  window.addEventListener('load', () => {
+    document.querySelectorAll('[data-tex]').forEach(el => renderTeX(el, el.dataset.tex, el.hasAttribute('data-display')));
+    drawAll();
+  });
+  window.addEventListener('load', () => { if (document.fonts && document.fonts.load) document.fonts.load(MATH_FONT).then(drawAll); });
+
+  // ---------- Tests: inputs and outputs to compare, and where they must agree ----------
+  // Each returns {ins: [[values, color, width, dash]], outs: [...], diff, shade}
+  const maxAbs = (v) => v.reduce((m, x) => Math.max(m, Math.abs(x)), 0);
+  const maxDiff = (a, b, keep = () => true) => { const g = grid(); let m = 0; for (let i = 0; i < g.length; i++) if (keep(g[i])) m = Math.max(m, Math.abs(a[i] - b[i])); return m; };
+  const tcOf = (key) => SYSTEMS[key].tc ?? IN().tc;     // where the causality test's inputs start to differ
+  function runTest(key, test, par){
+    const S = SYSTEMS[key].apply, I = IN(), h = dt ? 0.5 : 0;   // h: half a sample, for shading in discrete time
+    if (test === 'L'){
+      const {a, b} = par, xc = (t) => a * I.X1(t) + b * I.X2(t);
+      const yc = S(xc), y1 = S(I.X1), y2 = S(I.X2), pred = y1.map((v, i) => a * v + b * y2[i]);
+      return {ins: [[sample(I.X1), C_X, 1.3, [5, 4]], [sample(I.X2), C_X2, 1.3, [5, 4]], [sample(xc), C_X, 2.5]],
+              outs: [[yc, C_Y, 3], [pred, C_P, 2, [7, 5]]], diff: maxDiff(yc, pred)};
+    }
+    if (test === 'TI'){
+      const {t0} = par, x = (t) => I.X1(t) + I.X2(t), xs = (t) => x(t - t0);
+      const ys = S(xs), yd = shiftArr(S(x), t0);
+      return {ins: [[sample(x), C_X, 1.3, [5, 4]], [sample(xs), C_X, 2.5]], outs: [[ys, C_Y, 3], [yd, C_P, 2, [7, 5]]], diff: maxDiff(ys, yd)};
+    }
+    if (test === 'C'){
+      const tc = tcOf(key), p = I.pulse(tc), xb = (t) => I.XC(t) + p(t);
+      const ya = S(I.XC), yb = S(xb), g0 = grid()[0];
+      return {ins: [[sample(xb), C_X2, 2.5], [sample(I.XC), C_X, 2.5]], outs: [[yb, C_Y, 3], [ya, C_P, 2, [7, 5]]],
+              diff: maxDiff(ya, yb, (t) => t < tc - (dt ? 0.5 : 2 * DT)), shade: [[g0 - h, tc - h, 'rgba(45, 212, 191, 0.10)']]};
+    }
+    if (test === 'M'){
+      const xb = (t) => I.X1(t) + I.bumpF(t), ya = S(I.X1), yb = S(xb);
+      return {ins: [[sample(xb), C_X2, 2.5], [sample(I.X1), C_X, 2.5]], outs: [[yb, C_Y, 3], [ya, C_P, 2, [7, 5]]],
+              diff: maxDiff(ya, yb, (t) => Math.abs(t - I.bump) > I.bw + (dt ? 0 : 2 * DT)), shade: [[I.bump - I.bw, I.bump + I.bw, 'rgba(250, 204, 21, 0.14)']]};
+    }
+    const y = S(I.U);
+    return {ins: [[sample(I.U), C_X, 2.5]], outs: [[y, C_Y, 3]], diff: maxAbs(y)};
+  }
+  // Fixed y-ranges for each system and test: the widest over the slider's corners, so moving it never rescales
+  const rangeCache = {};
+  function ranges(key, test){
+    const id = key + '|' + test;
+    if (rangeCache[id]) return rangeCache[id];
+    const d = dt ? [-3, -2, -1, 0, 1, 2, 3] : [-2, -1, 0, 1, 2];
+    const pars = test === 'L' ? [-2, 0, 2].flatMap((a) => [-2, 0, 2].map((b) => ({a, b}))) : test === 'TI' ? d.map((t0) => ({t0})) : [{}];
+    let iLo = 0, iHi = 0, oLo = 0, oHi = 0;
+    for (const p of pars){
+      const r = runTest(key, test, p);
+      for (const [v] of r.ins) for (const x of v){ iLo = Math.min(iLo, x); iHi = Math.max(iHi, x); }
+      for (const [v] of r.outs) for (const x of v){ oLo = Math.min(oLo, x); oHi = Math.max(oHi, x); }
+    }
+    const pad = (lo, hi) => { const s = 0.1 * Math.max(hi - lo, 1); return [lo - s, hi + s]; };
+    return (rangeCache[id] = {inR: pad(iLo, iHi), outR: pad(oLo, oHi)});
+  }
+
+  // plot titles and notes for each test (fixed strings); v: the time variable, tc: where the causality inputs differ
+  function texts(test, tc){
+    const v = dt ? 'n' : 't', d = dt ? 'n<sub>0</sub>' : 't<sub>0</sub>', x = (s) => dt ? `${s}[n]` : `${s}(t)`;
+    const dash = dt ? 'rings' : 'dashed', sol = dt ? 'stems' : 'solid';
+    return {
+      L:  {inT: 'Inputs', inN: `(${dash}: x<sub>1</sub> and x<sub>2</sub>; ${sol}: a x<sub>1</sub> + b x<sub>2</sub>)`, outT: 'Outputs', outN: `(${sol}: output of a x<sub>1</sub> + b x<sub>2</sub>; ${dash}: a y<sub>1</sub> + b y<sub>2</sub>)`,
+           note: 'Linear if the output of a x₁ + b x₂ equals a y₁ + b y₂ for every a, b.'},
+      TI: {inT: 'Inputs', inN: `(${dash}: ${x('x')}; ${sol}: the delayed input x${dt ? '[n − n<sub>0</sub>]' : '(t − t<sub>0</sub>)'})`, outT: 'Outputs', outN: `(${sol}: output of the delayed input; ${dash}: y${dt ? '[n − n<sub>0</sub>]' : '(t − t<sub>0</sub>)'}, the output delayed)`,
+           note: 'Time-invariant if delaying the input only delays the output.'},
+      C:  {inT: 'Inputs', inN: `(two inputs that are equal before ${v} = ${tc}, shaded)`, outT: 'Outputs', outN: `(they must agree in the shaded part, before ${v} = ${tc})`,
+           note: 'Causal if inputs that agree up to a time give outputs that agree up to that time.'},
+      M:  {inT: 'Inputs', inN: `(the second adds ${dt ? 'one sample at n = 8' : 'a narrow bump at t = 3'}, shaded)`, outT: 'Outputs', outN: '(a memoryless system may only change them inside the shaded part)',
+           note: 'Memoryless if changing the input at one instant changes the output only at that instant.'},
+      S:  {inT: 'Input', inN: `(the unit step ${dt ? 'u[n]' : 'u(t)'}, bounded by 1)`, outT: 'Output', outN: '(bounded, or growing without bound?)',
+           note: 'Stable if every bounded input gives a bounded output.'},
+    }[test];
+  }
+  const setTitle = (id, text, note) => { el(id).innerHTML = `<span>${text} <span class="probe-note">${note}</span></span>`; };   // fixed strings
+
+  // ---------- Main draw ----------
+  function drawAll(){
+    const key = elSys.value, test = elTest.value, sys = SYSTEMS[key];
+    const a = parseFloat(elA.value), b = parseFloat(elB.value), t0 = parseFloat(elT0.value);
+    const lm = el('sysMath');
+    if (!renderTeX(lm, sys.tex, true)) lm.textContent = sys.label;
+    setTeX(el('abval'), `a=${a.toFixed(1)},\\ b=${b.toFixed(1)}`, `a = ${a.toFixed(1)}, b = ${b.toFixed(1)}`);
+    if (dt) setTeX(el('t0val'), `n_0=${t0.toFixed(0)}`, `n₀ = ${t0.toFixed(0)}`);
+    else setTeX(el('t0val'), String.raw`t_0=${t0.toFixed(2)}\ \text{s}`, `t₀ = ${t0.toFixed(2)} s`);
+    el('boxAB').style.display = test === 'L' ? '' : 'none';
+    el('boxT0').style.display = test === 'TI' ? '' : 'none';
+    el('boxNone').style.display = (test === 'L' || test === 'TI') ? 'none' : '';
+    const tc = tcOf(key), tcTxt = String(tc).replace('-', '−'), T = texts(test, tcTxt);   // a real minus sign
+    el('testNote').textContent = T.note;
+    setTitle('titleIn', T.inT, T.inN); setTitle('titleOut', T.outT, T.outN);
+
+    const r = runTest(key, test, {a, b, t0}), R = ranges(key, test);
+    const xr = dt ? [N0 - 0.5, N1 + 0.5] : [T0, T1];
+    let F = frame(ctxIn, xr, R.inR, {shade: r.shade});
+    for (const [v, c, w, d] of r.ins) line(F, v, c, w, d || null, d ? 0.85 : 1);
+    F = frame(ctxOut, xr, R.outR, {shade: r.shade});
+    for (const [v, c, w, d] of r.outs) line(F, v, c, w, d || null);
+
+    // result of this one example, then the verdict table
+    const held = sys.P[test][0], res = el('result'), v = dt ? 'n' : 't';
+    if (test === 'S'){
+      res.innerHTML = `Input bounded by 1; the largest |y| on the plot is <b>${r.diff.toFixed(2)}</b>` +
+        (held ? ' and the output stays bounded.' : ` and it keeps growing as ${v} increases.`);
+    } else {
+      const agree = r.diff < 1e-3;
+      res.innerHTML = `Largest difference between the two outputs${test === 'C' ? ` before ${v} = ${tcTxt}` : test === 'M' ? ' outside the shaded part' : ''}: <b>${r.diff.toFixed(3)}</b>. ` +
+        (agree ? (held ? 'They agree, as they must.' : 'They agree for this example, but the property still fails: try other settings.')
+               : 'They differ, so this one example proves the property fails.');
+    }
+    drawTable();
+  }
+
+  // ---------- The verdict table: the student answers first, then checks ----------
+  // guesses[p] = true / false / undefined; reset when the system changes
+  let guesses = {}, revealed = false, lastSys = null;
+  function drawTable(){
+    const key = elSys.value, test = elTest.value, sys = SYSTEMS[key];
+    if (key !== lastSys){ guesses = {}; revealed = false; lastSys = key; }
+    const props = Object.keys(PROP_NAMES);
+    el('verdicts').innerHTML = '<thead><tr><th>Property</th><th>Your answer</th><th>Verdict</th><th>Why</th></tr></thead><tbody>' + props.map((p) => {
+      const [ok, why] = sys.P[p], g = guesses[p];
+      const btn = (val, label) => `<button type="button" data-p="${p}" data-v="${val}" aria-pressed="${g === val}">${label}</button>`;
+      const mark = revealed && g !== undefined ? `<span class="mark ${g === !!ok ? 'yes' : 'no'}">${g === !!ok ? '✓' : '✗'}</span>` : '';
+      const verdict = revealed ? `<td class="v ${ok ? 'yes' : 'no'}">${ok ? 'yes' : 'no'}</td>` : '<td class="v hidden-ans">?</td>';
+      return `<tr class="${p === test ? 'on' : ''}"><th>${PROP_NAMES[p]}</th><td><span class="guess" role="group" aria-label="${PROP_NAMES[p]}?">${btn(true, 'Yes')}${btn(false, 'No')}</span>${mark}</td>${verdict}<td>${revealed ? why : '<span class="hidden-ans">checked after you answer</span>'}</td></tr>`;
+    }).join('') + '</tbody>';
+    const n = props.filter((p) => guesses[p] !== undefined).length;
+    const right = props.filter((p) => guesses[p] === !!sys.P[p][0]).length;
+    el('btnCheck').textContent = revealed ? 'Hide the answers' : 'Check my answers';
+    el('score').textContent = revealed ? (n ? `${right} of ${props.length} correct` + (n < props.length ? ` (${props.length - n} not answered)` : '') : 'Answers shown') : (n ? `${n} of ${props.length} answered` : '');
+  }
+  el('verdicts').addEventListener('click', (e) => {
+    const b = e.target.closest('button[data-p]');
+    if (!b) return;
+    guesses[b.dataset.p] = b.dataset.v === 'true';
+    drawTable();
+  });
+  el('btnCheck').addEventListener('click', () => { revealed = !revealed; drawTable(); });
+
+  // ---------- Continuous or discrete time: the system list, the delay slider and the axis labels ----------
+  function setDomain(){
+    dt = elDom.value === 'dt';
+    elSys.innerHTML = Object.entries(SYSTEMS).filter(([, s]) => s.dom === elDom.value)
+      .map(([k, s]) => `<option value="${k}">${s.label}</option>`).join('');                       // fixed strings
+    if (dt){ elT0.min = -3; elT0.max = 3; elT0.step = 1; elT0.value = 1; }
+    else { elT0.min = -2; elT0.max = 2; elT0.step = 0.05; elT0.value = 1; }
+    el('boxT0').querySelector('label').firstChild.textContent = 'Input delay ';
+    for (const id of ['axIn', 'axOut']) setTeX(el(id), dt ? String.raw`n\ (\text{samples})` : String.raw`t\ (\mathrm{s})`, dt ? 'n (samples)' : 't (s)');
+    drawAll();
+  }
+
+  // listeners
+  elDom.addEventListener('change', setDomain);
+  [elSys, elTest].forEach((e) => e.addEventListener('change', drawAll));
+  [elA, elB, elT0].forEach((e) => e.addEventListener('input', drawAll));
+  window.addEventListener('resize', drawAll);
+
+  setDomain();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+<meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <script src="/demos/demo.js"></script>
+<title>Amplitude Modulation | Ahmed Hamdi Sakr</title>
+<meta name="description" content="Interactive demo of amplitude modulation: multiply a message by a carrier, see its spectrum move to the carrier frequency, and bring it back with a coherent receiver, including phase errors and overmodulation." />
+    <script defer src="https://cdn.jsdelivr.net/npm/feather-icons@4.29.2/dist/feather.min.js"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css" />
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+
+    <link href="/styles.css" rel="stylesheet" />
+    <link href="/demos/demo.css" rel="stylesheet" />
+    <link rel="icon" type="image/x-icon" href="/images/icon.ico" />
+    <script defer src="/app.js"></script>
+
+</head>
+
+<body data-page="teaching">
+
+    <div id="site-nav"></div>
+
+        <div class="site-container">
+        <main class="page fade-in" id="main">
+  <div class="panel panel--static">
+  <h1 class="title-lg mb-4">Amplitude Modulation</h1>
+  <p>Multiplying a message <span class="m" data-tex="m(t)">m(t)</span> by a carrier <span class="m" data-tex="\cos(2\pi f_c t)">cos(2&pi;f<sub>c</sub>t)</span> moves its spectrum to <span class="m" data-tex="\pm f_c">&plusmn;f<sub>c</sub></span>: this is the modulation property, <span class="m" data-tex="m(t)\cos(2\pi f_c t)\leftrightarrow\tfrac12\left[M(f-f_c)+M(f+f_c)\right]">m(t) cos(2&pi;f<sub>c</sub>t) &harr; &frac12;[M(f &minus; f<sub>c</sub>) + M(f + f<sub>c</sub>)]</span>. The receiver multiplies by the carrier again, which puts one copy back at 0 and others at <span class="m" data-tex="\pm 2f_c">&plusmn;2f<sub>c</sub></span>, and a low-pass filter keeps the one at 0. In <strong>DSB-SC</strong> (double sideband, suppressed carrier) the transmitted signal is <span class="m" data-tex="m(t)\cos(2\pi f_c t)">m(t) cos(2&pi;f<sub>c</sub>t)</span>; in <strong>AM</strong> a carrier is added, <span class="m" data-tex="\left(1+\mu\, m(t)\right)\cos(2\pi f_c t)">(1 + &mu; m(t)) cos(2&pi;f<sub>c</sub>t)</span>, so the envelope itself follows the message.</p>
+  <p class="mb-4"><strong>Try it:</strong> start with DSB-SC: the spectrum of <span class="m" data-tex="s(t)">s(t)</span> is the message spectrum moved to <span class="m" data-tex="\pm f_c">&plusmn;f<sub>c</sub></span> at half height, and the receiver output lies on <span class="m" data-tex="m(t)">m(t)</span>. Press Sweep to turn the receiver's phase error <span class="m" data-tex="\phi">&phi;</span>: the output shrinks by <span class="m" data-tex="\cos\phi">cos &phi;</span>, vanishes at <span class="m" data-tex="90^\circ">90&deg;</span> and comes back inverted. Switch to AM: a carrier line appears at <span class="m" data-tex="\pm f_c">&plusmn;f<sub>c</sub></span> and the envelope of <span class="m" data-tex="s(t)">s(t)</span> traces <span class="m" data-tex="1+\mu m(t)">1 + &mu;m(t)</span>. Choose the envelope detector: it needs no carrier at the receiver and still recovers the message. Raise <span class="m" data-tex="\mu">&mu;</span> above 1: the envelope folds over (overmodulation) and the detector output is distorted, while the coherent receiver still recovers the message. Switch back to DSB-SC with the envelope detector: it gives <span class="m" data-tex="|m(t)|">|m(t)|</span>, which is why DSB-SC needs a coherent receiver and AM pays for a carrier. Finally, choose the two tones, raise <span class="m" data-tex="f_m">f<sub>m</sub></span> and lower <span class="m" data-tex="f_c">f<sub>c</sub></span> until the two copies of the spectrum overlap. To see the sidebands closely, zoom into a spectrum (Ctrl + scroll or pinch, drag to pan, double-click to reset).</p>
+  <div class="predict">
+    <h2 class="predict-title">Predict, then check</h2>
+    <details><summary>A message has its highest frequency at <span class="m" data-tex="W">W</span>. What range of frequencies does the DSB-SC signal occupy?</summary><p>From <span class="m" data-tex="f_c-W">f<sub>c</sub> &minus; W</span> to <span class="m" data-tex="f_c+W">f<sub>c</sub> + W</span> (and the mirror image at negative frequencies): a bandwidth of <span class="m" data-tex="2W">2W</span>, twice the message bandwidth, since both sidebands are sent.</p></details>
+    <details><summary>With DSB-SC and a receiver phase error of <span class="m" data-tex="90^\circ">90&deg;</span>, what comes out?</summary><p>Nothing. The output is <span class="m" data-tex="m(t)\cos\phi">m(t) cos &phi;</span>, and <span class="m" data-tex="\cos 90^\circ=0">cos 90&deg; = 0</span>: the receiver's carrier is in quadrature with the transmitter's, so the product has no low-frequency part. That is why coherent receivers must track the carrier phase.</p></details>
+  </div>
+
+  <div class="controls controls--sticky controls--3">
+    <div class="control">
+      <label for="msg">Message</label>
+      <select id="msg" class="sig-select">
+        <option value="one">One tone: cos(2&pi;f&#8344;t)</option>
+        <option value="two">Two tones: f&#8344; and 2.5 f&#8344;</option>
+      </select>
+      <label for="fm" style="margin-top:10px">Message frequency <span id="fmval" class="m">f&#8344; = 5 Hz</span></label>
+      <input id="fm" type="range" min="1" max="10" step="0.5" value="5"/>
+    </div>
+    <div class="control">
+      <label for="mod">Modulation</label>
+      <select id="mod" class="sig-select">
+        <option value="dsb">DSB-SC: m(t) cos(2&pi;f&#8342;t)</option>
+        <option value="am">AM: (1 + &mu;m(t)) cos(2&pi;f&#8342;t)</option>
+      </select>
+      <label for="fc" style="margin-top:10px">Carrier <span id="fcval" class="m">f&#8342; = 50 Hz</span></label>
+      <input id="fc" type="range" min="20" max="100" step="1" value="50"/>
+      <div id="muBox" style="display:none">
+        <label for="mu" style="margin-top:10px">Modulation index <span id="muval" class="m">&mu; = 0.5</span></label>
+        <input id="mu" type="range" min="0" max="1.5" step="0.05" value="0.5"/>
+      </div>
+    </div>
+    <div class="control">
+      <label for="rx">Receiver</label>
+      <select id="rx" class="sig-select">
+        <option value="coh">Coherent: multiply by the carrier, then low-pass</option>
+        <option value="env">Envelope detector: rectify, then low-pass</option>
+      </select>
+      <div id="phBox">
+        <div class="control-head" style="margin-top:10px">
+          <label for="ph">Phase error <span id="phval" class="m">&phi; = 0&deg;</span></label>
+          <button class="btn btn-primary sweep-btn" id="btnSweep" type="button">&#9654;&#xFE0E; Sweep &phi;</button>
+        </div>
+        <input id="ph" type="range" min="0" max="180" step="1" value="0"/>
+        <div class="small" style="margin-top:8px">The receiver multiplies by <span class="m" data-tex="2\cos(2\pi f_c t+\phi)">2cos(2&pi;f<sub>c</sub>t + &phi;)</span> and keeps <span class="m" data-tex="|f|&lt;f_c">|f| &lt; f<sub>c</sub></span>.</div>
+      </div>
+      <div id="envNote" class="small" style="display:none;margin-top:8px">An ideal envelope detector follows the peaks of <span class="m" data-tex="s(t)">s(t)</span>: its output is <span class="m" data-tex="|1+\mu m(t)|">|1 + &mu;m(t)|</span> for AM and <span class="m" data-tex="|m(t)|">|m(t)|</span> for DSB-SC. It needs no carrier at the receiver.</div>
+    </div>
+  </div>
+
+  <div class="plot-grid">
+    <div class="card">
+      <h2><span>Message <span class="m" data-tex="m(t)">m(t)</span></span></h2>
+      <canvas id="cm" class="short" role="img" aria-label="The message signal"></canvas>
+      <div class="axis-label" data-tex="t\ (\mathrm{s})">t (s)</div>
+    </div>
+    <div class="card">
+      <h2><span>Message spectrum <span class="m" data-tex="|M(f)|">|M(f)|</span></span></h2>
+      <canvas id="cM" class="short" role="img" aria-label="The message spectrum lines"></canvas>
+      <div class="axis-label" data-tex="f\ (\mathrm{Hz})">f (Hz)</div>
+    </div>
+  </div>
+  <div class="plot-grid group">
+    <div class="card">
+      <h2><span>Modulated signal <span class="m" data-tex="s(t)">s(t)</span> <span class="probe-note">(dashed: its envelope)</span></span></h2>
+      <canvas id="cs" class="short" role="img" aria-label="The modulated signal and its envelope"></canvas>
+      <div class="axis-label" data-tex="t\ (\mathrm{s})">t (s)</div>
+    </div>
+    <div class="card">
+      <h2><span>Modulated spectrum <span class="m" data-tex="|S(f)|">|S(f)|</span></span></h2>
+      <canvas id="cS" class="short" role="img" aria-label="The spectrum of the modulated signal"></canvas>
+      <div class="axis-label" data-tex="f\ (\mathrm{Hz})">f (Hz)</div>
+    </div>
+  </div>
+  <div class="plot-grid group">
+    <div class="card">
+      <h2 id="titleY"><span>Receiver output <span class="m" data-tex="y(t)">y(t)</span> <span class="probe-note">(dashed: what was sent)</span></span></h2>
+      <canvas id="cy" class="short" role="img" aria-label="The receiver output, with the transmitted message dashed"></canvas>
+      <div class="axis-label" data-tex="t\ (\mathrm{s})">t (s)</div>
+      <div class="math-block live" id="liveMath" aria-live="polite"></div>
+    </div>
+    <div class="card">
+      <h2 id="titleV"><span>After multiplying by the carrier <span class="m" data-tex="|V(f)|">|V(f)|</span> <span class="probe-note">(shaded: what the low-pass keeps)</span></span></h2>
+      <canvas id="cV" class="short" role="img" aria-label="The spectrum after the receiver multiplies by the carrier, with the low-pass band shaded"></canvas>
+      <canvas id="cR" class="short" role="img" aria-label="The rectified signal and the envelope the low-pass keeps" style="display:none"></canvas>
+      <div class="axis-label" id="axV" data-tex="f\ (\mathrm{Hz})">f (Hz)</div>
+    </div>
+  </div>
+
+</div>
+
+        </main>
+        <footer class="site-footer fade-in">
+            <p>&copy; 2021&ndash;2026 Ahmed Hamdi Sakr. All rights reserved.</p>
+        </footer>
+        </div>
+
+
+<script>
+(function(){
+  const {MATH_FONT, fitCanvas, fmtTick, niceTicks, renderTeX, setTeX, zoomX} = window.Demo;   // shared helpers (demos/demo.js)
+  // ---------- Config ----------
+  const TWO_PI = Math.PI * 2;
+  const T_WIN = 1, NT = 8000;                                  // 1 s, 80 points per carrier cycle at 100 Hz
+  const TT = Float64Array.from({length: NT + 1}, (_, i) => i * T_WIN / NT);
+  const F_SPAN = 250;                                          // spectra: -250 to 250 Hz (up to 2 fc + the message)
+  const css = getComputedStyle(document.documentElement);
+  const col = (name, fb) => css.getPropertyValue(name).trim() || fb;
+  const C_X = col('--xcolor', '#f59e0b'), C_Y = col('--ycolor', '#60a5fa'), C_S = col('--scolor', '#c084fc'), C_H = col('--hcolor', '#22c55e');
+  const C_GRID = col('--grid', '#15223e'), C_AXIS = '#223356', C_TICK = '#94a3b8', C_BG = '#0a1326', C_REF = '#e2e8f0';
+
+  // DOM
+  const el = (id) => document.getElementById(id);
+  const elMsg = el('msg'), elFm = el('fm'), elMod = el('mod'), elFc = el('fc'), elMu = el('mu'), elPh = el('ph'), elSweep = el('btnSweep');
+  const ctx = (id) => el(id).getContext('2d');
+  const cm = ctx('cm'), cM = ctx('cM'), cs = ctx('cs'), cS = ctx('cS'), cy = ctx('cy'), cV = ctx('cV'), cR = ctx('cR');
+  const elRx = el('rx');
+
+  // ---------- Plot helpers (style matches the other demos) ----------
+  function frame(c, xr, yr, opts = {}){
+    const {width, height} = fitCanvas(c.canvas);
+    const m = {left: 56, right: 12, top: 10, bottom: 28};
+    const P = {x0: m.left, y0: m.top, w: width - m.left - m.right, h: height - m.top - m.bottom};
+    const [xmin, xmax] = xr, [ymin, ymax] = yr;
+    const X = (v) => P.x0 + (v - xmin) * (P.w / (xmax - xmin));
+    const Y = (v) => P.y0 + P.h - ((v - ymin) / (ymax - ymin)) * P.h;
+    const xt = niceTicks(xmin, xmax, 8), yt = opts.yt || niceTicks(ymin, ymax, 4);
+    c.clearRect(0, 0, width, height);
+    c.fillStyle = C_BG; c.fillRect(0, 0, width, height);
+    c.save(); c.beginPath(); c.rect(P.x0, P.y0, P.w, P.h); c.clip();
+    if (opts.band){ c.fillStyle = 'rgba(34, 197, 94, 0.12)'; c.fillRect(X(opts.band[0]), P.y0, X(opts.band[1]) - X(opts.band[0]), P.h); }
+    c.strokeStyle = C_GRID; c.lineWidth = 1;
+    for (const v of yt){ const y = Y(v); c.beginPath(); c.moveTo(P.x0, y); c.lineTo(P.x0 + P.w, y); c.stroke(); }
+    for (const u of xt){ const x = X(u); c.beginPath(); c.moveTo(x, P.y0); c.lineTo(x, P.y0 + P.h); c.stroke(); }
+    c.restore();
+    c.fillStyle = C_TICK; c.font = MATH_FONT; c.textAlign = "right"; c.textBaseline = "middle";
+    for (const v of yt){
+      const y = Y(v);
+      c.fillText(fmtTick(v), P.x0 - 8, y);
+      c.strokeStyle = C_AXIS; c.beginPath(); c.moveTo(P.x0-4, y); c.lineTo(P.x0, y); c.stroke();
+    }
+    c.textAlign = "center"; c.textBaseline = "top";
+    const gap = xt.length > 1 ? Math.abs(X(xt[1]) - X(xt[0])) : Infinity, every = Math.max(1, Math.ceil(34 / gap));
+    const i0 = xt.reduce((b, u, i) => Math.abs(u) < Math.abs(xt[b]) ? i : b, 0);
+    xt.forEach((u, i) => { if ((((i - i0) % every) + every) % every === 0) c.fillText(fmtTick(u), X(u), P.y0 + P.h + 6); });
+    if (ymin <= 0 && ymax >= 0){ c.strokeStyle = C_AXIS; c.lineWidth = 1.5; c.beginPath(); c.moveTo(P.x0, Y(0)); c.lineTo(P.x0 + P.w, Y(0)); c.stroke(); }
+    return {ctx: c, P, X, Y};
+  }
+  function clipped(F, fn){ const {ctx: c, P} = F; c.save(); c.beginPath(); c.rect(P.x0, P.y0, P.w, P.h); c.clip(); fn(c); c.restore(); }
+  function line(F, ys, color, width = 2, dash = null, alpha = 1){
+    clipped(F, (c) => {
+      c.strokeStyle = color; c.lineWidth = width; c.globalAlpha = alpha; c.lineJoin = 'round';
+      if (dash) c.setLineDash(dash);
+      c.beginPath();
+      for (let i = 0; i <= NT; i++){ const x = F.X(TT[i]), y = F.Y(ys[i]); if (i === 0) c.moveTo(x, y); else c.lineTo(x, y); }
+      c.stroke();
+    });
+  }
+  function stems(F, lines, color){
+    clipped(F, (c) => {
+      c.strokeStyle = color; c.fillStyle = color; c.lineWidth = 2.5;
+      for (const [f, a] of lines){
+        c.beginPath(); c.moveTo(F.X(f), F.Y(0)); c.lineTo(F.X(f), F.Y(a)); c.stroke();
+        c.beginPath(); c.arc(F.X(f), F.Y(a), 3.5, 0, TWO_PI); c.fill();
+      }
+    });
+  }
+
+  // ---------- Math rendering (KaTeX; plain-text fallback is already in the markup) ----------
+  window.addEventListener('load', () => {
+    document.querySelectorAll('[data-tex]').forEach(el => renderTeX(el, el.dataset.tex, el.hasAttribute('data-display')));
+    drawAll();
+  });
+  window.addEventListener('load', () => { if (document.fonts && document.fonts.load) document.fonts.load(MATH_FONT).then(drawAll); });
+
+  // ---------- Signals as sums of cosines: [{f >= 0, re, im}] stands for Σ Re((re + j im) e^{j2πft}) ----------
+  // So multiplying by a cosine and low-pass filtering are exact, and the spectrum is a set of lines.
+  function add(terms, f, re, im){
+    const k = terms.find((t) => Math.abs(t.f - f) < 1e-9);
+    if (k){ k.re += re; k.im += im; } else terms.push({f, re, im});
+  }
+  // multiply by g·cos(2π fc t + ph): each term splits into f + fc and |f - fc| (conjugated when f - fc < 0)
+  function mulCos(terms, fc, ph, g = 1){
+    const out = [], c = Math.cos(ph), s = Math.sin(ph);
+    for (const t of terms){
+      const up = {re: (t.re * c - t.im * s) * g / 2, im: (t.re * s + t.im * c) * g / 2};    // A e^{jφ} / 2
+      const dn = {re: (t.re * c + t.im * s) * g / 2, im: (t.im * c - t.re * s) * g / 2};    // A e^{-jφ} / 2
+      add(out, t.f + fc, up.re, up.im);
+      const d = t.f - fc;
+      if (Math.abs(d) < 1e-9) add(out, 0, dn.re, 0);                                      // DC: only the real part survives
+      else if (d > 0) add(out, d, dn.re, dn.im);
+      else add(out, -d, dn.re, -dn.im);                                                     // Re(B e^{-jωt}) = Re(conj(B) e^{jωt})
+    }
+    return out;
+  }
+  const evalAt = (terms, t) => terms.reduce((s, k) => s + (k.f === 0 ? k.re : k.re * Math.cos(TWO_PI * k.f * t) - k.im * Math.sin(TWO_PI * k.f * t)), 0);
+  const sampleT = (terms) => Float64Array.from(TT, (t) => evalAt(terms, t));
+  // two-sided magnitude lines: |A|/2 at ±f, |DC| at 0
+  function spectrum(terms){
+    const L = [];
+    for (const k of terms){
+      const a = Math.hypot(k.re, k.im);
+      if (a < 1e-9) continue;
+      if (k.f === 0) L.push([0, Math.abs(k.re)]); else { L.push([k.f, a / 2]); L.push([-k.f, a / 2]); }
+    }
+    return L;
+  }
+
+  // Zoom and pan: the three spectra share one frequency axis, the three time plots one time axis
+  const zoomF = zoomX([cM.canvas, cS.canvas, cV.canvas], {range: [-F_SPAN, F_SPAN], left: 56, right: 12, minFrac: 0.02, onChange: drawAll});
+
+  // ---------- Main draw ----------
+  function drawAll(){
+    const fm = parseFloat(elFm.value), fc = parseFloat(elFc.value), mu = parseFloat(elMu.value), phDeg = parseFloat(elPh.value), ph = phDeg * Math.PI / 180;
+    const am = elMod.value === 'am';
+    el('muBox').style.display = am ? '' : 'none';
+    setTeX(el('fmval'), String.raw`f_m=${fm}\ \text{Hz}`, `fm = ${fm} Hz`);
+    setTeX(el('fcval'), String.raw`f_c=${fc}\ \text{Hz}`, `fc = ${fc} Hz`);
+    setTeX(el('muval'), String.raw`\mu=${mu.toFixed(2)}`, `μ = ${mu.toFixed(2)}`);
+    setTeX(el('phval'), String.raw`\phi=${phDeg}^\circ`, `φ = ${phDeg}°`);
+
+    // message, transmitted signal, receiver product and output
+    const msg = elMsg.value === 'two' ? [{f: fm, re: 0.6, im: 0}, {f: 2.5 * fm, re: 0.4, im: 0}] : [{f: fm, re: 1, im: 0}];
+    const base = am ? [{f: 0, re: 1, im: 0}, ...msg.map((k) => ({f: k.f, re: mu * k.re, im: mu * k.im}))] : msg;   // what multiplies the carrier
+    // receiver: coherent (multiply by the carrier, low-pass) or an ideal envelope detector (|envelope|)
+    const envRx = elRx.value === 'env';
+    el('phBox').style.display = envRx ? 'none' : '';
+    el('envNote').style.display = envRx ? '' : 'none';
+    const s = mulCos(base, fc, 0), v = mulCos(s, fc, ph, 2), y = v.filter((k) => k.f < fc - 1e-9);
+    const mT = sampleT(msg), bT = sampleT(base), sT = sampleT(s);
+    const yT = envRx ? Float64Array.from(bT, Math.abs) : sampleT(y);
+
+    // time plots (fixed ranges for each modulation type)
+    const sMax = am ? 2.7 : 1.2;
+    let F = frame(cm, [0, T_WIN], [-1.2, 1.2], {yt: [-1, 0, 1]});
+    line(F, mT, C_X, 2.2);
+    F = frame(cs, [0, T_WIN], [-sMax, sMax], {yt: am ? [-2, -1, 0, 1, 2] : [-1, 0, 1]});
+    line(F, sT, C_S, 1.2, null, 0.9);
+    const env = Float64Array.from(bT, Math.abs);
+    line(F, env, C_REF, 1.6, [6, 4]); line(F, env.map((e) => -e), C_REF, 1.6, [6, 4]);
+    F = frame(cy, [0, T_WIN], [-sMax, sMax], {yt: am ? [-2, -1, 0, 1, 2] : [-1, 0, 1]});
+    line(F, yT, C_Y, 2.6); line(F, bT, C_X, 1.6, [6, 4]);
+
+    // spectra on one shared axis
+    const fr = zoomF.range();
+    F = frame(cM, fr, [0, 1.1], {yt: [0, 0.5, 1]}); stems(F, spectrum(msg), C_X);
+    F = frame(cS, fr, [0, 1.1], {yt: [0, 0.5, 1]}); stems(F, spectrum(s), C_S);
+    // bottom right: the coherent receiver's spectrum, or the envelope detector's rectified signal
+    el('cV').style.display = envRx ? 'none' : ''; el('cR').style.display = envRx ? '' : 'none';
+    if (el('titleV').dataset.rx !== elRx.value){
+      el('titleV').dataset.rx = elRx.value;
+      el('titleV').innerHTML = envRx
+        ? '<span>Rectified signal <span class="m" data-tex="|s(t)|">|s(t)|</span> <span class="probe-note">(dashed: the envelope the low-pass keeps)</span></span>'
+        : '<span>After multiplying by the carrier <span class="m" data-tex="|V(f)|">|V(f)|</span> <span class="probe-note">(shaded: what the low-pass keeps)</span></span>';
+      el('titleV').querySelectorAll('[data-tex]').forEach((e) => renderTeX(e, e.dataset.tex, false));
+      setTeX(el('axV'), envRx ? String.raw`t\ (\mathrm{s})` : String.raw`f\ (\mathrm{Hz})`, envRx ? 't (s)' : 'f (Hz)');
+    }
+    if (envRx){
+      F = frame(cR, [0, T_WIN], [-0.3, sMax], {yt: am ? [0, 1, 2] : [0, 0.5, 1]});
+      line(F, Float64Array.from(sT, Math.abs), C_S, 1.2, null, 0.9); line(F, yT, C_REF, 1.6, [6, 4]);
+    } else {
+      F = frame(cV, fr, [0, 1.1], {yt: [0, 0.5, 1], band: [-fc, fc]}); stems(F, spectrum(v), C_H);
+    }
+
+    // readout: what the receiver gives
+    const c = Math.cos(ph), cTxt = c.toFixed(2);
+    let tex, txt;
+    if (envRx){
+      if (am && mu <= 1){
+        tex = String.raw`y(t)=|1+\mu m(t)|=1+\mu m(t):\ \text{the envelope follows the message (remove the DC to get }\mu m(t)\text{)}`;
+        txt = 'y(t) = |1 + μ m(t)| = 1 + μ m(t): the envelope follows the message';
+      } else if (am){
+        tex = String.raw`y(t)=|1+\mu m(t)|\ne 1+\mu m(t):\ 1+\mu m(t)\text{ goes negative, so the envelope is distorted}`;
+        txt = 'y(t) = |1 + μ m(t)|: 1 + μ m(t) goes negative, so the envelope is distorted';
+      } else {
+        tex = String.raw`y(t)=|m(t)|:\ \text{the sign of }m(t)\text{ is lost, so DSB-SC needs a coherent receiver}`;
+        txt = 'y(t) = |m(t)|: the sign of m(t) is lost, so DSB-SC needs a coherent receiver';
+      }
+    } else {
+      tex = am ? String.raw`y(t)=\cos\phi\,\left(1+\mu\,m(t)\right)=${cTxt}\left(1+${mu.toFixed(2)}\,m(t)\right)` : String.raw`y(t)=\cos\phi\;m(t)=${cTxt}\,m(t)`;
+      txt = am ? `y(t) = cos φ (1 + μ m(t)) = ${cTxt} (1 + ${mu.toFixed(2)} m(t))` : `y(t) = cos φ · m(t) = ${cTxt} m(t)`;
+    }
+    const top = elMsg.value === 'two' ? 2.5 * fm : fm;
+    if (!envRx && am && mu > 1){ tex += String.raw`\\ \mu>1:\ \text{overmodulation, the envelope no longer follows }1+\mu m(t)`; txt += '; μ > 1: overmodulation'; }
+    if (fc <= top){ tex += String.raw`\\ f_c\le ${top}\ \text{Hz (the highest message frequency): the copies overlap}`; txt += '; the copies overlap'; }
+    const lm = el('liveMath');
+    if (!renderTeX(lm, String.raw`\begin{gathered}` + tex + String.raw`\end{gathered}`, true)) lm.textContent = txt;
+  }
+
+  // ---------- Sweep the receiver phase from its current value to 180° (dragging the slider stops it) ----------
+  const SWEEP_RATE = 30;                                       // degrees per second
+  let raf = null, lastTs = 0, val = 0;
+  function stopSweep(){ if (raf) cancelAnimationFrame(raf); raf = null; elSweep.innerHTML = '&#9654;&#xFE0E; Sweep &phi;'; }
+  function step(ts){
+    const hi = parseFloat(elPh.max), dt = lastTs ? Math.min(0.1, (ts - lastTs) / 1000) : 0;
+    lastTs = ts;
+    val = Math.min(hi, val + SWEEP_RATE * dt);
+    elPh.value = Math.round(val);
+    drawAll();
+    if (val >= hi) { stopSweep(); return; }
+    raf = requestAnimationFrame(step);
+  }
+  elSweep.addEventListener('click', () => {
+    if (raf) { stopSweep(); return; }
+    val = parseFloat(elPh.value);
+    if (val >= parseFloat(elPh.max)) val = 0;
+    lastTs = 0; elSweep.innerHTML = '&#10074;&#10074;&#xFE0E; Pause';
+    raf = requestAnimationFrame(step);
+  });
+
+  // listeners
+  elPh.addEventListener('input', () => { stopSweep(); drawAll(); });
+  [elFm, elFc, elMu].forEach((e) => e.addEventListener('input', drawAll));
+  [elMsg, elMod].forEach((e) => e.addEventListener('change', drawAll));
+  elRx.addEventListener('change', () => { stopSweep(); drawAll(); });
+  window.addEventListener('resize', drawAll);
+
+  drawAll();
+})();
+</script>
+</body>
+</html>

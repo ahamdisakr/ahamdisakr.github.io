@@ -14,6 +14,7 @@
   // ---------- The demos in course order (as on teaching.html): previous / next links ----------
   var DEMOS = [
     ['lti-systems', 'Linearity and Time Invariance'],
+    ['system-properties', 'System Properties'],
     ['convolution-impulses', 'Convolution from Impulse Responses'],
     ['convolution-flip-slide', 'Convolution: Flip and Slide'],
     ['fourier-intuition', 'Why Fourier Analysis Works'],
@@ -21,7 +22,10 @@
     ['fourier-transform', 'Frequency Response'],
     ['fourier-filtering', 'Filtering Signals and Audio'],
     ['ft-properties', 'Fourier Transform Properties'],
+    ['amplitude-modulation', 'Amplitude Modulation'],
     ['sampling-aliasing', 'Sampling and Aliasing'],
+    ['dtft-dft', 'DTFT and DFT'],
+    ['region-of-convergence', 'Region of Convergence'],
     ['poles-zeros', 'Poles, Zeros and Frequency Response']
   ];
 

@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+<meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <script src="/demos/demo.js"></script>
+<title>DTFT and DFT: Windowing, Leakage and Zero-Padding | Ahmed Hamdi Sakr</title>
+<meta name="description" content="Interactive demo of the DTFT and the DFT: window a sequence, see the DFT samples on its DTFT, and explore leakage, resolution and zero-padding." />
+    <script defer src="https://cdn.jsdelivr.net/npm/feather-icons@4.29.2/dist/feather.min.js"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css" />
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+
+    <link href="/styles.css" rel="stylesheet" />
+    <link href="/demos/demo.css" rel="stylesheet" />
+    <link rel="icon" type="image/x-icon" href="/images/icon.ico" />
+    <script defer src="/app.js"></script>
+
+</head>
+
+<body data-page="teaching">
+
+    <div id="site-nav"></div>
+
+        <div class="site-container">
+        <main class="page fade-in" id="main">
+  <div class="panel panel--static">
+  <h1 class="title-lg mb-4">DTFT and DFT: Windowing, Leakage and Zero-Padding</h1>
+  <p>A computer only ever has a finite number <span class="m" data-tex="N">N</span> of samples, so it works with a windowed sequence <span class="m" data-tex="w[n]\,x[n]">w[n] x[n]</span>. Its DTFT is a continuous function of the frequency <span class="m" data-tex="f">f</span> in cycles per sample, periodic with period 1. The DFT of length <span class="m" data-tex="M">M</span> computes <span class="m" data-tex="M">M</span> samples of that DTFT, at <span class="m" data-tex="f=k/M">f = k/M</span>. Padding the sequence with zeros (<span class="m" data-tex="M&gt;N">M &gt; N</span>) samples the same DTFT more densely; only more data (a larger <span class="m" data-tex="N">N</span>) or a different window changes its shape.</p>
+  <div class="math-block mb-4" data-display data-tex="X\!\left(e^{j2\pi f}\right)=\sum_{n=0}^{N-1} w[n]\,x[n]\,e^{-j2\pi f n},\qquad X[k]=X\!\left(e^{j2\pi k/M}\right),\quad k=0,1,\dots,M-1.">X(e<sup>j2&pi;f</sup>) = &Sigma; w[n] x[n] e<sup>&minus;j2&pi;fn</sup> (n = 0&hellip;N&minus;1), X[k] = X(e<sup>j2&pi;k/M</sup>), k = 0&hellip;M&minus;1</div>
+  <p class="mb-4"><strong>Try it:</strong> with one cosine, set <span class="m" data-tex="f_0=0.125">f<sub>0</sub> = 0.125</span>, <span class="m" data-tex="N=32">N = 32</span> and no zero-padding. That is exactly 4 cycles in 32 samples, so the DFT has only two nonzero samples, at <span class="m" data-tex="k=4">k = 4</span> and <span class="m" data-tex="k=28">k = 28</span>, even though the DTFT has side lobes: the other samples land on its zeros. Press Sweep: as <span class="m" data-tex="f_0">f<sub>0</sub></span> moves between bins, the energy leaks into many DFT samples and the tallest one drops by up to about a third with the rectangular window, worst halfway between bins. Raise the zero-padding to <span class="m" data-tex="8N">8N</span>: the samples now trace the DTFT, whose shape has not changed. Choose the two close cosines (<span class="m" data-tex="\Delta f=0.04">&Delta;f = 0.04</span>): at <span class="m" data-tex="N=32">N = 32</span> there are two peaks; lower <span class="m" data-tex="N">N</span> to 16 and they merge, since separating two tones needs about <span class="m" data-tex="\Delta f&gt;1/N">&Delta;f &gt; 1/N</span>. Finally choose the strong and weak cosines and the dB scale, and compare the windows: the side lobes of the rectangular window hide the weak tone, and the lower side lobes of the Hann window reveal it, at the cost of a wider main lobe. To look closely at the samples on the curve, zoom into the spectrum (Ctrl + scroll or pinch, drag to pan, double-click to reset).</p>
+  <div class="predict">
+    <h2 class="predict-title">Predict, then check</h2>
+    <details><summary>Two cosines are 0.02 cycles/sample apart and merge into one peak at <span class="m" data-tex="N=32">N = 32</span>. Does zero-padding to <span class="m" data-tex="M=8N">M = 8N</span> separate them?</summary><p>No. Zero-padding only samples the same DTFT more densely, and that DTFT has a single merged peak. To separate them you need a main lobe narrower than the spacing, so more data: about <span class="m" data-tex="N&gt;1/\Delta f=50">N &gt; 1/&Delta;f = 50</span> with the rectangular window, twice that with Hann.</p></details>
+    <details><summary>With <span class="m" data-tex="N=32">N = 32</span> and no zero-padding, where does <span class="m" data-tex="f_0">f<sub>0</sub></span> have to be for the DFT to show no leakage at all?</summary><p>On a bin: <span class="m" data-tex="f_0=k/32">f<sub>0</sub> = k/32</span>, a whole number of cycles in the window. Then every other DFT sample falls on a zero of the DTFT. The leakage is still there in the DTFT; the DFT just samples it where it is zero.</p></details>
+  </div>
+
+  <div class="controls controls--sticky controls--3">
+    <div class="control">
+      <label for="sig">Signal</label>
+      <select id="sig" class="sig-select">
+        <option value="one">One cosine: cos(2&pi;f&#8320;n)</option>
+        <option value="two">Two close cosines, equal size</option>
+        <option value="weak">Strong cosine + weak one (40 dB below)</option>
+      </select>
+      <div class="control-head" style="margin-top:10px">
+        <label for="f0">Frequency <span id="f0val" class="m">f&#8320; = 0.100</span></label>
+        <button class="btn btn-primary sweep-btn" id="btnSweep" type="button">&#9654;&#xFE0E; Sweep f&#8320;</button>
+      </div>
+      <input id="f0" type="range" min="0.02" max="0.48" step="0.001" value="0.1"/>
+      <div id="dfBox" style="display:none">
+        <label for="df" style="margin-top:10px">Spacing <span id="dfval" class="m">&Delta;f = 0.040</span></label>
+        <input id="df" type="range" min="0.005" max="0.25" step="0.005" value="0.04"/>
+      </div>
+    </div>
+    <div class="control">
+      <label for="nlen">Window length <span id="nval" class="m">N = 32</span></label>
+      <input id="nlen" type="range" min="8" max="128" step="1" value="32"/>
+      <label for="win">Window</label>
+      <select id="win" class="sig-select">
+        <option value="rect">Rectangular</option>
+        <option value="hann">Hann</option>
+      </select>
+    </div>
+    <div class="control">
+      <label for="pad">DFT length (zero-padding)</label>
+      <select id="pad" class="sig-select">
+        <option value="1">M = N (no padding)</option>
+        <option value="2">M = 2N</option>
+        <option value="4">M = 4N</option>
+        <option value="8">M = 8N</option>
+      </select>
+      <label for="scale">Magnitude</label>
+      <select id="scale" class="sig-select">
+        <option value="lin">Linear</option>
+        <option value="db">dB</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="canvas-row">
+    <div class="card">
+      <h2><span>Windowed sequence <span class="m" data-tex="w[n]\,x[n]">w[n] x[n]</span> <span class="probe-note">(dashed: the window <span class="m" data-tex="w[n]">w[n]</span>; gray strip: the padded zeros)</span></span></h2>
+      <canvas id="ct" class="short" role="img" aria-label="The windowed sequence as stems, the window dashed, and the padded zeros"></canvas>
+      <div class="axis-label" data-tex="n\ (\text{samples})">n (samples)</div>
+    </div>
+  </div>
+
+  <div class="canvas-row group">
+    <div class="card">
+      <h2 id="titleF"><span>Spectrum <span class="m" data-tex="|X(e^{j2\pi f})|">|X(e<sup>j2&pi;f</sup>)|</span> <span class="probe-note">(curve: DTFT; stems: the <span class="m" data-tex="M">M</span> DFT samples; dashed: the true frequencies)</span></span></h2>
+      <canvas id="cf" role="img" aria-label="The DTFT magnitude as a curve with the DFT samples as stems on it"></canvas>
+      <div class="axis-label" data-tex="f\ (\text{cycles/sample})">f (cycles/sample)</div>
+      <div class="math-block live" id="liveMath" aria-live="polite"></div>
+    </div>
+  </div>
+
+</div>
+
+        </main>
+        <footer class="site-footer fade-in">
+            <p>&copy; 2021&ndash;2026 Ahmed Hamdi Sakr. All rights reserved.</p>
+        </footer>
+        </div>
+
+
+<script>
+(function(){
+  const {MATH_FONT, fitCanvas, fmtTick, niceTicks, renderTeX, setTeX, zoomX} = window.Demo;   // shared helpers (demos/demo.js)
+  // ---------- Config ----------
+  const TWO_PI = Math.PI * 2;
+  const NF = 4096;                                           // DTFT curve: f = 0 .. 1 on a fine grid
+  const FF = Float64Array.from({length: NF + 1}, (_, i) => i / NF);
+  const WEAK = 0.01;                                         // the weak tone: 40 dB below the strong one
+  const DB_FLOOR = -100;
+  const css = getComputedStyle(document.documentElement);
+  const col = (name, fb) => css.getPropertyValue(name).trim() || fb;
+  const C_X = col('--xcolor', '#f59e0b'), C_Y = col('--ycolor', '#60a5fa'), C_W = col('--scolor', '#c084fc');
+  const C_GRID = col('--grid', '#15223e'), C_AXIS = '#223356', C_TICK = '#94a3b8', C_BG = '#0a1326', C_PAD = '#64748b';
+
+  // DOM
+  const el = (id) => document.getElementById(id);
+  const elSig = el('sig'), elF0 = el('f0'), elDf = el('df'), elN = el('nlen'), elWin = el('win'), elPad = el('pad'), elScale = el('scale'), elSweep = el('btnSweep');
+  const ctxT = el('ct').getContext('2d'), ctxF = el('cf').getContext('2d');
+
+  // ---------- Plot helpers (style matches the other demos) ----------
+  function frame(ctx, xr, yr, xt, yt, yFmt = fmtTick){
+    const {width, height} = fitCanvas(ctx.canvas);
+    const m = {left: 56, right: 12, top: 10, bottom: 28};
+    const P = {x0: m.left, y0: m.top, w: width - m.left - m.right, h: height - m.top - m.bottom};
+    const [xmin, xmax] = xr, [ymin, ymax] = yr;
+    const X = (v) => P.x0 + (v - xmin) * (P.w / (xmax - xmin));
+    const Y = (v) => P.y0 + P.h - ((v - ymin) / (ymax - ymin)) * P.h;
+    yt = yt || niceTicks(ymin, ymax);
+
+    ctx.clearRect(0, 0, width, height);
+    ctx.fillStyle = C_BG; ctx.fillRect(0, 0, width, height);
+    ctx.save(); ctx.beginPath(); ctx.rect(P.x0, P.y0, P.w, P.h); ctx.clip();
+    ctx.strokeStyle = C_GRID; ctx.lineWidth = 1;
+    for (const v of yt){ const y = Y(v); ctx.beginPath(); ctx.moveTo(P.x0, y); ctx.lineTo(P.x0 + P.w, y); ctx.stroke(); }
+    for (const u of xt){ const x = X(u); ctx.beginPath(); ctx.moveTo(x, P.y0); ctx.lineTo(x, P.y0 + P.h); ctx.stroke(); }
+    ctx.restore();
+
+    ctx.fillStyle = C_TICK; ctx.font = MATH_FONT; ctx.textAlign = "right"; ctx.textBaseline = "middle";
+    for (const v of yt){
+      const y = Y(v);
+      ctx.fillText(yFmt(v), P.x0 - 8, y);
+      ctx.strokeStyle = C_AXIS; ctx.beginPath(); ctx.moveTo(P.x0-4, y); ctx.lineTo(P.x0, y); ctx.stroke();
+    }
+    ctx.textAlign = "center"; ctx.textBaseline = "top";
+    // thin out the labels on narrow screens (keep the one nearest 0)
+    const gap = xt.length > 1 ? Math.abs(X(xt[1]) - X(xt[0])) : Infinity, every = Math.max(1, Math.ceil(36 / gap));
+    const i0 = xt.reduce((b, u, i) => Math.abs(u) < Math.abs(xt[b]) ? i : b, 0);
+    xt.forEach((u, i) => { if ((((i - i0) % every) + every) % every === 0) ctx.fillText(fmtTick(u), X(u), P.y0 + P.h + 6); });
+
+    if (ymin <= 0 && ymax >= 0){
+      ctx.strokeStyle = C_AXIS; ctx.lineWidth = 1.5;
+      ctx.beginPath(); ctx.moveTo(P.x0, Y(0)); ctx.lineTo(P.x0 + P.w, Y(0)); ctx.stroke();
+    }
+    return {ctx, P, X, Y, ymin};
+  }
+  function clipped(F, fn){
+    const {ctx, P} = F;
+    ctx.save(); ctx.beginPath(); ctx.rect(P.x0, P.y0, P.w, P.h); ctx.clip(); fn(ctx); ctx.restore();
+  }
+  function line(F, xs, ys, color, width = 2, alpha = 1, dash = null){
+    clipped(F, (ctx) => {
+      ctx.strokeStyle = color; ctx.lineWidth = width; ctx.globalAlpha = alpha; ctx.lineJoin = 'round';
+      if (dash) ctx.setLineDash(dash);
+      ctx.beginPath();
+      for (let i = 0; i < xs.length; i++){ const x = F.X(xs[i]), y = F.Y(ys[i]); if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y); }
+      ctx.stroke();
+    });
+  }
+  // stems from `base` (0, or the bottom of a dB axis) up to each value; the dots shrink when there are many
+  function stems(F, xs, ys, color, {base = 0, width = 1.5, r = 3, alpha = 1} = {}){
+    clipped(F, (ctx) => {
+      ctx.globalAlpha = alpha; ctx.strokeStyle = color; ctx.fillStyle = color; ctx.lineWidth = width;
+      const yb = F.Y(base);
+      for (let i = 0; i < xs.length; i++){
+        const x = F.X(xs[i]), y = F.Y(ys[i]);
+        ctx.beginPath(); ctx.moveTo(x, yb); ctx.lineTo(x, y); ctx.stroke();
+        if (r > 0){ ctx.beginPath(); ctx.arc(x, y, r, 0, TWO_PI); ctx.fill(); }
+      }
+    });
+  }
+  function vline(F, x, color, dash = [5, 4]){
+    clipped(F, (ctx) => {
+      ctx.strokeStyle = color; ctx.lineWidth = 1.2; ctx.setLineDash(dash);
+      ctx.beginPath(); ctx.moveTo(F.X(x), F.P.y0); ctx.lineTo(F.X(x), F.P.y0 + F.P.h); ctx.stroke();
+    });
+  }
+
+  // ---------- Math rendering (KaTeX; plain-text fallback is already in the markup) ----------
+  window.addEventListener('load', () => {
+    document.querySelectorAll('[data-tex]').forEach(el => renderTeX(el, el.dataset.tex, el.hasAttribute('data-display')));
+    drawAll();
+  });
+  window.addEventListener('load', () => { if (document.fonts && document.fonts.load) document.fonts.load(MATH_FONT).then(drawAll); });
+
+  // ---------- Signals, window, transforms ----------
+  // tones: [{f, a}] — cosines a·cos(2π f n)
+  function tones(){
+    const f0 = parseFloat(elF0.value), df = parseFloat(elDf.value);
+    if (elSig.value === 'two')  return [{f: f0, a: 1}, {f: f0 + df, a: 1}];
+    if (elSig.value === 'weak') return [{f: f0, a: 1}, {f: f0 + df, a: WEAK}];
+    return [{f: f0, a: 1}];
+  }
+  const windowAt = (n, N) => elWin.value === 'hann' ? 0.5 - 0.5 * Math.cos(TWO_PI * n / (N - 1)) : 1;
+  // magnitude of the DTFT of the sequence v[0..N-1] at frequency f
+  function dtftMag(v, f){
+    let re = 0, im = 0;
+    for (let n = 0; n < v.length; n++){ const a = TWO_PI * f * n; re += v[n] * Math.cos(a); im -= v[n] * Math.sin(a); }
+    return Math.hypot(re, im);
+  }
+
+  // Zoom and pan on the spectrum (demos/demo.js; margins match frame)
+  const zoomF = zoomX([ctxF.canvas], {range: [0, 1], left: 56, right: 12, minFrac: 0.01, onChange: drawAll});
+
+  // ---------- Main draw ----------
+  function drawAll(){
+    const N = parseInt(elN.value, 10), M = N * parseInt(elPad.value, 10), T = tones(), db = elScale.value === 'db';
+    const twoTone = elSig.value !== 'one';
+    el('dfBox').style.display = twoTone ? '' : 'none';
+    setTeX(el('f0val'), String.raw`f_0=${T[0].f.toFixed(3)}`, `f₀ = ${T[0].f.toFixed(3)}`);
+    setTeX(el('dfval'), String.raw`\Delta f=${parseFloat(elDf.value).toFixed(3)}`, `Δf = ${parseFloat(elDf.value).toFixed(3)}`);
+    setTeX(el('nval'), `N=${N}`, `N = ${N}`);
+
+    // windowed sequence v[n] = w[n] x[n]; normalized so a unit cosine peaks at 1/2 whatever the window
+    const w = Float64Array.from({length: N}, (_, n) => windowAt(n, N));
+    const S = w.reduce((s, v) => s + v, 0);
+    const v = Float64Array.from({length: N}, (_, n) => w[n] * T.reduce((s, t) => s + t.a * Math.cos(TWO_PI * t.f * n), 0));
+    const norm = 1 / S;
+
+    // 1) time: the N samples keep the whole width; with zero-padding a gray strip at the end shows the
+    // first few padded zeros and says how many there are (drawing all M would squeeze the data into 1/8)
+    const amp = elSig.value === 'two' ? 2 : 1, padded = M > N, xEnd = padded ? N + Math.max(4, Math.round(0.2 * N)) : N;
+    let F = frame(ctxT, [-0.5, xEnd - 0.5], [-1.2 * amp, 1.2 * amp], niceTicks(0, N - 1, 8), niceTicks(-amp, amp, 5));
+    if (padded){
+      clipped(F, (ctx) => { ctx.fillStyle = 'rgba(100, 116, 139, 0.16)'; ctx.fillRect(F.X(N - 0.5), F.P.y0, F.X(xEnd - 0.5) - F.X(N - 0.5), F.P.h); });
+      stems(F, Array.from({length: xEnd - N}, (_, i) => N + i), new Array(xEnd - N).fill(0), C_PAD, {r: 2.5, alpha: 0.9});
+      const c = F.ctx; c.fillStyle = '#cbd5e1'; c.font = MATH_FONT; c.textAlign = 'center'; c.textBaseline = 'top';
+      const xm = (F.X(N - 0.5) + F.X(xEnd - 0.5)) / 2;
+      c.fillText(`+ ${M - N} zeros`, xm, F.P.y0 + 6); c.fillText(`(M = ${M})`, xm, F.P.y0 + 22);
+    }
+    line(F, Array.from({length: N}, (_, n) => n), Array.from(w, (x) => x * amp), C_W, 1.5, 0.9, [6, 5]);
+    stems(F, Array.from({length: N}, (_, n) => n), v, C_Y, {r: N > 80 ? 2 : 3});
+
+    // 2) spectrum: DTFT curve, DFT samples on it, true frequencies dashed (and their mirror images at 1 - f)
+    const mag = Float64Array.from(FF, (f) => dtftMag(v, f) * norm);
+    const ks = Array.from({length: M}, (_, k) => k / M);
+    const kmag = ks.map((f) => dtftMag(v, f) * norm);
+    const toY = db ? (m) => Math.max(DB_FLOOR, 20 * Math.log10(m / 0.5)) : (m) => m;   // dB: a unit cosine peaks at 0 dB
+    const yr = db ? [-80, 5] : [0, 0.6], yt = db ? [-80, -60, -40, -20, 0] : [0, 0.1, 0.2, 0.3, 0.4, 0.5];
+    const fr = zoomF.range();
+    F = frame(ctxF, fr, yr, niceTicks(fr[0], fr[1], 10), yt, db ? (x) => x + ' dB' : fmtTick);
+    for (const t of T){ const ff = ((t.f % 1) + 1) % 1; vline(F, ff, '#94a3b8'); vline(F, 1 - ff, '#94a3b8'); }
+    line(F, FF, Array.from(mag, toY), C_X, 1.8, 0.9);
+    stems(F, ks, kmag.map(toY), C_Y, {base: db ? yr[0] : 0, width: M > 256 ? 1 : 1.8, r: M > 256 ? 0 : (M > 96 ? 2 : 3.5)});
+
+    // readout: bin spacing, where f0 falls, and whether two tones are resolved
+    const kf = T[0].f * M, onBin = Math.abs(kf - Math.round(kf)) < 1e-6;
+    const lobe = elWin.value === 'hann' ? 2 / N : 1 / N;                 // half the main-lobe width
+    let tex = String.raw`N=${N},\ M=${M}:\quad \text{bin spacing } 1/M=${(1 / M).toFixed(4)},\quad f_0M=${kf.toFixed(2)}\ ` +
+      (onBin ? String.raw`\text{(on bin } k=${Math.round(kf)}\text{)}` : String.raw`\text{(between bins } ${Math.floor(kf)}\text{ and }${Math.floor(kf) + 1}\text{)}`);
+    let txt = `N = ${N}, M = ${M}: bin spacing 1/M = ${(1 / M).toFixed(4)}, f0·M = ${kf.toFixed(2)}` + (onBin ? ` (on bin ${Math.round(kf)})` : ` (between bins ${Math.floor(kf)} and ${Math.floor(kf) + 1})`);
+    if (twoTone){
+      const df = parseFloat(elDf.value), ok = df > lobe;
+      tex += String.raw`\\ \Delta f=${df.toFixed(3)}\ ${ok ? '>' : '<'}\ ${elWin.value === 'hann' ? '2/N' : '1/N'}=${lobe.toFixed(3)}:\ \text{${ok ? 'the main lobes are apart' : 'the main lobes overlap'}}`;
+      txt += `; Δf = ${df.toFixed(3)} ${ok ? '>' : '<'} ${lobe.toFixed(3)}: ${ok ? 'the main lobes are apart' : 'the main lobes overlap'}`;
+    }
+    const lm = el('liveMath');
+    if (!renderTeX(lm, String.raw`\begin{gathered}` + tex + String.raw`\end{gathered}`, true)) lm.textContent = txt;
+  }
+
+  // ---------- Sweep f0 from its current value to the top of the slider (dragging the slider stops it) ----------
+  const SWEEP_RATE = 0.02;                                   // cycles/sample per second
+  let raf = null, lastTs = 0, val = 0;
+  function stopSweep(){
+    if (raf) cancelAnimationFrame(raf);
+    raf = null; elSweep.innerHTML = '&#9654;&#xFE0E; Sweep f&#8320;';
+  }
+  function step(ts){
+    const hi = parseFloat(elF0.max), st = parseFloat(elF0.step);
+    const dt = lastTs ? Math.min(0.1, (ts - lastTs) / 1000) : 0;
+    lastTs = ts;
+    val = Math.min(hi, val + SWEEP_RATE * dt);
+    elF0.value = (Math.round(val / st) * st).toFixed(3);
+    drawAll();
+    if (val >= hi) { stopSweep(); return; }
+    raf = requestAnimationFrame(step);
+  }
+  elSweep.addEventListener('click', () => {
+    if (raf) { stopSweep(); return; }
+    val = parseFloat(elF0.value);
+    if (val >= parseFloat(elF0.max)) val = parseFloat(elF0.min);
+    lastTs = 0; elSweep.innerHTML = '&#10074;&#10074;&#xFE0E; Pause';
+    raf = requestAnimationFrame(step);
+  });
+
+  // listeners
+  elF0.addEventListener('input', () => { stopSweep(); drawAll(); });
+  // a new signal type gets a spacing that shows it well: close tones for resolution, far ones for leakage
+  elSig.addEventListener('change', () => { if (elSig.value === 'two') elDf.value = 0.04; if (elSig.value === 'weak') elDf.value = 0.15; drawAll(); });
+  [elDf, elN].forEach((e) => e.addEventListener('input', drawAll));
+  [elWin, elPad, elScale].forEach((e) => e.addEventListener('change', drawAll));
+  window.addEventListener('resize', drawAll);
+
+  drawAll();
+})();
+</script>
+</body>
+</html>
