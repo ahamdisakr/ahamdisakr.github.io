@@ -5,6 +5,16 @@
 <head>
 <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <script>/* ?embed=1: hide the site menu and footer (e.g. inside a Brightspace page) and credit the source */
+      if (/[?&]embed=1(&|$)/.test(location.search)) {
+        document.documentElement.classList.add('embed');
+        document.addEventListener('DOMContentLoaded', function () {
+          var p = document.createElement('p'); p.className = 'embed-credit';
+          p.innerHTML = 'Interactive demo &copy; 2021&ndash;2026 <a href="/teaching.html" target="_blank" rel="noopener">Ahmed Hamdi Sakr</a> &middot; <a href="' + location.pathname + '" target="_blank" rel="noopener">Open the full page &#8599;</a>';
+          var panel = document.querySelector('main .panel'); (panel || document.body).appendChild(p);
+        });
+      }
+    </script>
 <title>Fourier Series Coefficients | Ahmed Hamdi Sakr</title>
 <meta name="description" content="Interactive demo of Fourier series coefficients: choose a signal, the number of harmonics and a time shift, and see the reconstruction, the error and the spectra." />
     <script defer src="https://cdn.jsdelivr.net/npm/feather-icons@4.29.2/dist/feather.min.js"></script>
@@ -26,10 +36,15 @@
         <div class="site-container">
         <main class="page fade-in" id="main">
   <div class="panel panel--static">
-  <h1 class="title-lg mb-4">Interactive Fourier Series Coefficient Demo</h1>
+  <h1 class="title-lg mb-4">Fourier Series Coefficients</h1>
   <p>Choose a signal, the number of coefficients and a time shift. You can also overlay the error <span class="m" data-tex="e(t)=x(t)-y(t)">e(t) = x(t) - y(t)</span>. Shifting the signal in time leaves <span class="m" data-tex="|a_k|">|a<sub>k</sub>|</span> unchanged and only changes the phase, by an amount proportional to <span class="m" data-tex="k">k</span>: <span class="m" data-tex="a_k \to a_k\,e^{-j2\pi k\tau/T}">a<sub>k</sub> &rarr; a<sub>k</sub> e<sup>-j2&pi;k&tau;/T</sup></span>.</p>
-  <p>Change the period <span class="m" data-tex="T">T</span> and switch the spectrum axis to frequency: the coefficients <span class="m" data-tex="a_k">a<sub>k</sub></span> do not depend on <span class="m" data-tex="T">T</span>, but they sit at the harmonic frequencies <span class="m" data-tex="f_k = k/T">f<sub>k</sub> = k/T</span>, so a longer period packs the spectral lines closer together.</p>
-  <p class="mb-4"><strong>Try it:</strong> with the square wave, raise <span class="m" data-tex="N">N</span> one step at a time. Only the odd harmonics are nonzero, and each one brings the reconstruction closer to the square wave. Near the jumps, though, the overshoot stays at about 9% of the jump however large <span class="m" data-tex="N">N</span> gets (the Gibbs phenomenon). Switch to the triangle wave: it has no jumps, its coefficients fall off much faster, and a few terms already look right. Then move the time shift and watch only the phase spectrum change. Finally, select the frequency axis and change <span class="m" data-tex="T">T</span>: the same coefficients spread out or bunch together.</p>
+  <p>Change the period <span class="m" data-tex="T">T</span> and switch the spectrum axis to frequency: the coefficients <span class="m" data-tex="a_k">a<sub>k</sub></span> do not depend on <span class="m" data-tex="T">T</span>, but they sit at the harmonic frequencies <span class="m" data-tex="f_k = k/T">f<sub>k</sub> = k/T</span>, spaced <span class="m" data-tex="1/T">1/T</span> apart, so a longer period puts the spectral lines closer together in frequency.</p>
+  <p class="mb-4"><strong>Try it:</strong> with the square wave, raise <span class="m" data-tex="N">N</span> one step at a time. Only the odd harmonics are nonzero, and each one brings the reconstruction closer to the square wave. Near the jumps, though, the overshoot stays at about 9% of the jump however large <span class="m" data-tex="N">N</span> gets (the Gibbs phenomenon). Switch to the triangle wave: it has no jumps, its coefficients fall off much faster, and a few terms already look right. Then move the time shift and watch only the phase spectrum change. Finally, select the frequency axis and change <span class="m" data-tex="T">T</span>: the coefficients stay the same, but the frequencies they sit at change, since the lines are <span class="m" data-tex="1/T">1/T</span> Hz apart.</p>
+  <div class="predict">
+    <h2 class="predict-title">Predict, then check</h2>
+    <details><summary>Square wave or triangle wave: which needs more coefficients to look right, and why?</summary><p>The square wave. Its jumps make its coefficients fall off only like <span class="m" data-tex="1/k">1/k</span>, while the continuous triangle&rsquo;s fall off like <span class="m" data-tex="1/k^2">1/k&sup2;</span>, so the triangle&rsquo;s higher harmonics matter much less.</p></details>
+    <details><summary>For the half-wave rectified sine, which coefficients are nonzero?</summary><p>The average <span class="m" data-tex="a_0=1/\pi">a<sub>0</sub> = 1/&pi;</span>, the fundamental <span class="m" data-tex="|a_{\pm 1}|=1/4">|a<sub>&plusmn;1</sub>| = 1/4</span>, and the even harmonics (<span class="m" data-tex="k=\pm 2,\pm 4,\dots">k = &plusmn;2, &plusmn;4, &hellip;</span>). The odd ones from <span class="m" data-tex="k=3">k = 3</span> on are zero.</p></details>
+  </div>
 
   <div class="controls controls--sticky controls--3">
     <div class="control">
@@ -49,7 +64,10 @@
     </div>
 
     <div class="control">
-      <label for="ncoef">Number of coefficients <span id="nval" class="m">N = 0</span></label>
+      <div class="control-head">
+        <label for="ncoef">Coefficients <span id="nval" class="m">N = 0</span></label>
+        <button class="btn btn-primary sweep-btn" id="btnPlayN" type="button">&#9654;&#xFE0E; Play</button>
+      </div>
       <input type="range" min="0" max="15" step="1" value="0" id="ncoef" />
       <label for="period">Period <span id="Tval" class="m">T = 2.0 s</span></label>
       <input type="range" min="1" max="5" step="0.1" value="2" id="period" />
@@ -138,8 +156,6 @@
   const elTval   = document.getElementById('Tval');
   const elAxis   = document.getElementById('xaxis');
   const T_WINDOW = 8;          // time plot length in seconds (holds T_WINDOW/T periods)
-  const F_MAX = 16;            // frequency axis range [-F_MAX, F_MAX] Hz: k = ±15 still fits at the shortest period
-  const F_TICKS = [-15, -10, -5, 0, 5, 10, 15];
 
   const timeCanvas  = document.getElementById('timeCanvas');
   const magCanvas   = document.getElementById('magCanvas');
@@ -318,12 +334,26 @@ function decomposeReconstruction(tArray, coeffs, N){
     ctx.fillRect(0,0,width,height);
   }
 
-  function yTicks(minv, maxv, count=5){
-    const ticks = [];
+  // Round tick values (steps of 1, 2, 2.5 or 5 times a power of ten), about `target` of them
+  function niceTicks(lo, hi, target = 5){
+    if (!(hi > lo)) return [lo];
+    const e = Math.floor(Math.log10((hi - lo) / target));
+    let best = null;
+    for (const p of [e - 1, e, e + 1]) for (const m of [1, 2, 2.5, 5]){
+      const s = m * Math.pow(10, p);
+      const n = Math.floor(hi / s + 1e-9) - Math.ceil(lo / s - 1e-9) + 1;
+      const score = Math.abs(n - target);
+      if (!best || score < best.score || (score === best.score && s > best.s)) best = {s, score};
+    }
+    const out = [];
+    for (let k = Math.ceil(lo / best.s - 1e-9); k * best.s <= hi + 1e-9 * best.s; k++) out.push(k === 0 ? 0 : k * best.s);
+    return out;
+  }
+  const fmtTick = (v) => (Math.abs(v) < 1e-12 ? "0" : String(Number(v.toPrecision(3))));
+
+  function yTicks(minv, maxv){
     if (minv===maxv){ minv -= 1; maxv += 1; }
-    const step = (maxv-minv)/(count-1);
-    for(let i=0;i<count;i++){ ticks.push(minv + i*step); }
-    return {min: minv, max: maxv, ticks};
+    return {min: minv, max: maxv, ticks: niceTicks(minv, maxv)};
   }
 
 function plotSignalWithAxes(ctx, tArray, seriesList, opts){
@@ -389,7 +419,7 @@ function plotSignalWithAxes(ctx, tArray, seriesList, opts){
   ctx.textAlign = "right"; ctx.textBaseline = "middle";
   yt.ticks.forEach(v => {
     const y = yToPx(v);
-    ctx.fillText(v.toFixed(2), plot.x0 - 6, y);
+    ctx.fillText(fmtTick(v), plot.x0 - 6, y);
     ctx.strokeStyle = "#223356"; ctx.beginPath(); ctx.moveTo(plot.x0-3, y); ctx.lineTo(plot.x0, y); ctx.stroke();
   });
 
@@ -447,8 +477,7 @@ function stemPlotWithAxes(ctx, values, opts = {}) {
   }
   const yToPx = v => plot.y0 + plot.h - ((v - ymin) / (ymax - ymin)) * plot.h;
 
-  const tickCount = 5;
-  const yTicksVals = Array.from({ length: tickCount }, (_, i) => ymin + (i * (ymax - ymin)) / (tickCount - 1));
+  const yTicksVals = niceTicks(ymin, ymax);
 
   // x positions for integer n
   const N = values.length;
@@ -494,7 +523,7 @@ function stemPlotWithAxes(ctx, values, opts = {}) {
   ctx.textBaseline = "middle";
   yTicksVals.forEach(v => {
     const y = yToPx(v);
-    ctx.fillText(v.toFixed(2), plot.x0 - 6, y);
+    ctx.fillText(fmtTick(v), plot.x0 - 6, y);
     ctx.strokeStyle = "#223356";
     ctx.beginPath(); ctx.moveTo(plot.x0 - 3, y); ctx.lineTo(plot.x0, y); ctx.stroke();
   });
@@ -775,8 +804,10 @@ function plotAllHarmonics(ctx, tArray, coeffs, N, opts = {}) {
     const phsLimited = f.map(c => Math.hypot(c.re, c.im) < 1e-3 * magMax ? 0 : Math.atan2(c.im, c.re));
 
     // Spectrum x axis: coefficient index k, or the harmonic frequency f_k = k/T in Hz
+    // the frequency axis covers the same harmonics as the k axis (|k| <= 15), so only the labels change: f_k = k/T
+    const fEdge = (span + 0.5) / Tp;
     const axisOpts = byFreq
-      ? { xs: f.map((_, i) => (i - span) / Tp), xr: [-F_MAX, F_MAX], xTicks: F_TICKS }
+      ? { xs: f.map((_, i) => (i - span) / Tp), xr: [-fEdge, fEdge], xTicks: niceTicks(-fEdge, fEdge, 7) }
       : {};
     const axisTex = byFreq ? String.raw`f\ (\mathrm{Hz})` : String.raw`k\ (\text{harmonic index})`;
     const axisTxt = byFreq ? 'f (Hz)' : 'k (harmonic index)';
@@ -797,6 +828,26 @@ function plotAllHarmonics(ctx, tArray, coeffs, N, opts = {}) {
   }
 
   [elWave, elNcoef, elPhase, elShowE, elShowH, elPeriod, elAxis].forEach(el => el.addEventListener('input', drawAll));
+
+  // Play: add the harmonics one at a time (dragging the N slider stops it)
+  const elPlayN = document.getElementById('btnPlayN');
+  const N_MAX = parseInt(elNcoef.max, 10), N_STEP_MS = 700;
+  let nTimer = null;
+  function stopPlayN(){
+    if (nTimer) clearInterval(nTimer);
+    nTimer = null; elPlayN.innerHTML = '&#9654;&#xFE0E; Play';
+  }
+  elPlayN.addEventListener('click', () => {
+    if (nTimer) { stopPlayN(); return; }
+    if (parseInt(elNcoef.value, 10) >= N_MAX) { elNcoef.value = 0; drawAll(); }
+    elPlayN.innerHTML = '&#10074;&#10074;&#xFE0E; Pause';
+    nTimer = setInterval(() => {
+      const n = parseInt(elNcoef.value, 10) + 1;
+      elNcoef.value = n; drawAll();
+      if (n >= N_MAX) stopPlayN();
+    }, N_STEP_MS);
+  });
+  elNcoef.addEventListener('input', stopPlayN);
   window.addEventListener('resize', drawAll);
   drawAll();
 })();

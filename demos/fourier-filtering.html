@@ -5,6 +5,16 @@
 <head>
 <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <script>/* ?embed=1: hide the site menu and footer (e.g. inside a Brightspace page) and credit the source */
+      if (/[?&]embed=1(&|$)/.test(location.search)) {
+        document.documentElement.classList.add('embed');
+        document.addEventListener('DOMContentLoaded', function () {
+          var p = document.createElement('p'); p.className = 'embed-credit';
+          p.innerHTML = 'Interactive demo &copy; 2021&ndash;2026 <a href="/teaching.html" target="_blank" rel="noopener">Ahmed Hamdi Sakr</a> &middot; <a href="' + location.pathname + '" target="_blank" rel="noopener">Open the full page &#8599;</a>';
+          var panel = document.querySelector('main .panel'); (panel || document.body).appendChild(p);
+        });
+      }
+    </script>
 <title>Filtering Signals and Audio | Ahmed Hamdi Sakr</title>
 <meta name="description" content="Interactive filtering demo: apply low-pass, high-pass, band-pass and notch filters to test signals or your own audio and compare the time and frequency domains." />
     <script defer src="https://cdn.jsdelivr.net/npm/feather-icons@4.29.2/dist/feather.min.js"></script>
@@ -26,8 +36,13 @@
         <main class="page fade-in" id="main">
   <div class="panel panel--static">
   <h1 class="title-lg mb-4">Filtering Signals and Audio</h1>
-    <p>Pick a signal and filter. For BPF/Notch, <span class="m" data-tex="Q=f_c/\mathrm{BW}">Q = f<sub>c</sub>/BW</span>. Upload/record audio and A/B play.</p>
+    <p>Choose a test signal, or upload or record your own audio, and a filter, then compare the input and the output in time and in frequency. In the frequency domain the filter simply multiplies the spectrum, <span class="m" data-tex="Y(f)=H(f)\,X(f)">Y(f) = H(f) X(f)</span>. For the band-pass and notch filters, the bandwidth sets the quality factor <span class="m" data-tex="Q=f_c/\mathrm{BW}">Q = f<sub>c</sub>/BW</span>. Use the play buttons to hear the original and the filtered signal.</p>
     <p class="mb-4"><strong>Try it:</strong> choose the square wave at <span class="m" data-tex="f_0=200\ \text{Hz}">f<sub>0</sub> = 200 Hz</span> and the low-pass filter. Its harmonics sit at 200, 600, 1000 Hz and so on. Lower <span class="m" data-tex="f_c">f<sub>c</sub></span> toward 300 Hz: the higher harmonics are removed, and the output becomes close to a 200 Hz sine. Play the original and the filtered signal to hear the difference. Then choose the demo tones (440 + 880 Hz) with a notch filter at <span class="m" data-tex="f_c=880\ \text{Hz}">f<sub>c</sub> = 880 Hz</span> and a narrow bandwidth (about 100 Hz): the 880 Hz line disappears from <span class="m" data-tex="|Y(f)|">|Y(f)|</span> and only the lower tone is left. You can also upload or record your own audio and try each filter on it.</p>
+    <div class="predict">
+      <h2 class="predict-title">Predict, then check</h2>
+      <details><summary>Send a 200 Hz cosine through the high-pass filter with <span class="m" data-tex="f_c=1000\ \text{Hz}">f<sub>c</sub> = 1000 Hz</span>. What does the output look like?</summary><p>A 200 Hz cosine, about 0.04 times as large. A filter can only scale and shift a sinusoid, and this high-pass filter lets very little through at a fifth of its cutoff.</p></details>
+      <details><summary>Choose white noise and the band-pass filter. What shape will <span class="m" data-tex="|Y(f)|">|Y(f)|</span> have?</summary><p>The shape of <span class="m" data-tex="|H(f)|">|H(f)|</span>: a bump around <span class="m" data-tex="f_c">f<sub>c</sub></span>. White noise has a flat spectrum, so <span class="m" data-tex="|Y(f)|=|H(f)|\,|X(f)|">|Y(f)| = |H(f)| |X(f)|</span> simply traces out the filter&rsquo;s response.</p></details>
+    </div>
 
 <div class="controls controls--sticky">
         <div class="control">
@@ -546,15 +561,14 @@
     fileInput.style.display = (kind==='upload') ? 'block' : 'none';
     recordRow.style.display = (kind==='record') ? 'flex' : 'none';
 
-    // Default time window: a few cycles of the chosen signal (full second for files).
-    // Reset only when the signal itself changes, so filter tweaks keep the user's zoom.
-    const CYCLES = 4;
-    const winKey = kind + '|' + f0 + '|' + (uploadedBuffer ? uploadedBuffer.length : 0);
+    // Default time window: fixed per signal type (it does not follow f0, so a higher f0 shows more
+    // cycles; 20 ms is 4 cycles at the default 200 Hz). Full second for files. Reset only when the
+    // signal type changes, so moving f0 or the filter keeps the axis (and the user's zoom).
+    const winKey = kind + '|' + (uploadedBuffer ? uploadedBuffer.length : 0);
     if (winKey !== lastWinKey){
       lastWinKey = winKey;
       let win = T;
-      if (hasF0) win = CYCLES / f0;
-      else if (kind === 'demo') win = CYCLES / 440;
+      if (hasF0 || kind === 'demo') win = 0.02;
       else if (kind === 'noise') win = 0.01;
       zoomTime.setInit([0, Math.min(T, win)]);
     }

@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+<meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <script>/* ?embed=1: hide the site menu and footer (e.g. inside a Brightspace page) and credit the source */
+      if (/[?&]embed=1(&|$)/.test(location.search)) {
+        document.documentElement.classList.add('embed');
+        document.addEventListener('DOMContentLoaded', function () {
+          var p = document.createElement('p'); p.className = 'embed-credit';
+          p.innerHTML = 'Interactive demo &copy; 2021&ndash;2026 <a href="/teaching.html" target="_blank" rel="noopener">Ahmed Hamdi Sakr</a> &middot; <a href="' + location.pathname + '" target="_blank" rel="noopener">Open the full page &#8599;</a>';
+          var panel = document.querySelector('main .panel'); (panel || document.body).appendChild(p);
+        });
+      }
+    </script>
+<title>Fourier Transform Properties | Ahmed Hamdi Sakr</title>
+<meta name="description" content="Interactive demo of Fourier transform properties: scale, reverse, shift, modulate, convolve or differentiate a pulse and watch its magnitude and phase spectrum change, with Parseval's theorem checked live." />
+    <script defer src="https://cdn.jsdelivr.net/npm/feather-icons@4.29.2/dist/feather.min.js"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css" />
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+
+    <link href="/styles.css" rel="stylesheet" />
+    <link href="/demos/demo.css" rel="stylesheet" />
+    <link rel="icon" type="image/x-icon" href="/images/icon.ico" />
+    <script defer src="/app.js"></script>
+
+</head>
+
+<body data-page="teaching">
+
+    <div id="site-nav"></div>
+
+        <div class="site-container">
+        <main class="page fade-in" id="main">
+  <div class="panel panel--static">
+  <h1 class="title-lg mb-4">Fourier Transform Properties</h1>
+  <p>Simple changes to a signal change its Fourier transform <span class="m" data-tex="X(f)">X(f)</span> in predictable ways. <strong>Scaling</strong> time by <span class="m" data-tex="a">a</span> scales frequency by <span class="m" data-tex="1/a">1/a</span>, and <span class="m" data-tex="a=-1">a = &minus;1</span> reverses time. A <strong>time shift</strong> only adds a phase that grows linearly with frequency. Multiplying by a complex exponential <strong>shifts the spectrum</strong>; multiplying by a cosine (<strong>modulation</strong>) makes two half-height copies. <strong>Convolution</strong> in time is multiplication in frequency, and <strong>differentiation</strong> multiplies the spectrum by <span class="m" data-tex="j2\pi f">j2&pi;f</span>, boosting high frequencies. Through all of them, <strong>Parseval&rsquo;s theorem</strong> says the energy is the same in both domains.</p>
+  <p class="mb-4"><strong>Try it:</strong> with the rectangular pulse and time scaling, raise <span class="m" data-tex="a">a</span> to 2: the pulse becomes half as wide and its spectrum twice as wide and half as tall. Move <span class="m" data-tex="a">a</span> to <span class="m" data-tex="-1">&minus;1</span> with the exponential: the signal is reversed, <span class="m" data-tex="|Y(f)|">|Y(f)|</span> stays the same and the phase flips sign. Switch to time shift and press Play: <span class="m" data-tex="|Y(f)|">|Y(f)|</span> does not move, while the phase becomes a steeper and steeper ramp. Compare frequency shift with modulation: the complex exponential moves the whole spectrum to <span class="m" data-tex="f_c">f<sub>c</sub></span>, while the cosine, half of <span class="m" data-tex="e^{j2\pi f_c t}">e<sup>j2&pi;f<sub>c</sub>t</sup></span> plus half of <span class="m" data-tex="e^{-j2\pi f_c t}">e<sup>&minus;j2&pi;f<sub>c</sub>t</sup></span>, makes two half-height copies. With convolution, widen the averaging pulse: <span class="m" data-tex="y(t)">y(t)</span> gets smoother and its spectrum narrower. Finally, differentiate the triangle: the result is two rectangular pulses, and the spectrum is boosted at high frequencies. Watch the two energies in the Parseval readout stay equal throughout.</p>
+  <div class="predict">
+    <h2 class="predict-title">Predict, then check</h2>
+    <details><summary>The rectangular pulse (1 s wide) has its first spectral zeros at <span class="m" data-tex="\pm 1\ \text{Hz}">&plusmn;1 Hz</span>. With <span class="m" data-tex="a=4">a = 4</span>, where are the first zeros, and how tall is <span class="m" data-tex="|Y(0)|">|Y(0)|</span>?</summary><p>At <span class="m" data-tex="\pm 4\ \text{Hz}">&plusmn;4 Hz</span>, and <span class="m" data-tex="|Y(0)|=1/4">|Y(0)| = 1/4</span>. The pulse is 4 times shorter, so its spectrum is 4 times wider and, since <span class="m" data-tex="Y(0)">Y(0)</span> is the area under <span class="m" data-tex="y(t)">y(t)</span>, 4 times lower.</p></details>
+    <details><summary>Shift the Gaussian pulse by <span class="m" data-tex="t_0=1\ \text{s}">t<sub>0</sub> = 1 s</span>. Does <span class="m" data-tex="|Y(f)|">|Y(f)|</span> change? What is the phase at <span class="m" data-tex="f=0.25\ \text{Hz}">f = 0.25 Hz</span>?</summary><p><span class="m" data-tex="|Y(f)|">|Y(f)|</span> does not change. The phase is <span class="m" data-tex="-2\pi f t_0=-2\pi(0.25)(1)=-\pi/2">&minus;2&pi;ft<sub>0</sub> = &minus;2&pi;(0.25)(1) = &minus;&pi;/2</span>, that is <span class="m" data-tex="-90^\circ">&minus;90&deg;</span>.</p></details>
+    <details><summary>Convolve the rectangular pulse with an averaging pulse of the same width, <span class="m" data-tex="W=1\ \text{s}">W = 1 s</span>. What shape is <span class="m" data-tex="y(t)">y(t)</span>, and what is <span class="m" data-tex="Y(f)">Y(f)</span>?</summary><p>A triangle from <span class="m" data-tex="-1">&minus;1</span> to <span class="m" data-tex="1">1</span> s with peak 1, the triangular pulse. Its transform is the product of the two spectra, <span class="m" data-tex="\mathrm{sinc}(f)\cdot\mathrm{sinc}(f)=\mathrm{sinc}^2(f)">sinc(f)&middot;sinc(f) = sinc&sup2;(f)</span>.</p></details>
+  </div>
+
+  <div class="controls controls--sticky controls--3">
+    <div class="control">
+      <label for="prop">Property</label>
+      <select id="prop" class="sig-select">
+        <option value="scale">Time scaling and reversal: x(at)</option>
+        <option value="shift">Time shift: x(t &minus; t&#8320;)</option>
+        <option value="fshift">Frequency shift: x(t) e^(j2&pi;f&#8346;t)</option>
+        <option value="mod">Modulation: x(t) cos(2&pi;f&#8346;t)</option>
+        <option value="conv">Convolution with a pulse: x(t) * w(t)</option>
+        <option value="diff">Differentiation: dx/dt</option>
+      </select>
+    </div>
+    <div class="control">
+      <label for="sig">Signal <span class="m" data-tex="x(t)">x(t)</span></label>
+      <select id="sig" class="sig-select">
+        <option value="rect">Rectangular pulse &harr; sinc(f)</option>
+        <option value="tri">Triangular pulse &harr; sinc&sup2;(f)</option>
+        <option value="gauss">Gaussian pulse &harr; e^(&minus;&pi;f&sup2;)</option>
+        <option value="exp">Decaying exponential &harr; 1/(1 + j2&pi;f)</option>
+      </select>
+    </div>
+    <div class="control">
+      <div id="parBox">
+        <div class="control-head">
+          <label for="par"><span id="parval" class="m">a = 1.00</span></label>
+          <button class="btn btn-primary sweep-btn" id="btnPlay" type="button">&#9654;&#xFE0E; Play</button>
+        </div>
+        <input id="par" type="range" min="-4" max="4" step="0.05" value="1"/>
+      </div>
+      <div id="noPar" class="small" style="display:none">This property has no parameter.</div>
+    </div>
+  </div>
+
+  <div class="canvas-row">
+    <div class="card">
+      <h2 id="propName"><span>Property</span></h2>
+      <div class="math-block" id="propFormula"></div>
+      <p class="small" id="propNote" style="margin:4px 0 0"></p>
+    </div>
+  </div>
+
+  <div class="canvas-row group">
+    <div class="card">
+      <h2 id="titleT"><span>Time domain</span></h2>
+      <canvas id="ct" class="short" role="img" aria-label="The changed signal y(t), with the original x(t) dashed"></canvas>
+      <div class="axis-label" data-tex="t\ (\mathrm{s})">t (s)</div>
+      <div class="math-block live" id="liveMath" aria-live="polite"></div>
+    </div>
+  </div>
+
+  <div class="plot-grid group">
+    <div class="card">
+      <h2 id="titleM"><span>Magnitude</span></h2>
+      <canvas id="cm" role="img" aria-label="Magnitude spectrum of y(t), with that of x(t) dashed"></canvas>
+      <div class="axis-label" data-tex="f\ (\mathrm{Hz})">f (Hz)</div>
+      <div class="readout" aria-live="polite"><span class="part" id="parseval"></span></div>
+    </div>
+    <div class="card">
+      <h2><span>Phase <span class="m" data-tex="\angle Y(f)">&ang;Y(f)</span> <span class="probe-note">(dashed: <span class="m" data-tex="\angle X(f)">&ang;X(f)</span>; hidden where <span class="m" data-tex="|Y(f)|\approx 0">|Y(f)| &asymp; 0</span>)</span></span></h2>
+      <canvas id="cp" role="img" aria-label="Phase spectrum of y(t) in degrees, with that of x(t) dashed"></canvas>
+      <div class="axis-label" data-tex="f\ (\mathrm{Hz})">f (Hz)</div>
+    </div>
+  </div>
+
+</div>
+
+        </main>
+        <footer class="site-footer fade-in">
+            <p>&copy; 2021&ndash;2026 Ahmed Hamdi Sakr. All rights reserved.</p>
+        </footer>
+        </div>
+
+
+<script>
+(function(){
+  // ---------- Config ----------
+  const TWO_PI = Math.PI * 2;
+  const T0 = -4, T1 = 4, NT = 1601;
+  const F0 = -6, F1 = 6, NF = 1201;
+  const TT = Float64Array.from({length: NT}, (_, i) => T0 + i * (T1 - T0) / (NT - 1));
+  const FF = Float64Array.from({length: NF}, (_, i) => F0 + i * (F1 - F0) / (NF - 1));
+  // Parseval: energies on wide, fine grids (the time signals are bounded; spectral tails beyond 1000 Hz are < 0.001)
+  // midpoint sampling, so no sample lands exactly on a jump (t = 0, ±0.5, ±1)
+  const ET = Float64Array.from({length: 40000}, (_, i) => -40 + (i + 0.5) * 0.002);
+  const EF = Float64Array.from({length: 200000}, (_, i) => -1000 + (i + 0.5) * 0.01);
+  const css = getComputedStyle(document.documentElement);
+  const col = (name, fb) => css.getPropertyValue(name).trim() || fb;
+  const C_X = col('--xcolor', '#f59e0b'), C_Y = col('--ycolor', '#60a5fa'), C_W = col('--scolor', '#c084fc');
+  const C_GRID = col('--grid', '#15223e'), C_AXIS = '#223356', C_TICK = '#94a3b8', C_BG = '#0a1326';
+
+  // ---------- Signals: x(t), X(f), the running integral Xi(t) = ∫_{-∞}^t x, and dx/dt (smooth part + impulses) ----------
+  const sinc = (u) => Math.abs(u) < 1e-12 ? 1 : Math.sin(Math.PI * u) / (Math.PI * u);
+  function erf(v){                                         // Abramowitz-Stegun 7.1.26, error < 1.5e-7
+    const s = Math.sign(v), a = Math.abs(v), t = 1 / (1 + 0.3275911 * a);
+    return s * (1 - (((((1.061405429 * t - 1.453152027) * t) + 1.421413741) * t - 0.284496736) * t + 0.254829592) * t * Math.exp(-a * a));
+  }
+  const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
+  const SIGNALS = {
+    rect:  {x: (t) => Math.abs(t) < 0.5 ? 1 : (Math.abs(t) === 0.5 ? 0.5 : 0),
+            X: (f) => ({re: sinc(f), im: 0}),
+            Xi: (t) => clamp(t + 0.5, 0, 1),
+            dx: () => 0, imp: [{t: -0.5, a: 1}, {t: 0.5, a: -1}]},
+    tri:   {x: (t) => Math.max(0, 1 - Math.abs(t)),
+            X: (f) => ({re: sinc(f) ** 2, im: 0}),
+            Xi: (t) => t <= -1 ? 0 : t <= 0 ? (t + 1) ** 2 / 2 : t <= 1 ? 1 - (1 - t) ** 2 / 2 : 1,
+            dx: (t) => (t > -1 && t < 0) ? 1 : (t > 0 && t < 1) ? -1 : 0, imp: []},
+    gauss: {x: (t) => Math.exp(-Math.PI * t * t),
+            X: (f) => ({re: Math.exp(-Math.PI * f * f), im: 0}),
+            Xi: (t) => 0.5 * (1 + erf(Math.sqrt(Math.PI) * t)),
+            dx: (t) => -TWO_PI * t * Math.exp(-Math.PI * t * t), imp: []},
+    exp:   {x: (t) => t >= 0 ? Math.exp(-t) : 0,
+            X: (f) => { const w = TWO_PI * f, d = 1 + w * w; return {re: 1 / d, im: -w / d}; },
+            Xi: (t) => t <= 0 ? 0 : 1 - Math.exp(-t),
+            dx: (t) => t > 0 ? -Math.exp(-t) : 0, imp: [{t: 0, a: 1}]},
+  };
+  const cmul = (a, b) => ({re: a.re * b.re - a.im * b.im, im: a.re * b.im + a.im * b.re});
+  // scaling: |a| below 0.5 snaps to ±0.5 (keeps 1/|a| on the plot); a = -1 is time reversal
+  const effA = (v) => Math.abs(v) < 0.5 ? (v < 0 ? -0.5 : 0.5) : v;
+
+  // Each property: slider (or none), y(t) (real, or {re, im}), impulses in y, Y(f), extra dashed curves, axis ranges
+  const PROPS = {
+    scale:  {par: {min: -4, max: 4, step: 0.05, def: 1}, timeYr: [-1.15, 1.15], magMax: 2,
+             y: (s, a, t) => s.x(effA(a) * t),
+             Y: (s, a, f) => { const A = effA(a), X = s.X(f / A); return {re: X.re / Math.abs(A), im: X.im / Math.abs(A)}; }},
+    shift:  {par: {min: -3, max: 3, step: 0.05, def: 0}, timeYr: [-1.15, 1.15], magMax: 1,
+             y: (s, t0, t) => s.x(t - t0),
+             Y: (s, t0, f) => cmul(s.X(f), {re: Math.cos(TWO_PI * f * t0), im: -Math.sin(TWO_PI * f * t0)})},
+    fshift: {par: {min: -4, max: 4, step: 0.05, def: 2}, timeYr: [-1.15, 1.15], magMax: 1, complex: true,
+             y: (s, fc, t) => { const v = s.x(t); return {re: v * Math.cos(TWO_PI * fc * t), im: v * Math.sin(TWO_PI * fc * t)}; },
+             Y: (s, fc, f) => s.X(f - fc)},
+    mod:    {par: {min: 0, max: 4, step: 0.05, def: 0}, timeYr: [-1.15, 1.15], magMax: 1,
+             y: (s, fc, t) => s.x(t) * Math.cos(TWO_PI * fc * t),
+             Y: (s, fc, f) => { const A = s.X(f - fc), B = s.X(f + fc); return {re: (A.re + B.re) / 2, im: (A.im + B.im) / 2}; }},
+    // w(t): a pulse of width W and height 1/W (area 1), so W(f) = sinc(Wf) and y is a moving average of x
+    conv:   {par: {min: 0.5, max: 3, step: 0.05, def: 1}, timeYr: [-0.25, 2.25], magMax: 1,
+             y: (s, W, t) => (s.Xi(t + W / 2) - s.Xi(t - W / 2)) / W,
+             Y: (s, W, f) => { const X = s.X(f), w = sinc(W * f); return {re: X.re * w, im: X.im * w}; },
+             wt: (W, t) => Math.abs(t) < W / 2 ? 1 / W : 0, Wf: (W, f) => Math.abs(sinc(W * f))},
+    diff:   {par: null, timeYr: [-2.2, 2.2], magMax: 2,
+             y: (s, _, t) => s.dx(t), imp: (s) => s.imp,
+             Y: (s, _, f) => cmul({re: 0, im: TWO_PI * f}, s.X(f))},
+  };
+
+  // DOM
+  const el = (id) => document.getElementById(id);
+  const elProp = el('prop'), elSig = el('sig'), elPar = el('par'), elPlay = el('btnPlay');
+  const ctxT = el('ct').getContext('2d'), ctxM = el('cm').getContext('2d'), ctxP = el('cp').getContext('2d');
+
+  // ---------- Plot helpers (style matches the other demos) ----------
+  const MATH_FONT = '13px KaTeX_Main, "Times New Roman", Times, serif';   // canvas tick labels
+  function fitCanvas(canvas){
+    const d = window.devicePixelRatio || 1;
+    const w = canvas.clientWidth, h = canvas.clientHeight;
+    const pw = Math.round(w*d), ph = Math.round(h*d);
+    if (canvas.width !== pw || canvas.height !== ph){ canvas.width = pw; canvas.height = ph; }
+    canvas.getContext('2d').setTransform(d,0,0,d,0,0);
+    return {width: w, height: h};
+  }
+  function fmtTick(u){
+    if (Math.abs(u) < 1e-12) return "0";
+    return String(Number(u.toPrecision(3)));
+  }
+  // Round tick values (steps of 1, 2, 2.5 or 5 times a power of ten), about `target` of them
+  function niceTicks(lo, hi, target = 5){
+    if (!(hi > lo)) return [lo];
+    const e = Math.floor(Math.log10((hi - lo) / target));
+    let best = null;
+    for (const p of [e - 1, e, e + 1]) for (const m of [1, 2, 2.5, 5]){
+      const s = m * Math.pow(10, p);
+      const n = Math.floor(hi / s + 1e-9) - Math.ceil(lo / s - 1e-9) + 1;
+      const score = Math.abs(n - target);
+      if (!best || score < best.score || (score === best.score && s > best.s)) best = {s, score};
+    }
+    const out = [];
+    for (let k = Math.ceil(lo / best.s - 1e-9); k * best.s <= hi + 1e-9 * best.s; k++) out.push(k === 0 ? 0 : k * best.s);
+    return out;
+  }
+  function frame(ctx, xr, yr, xt, yt, yFmt = fmtTick){
+    const {width, height} = fitCanvas(ctx.canvas);
+    const m = {left: 56, right: 12, top: 10, bottom: 28};
+    const P = {x0: m.left, y0: m.top, w: width - m.left - m.right, h: height - m.top - m.bottom};
+    const [xmin, xmax] = xr, [ymin, ymax] = yr;
+    const X = (v) => P.x0 + (v - xmin) * (P.w / (xmax - xmin));
+    const Y = (v) => P.y0 + P.h - ((v - ymin) / (ymax - ymin)) * P.h;
+    yt = yt || niceTicks(ymin, ymax);
+
+    ctx.clearRect(0, 0, width, height);
+    ctx.fillStyle = C_BG; ctx.fillRect(0, 0, width, height);
+    ctx.save(); ctx.beginPath(); ctx.rect(P.x0, P.y0, P.w, P.h); ctx.clip();
+    ctx.strokeStyle = C_GRID; ctx.lineWidth = 1;
+    for (const v of yt){ const y = Y(v); ctx.beginPath(); ctx.moveTo(P.x0, y); ctx.lineTo(P.x0 + P.w, y); ctx.stroke(); }
+    for (const u of xt){ const x = X(u); ctx.beginPath(); ctx.moveTo(x, P.y0); ctx.lineTo(x, P.y0 + P.h); ctx.stroke(); }
+    ctx.restore();
+
+    ctx.fillStyle = C_TICK; ctx.font = MATH_FONT; ctx.textAlign = "right"; ctx.textBaseline = "middle";
+    for (const v of yt){
+      const y = Y(v);
+      ctx.fillText(yFmt(v), P.x0 - 8, y);
+      ctx.strokeStyle = C_AXIS; ctx.beginPath(); ctx.moveTo(P.x0-4, y); ctx.lineTo(P.x0, y); ctx.stroke();
+    }
+    ctx.textAlign = "center"; ctx.textBaseline = "top";
+    const gap = xt.length > 1 ? Math.abs(X(xt[1]) - X(xt[0])) : Infinity, every = Math.max(1, Math.ceil(30 / gap));
+    const i0 = xt.reduce((b, u, i) => Math.abs(u) < Math.abs(xt[b]) ? i : b, 0);
+    xt.forEach((u, i) => { if ((((i - i0) % every) + every) % every === 0) ctx.fillText(fmtTick(u), X(u), P.y0 + P.h + 6); });
+
+    if (ymin <= 0 && ymax >= 0){
+      ctx.strokeStyle = C_AXIS; ctx.lineWidth = 1.5;
+      ctx.beginPath(); ctx.moveTo(P.x0, Y(0)); ctx.lineTo(P.x0 + P.w, Y(0)); ctx.stroke();
+    }
+    return {ctx, P, X, Y};
+  }
+  // NaN values break the line (used to hide the phase where the magnitude is zero);
+  // `jump` also breaks it where consecutive values differ by more than that (phase wrapping at ±180°)
+  function line(F, xs, ys, color, width = 2, alpha = 1, dash = null, jump = Infinity){
+    const {ctx, P} = F;
+    ctx.save(); ctx.beginPath(); ctx.rect(P.x0, P.y0, P.w, P.h); ctx.clip();
+    ctx.strokeStyle = color; ctx.lineWidth = width; ctx.globalAlpha = alpha; ctx.lineJoin = 'round';
+    if (dash) ctx.setLineDash(dash);
+    ctx.beginPath();
+    let pen = false;
+    for (let i = 0; i < xs.length; i++){
+      if (!isFinite(ys[i])) { pen = false; continue; }
+      const x = F.X(xs[i]), y = F.Y(ys[i]);
+      if (pen && Math.abs(ys[i] - ys[i-1]) > jump) pen = false;
+      if (!pen) { ctx.moveTo(x, y); pen = true; } else ctx.lineTo(x, y);
+    }
+    ctx.stroke(); ctx.restore();
+  }
+  // impulse a·δ(t - t0): an arrow of height a
+  function arrow(F, t0, a, color){
+    const {ctx, P} = F, x = F.X(t0), y0 = F.Y(0), y1 = F.Y(a), dir = a > 0 ? 1 : -1;
+    ctx.save(); ctx.beginPath(); ctx.rect(P.x0, P.y0, P.w, P.h); ctx.clip();
+    ctx.strokeStyle = color; ctx.fillStyle = color; ctx.lineWidth = 2.5;
+    ctx.beginPath(); ctx.moveTo(x, y0); ctx.lineTo(x, y1 + dir * 8); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(x, y1); ctx.lineTo(x - 6, y1 + dir * 10); ctx.lineTo(x + 6, y1 + dir * 10); ctx.closePath(); ctx.fill();
+    ctx.font = MATH_FONT; ctx.textAlign = 'left'; ctx.textBaseline = a > 0 ? 'top' : 'bottom';
+    ctx.fillText(`${a > 0 ? '' : '−'}δ`, x + 7, y1);
+    ctx.restore();
+  }
+
+  // ---------- Math rendering (KaTeX; plain-text fallback is already in the markup) ----------
+  function renderTeX(el, tex, display){
+    if (!window.katex) return false;
+    try { katex.render(tex, el, {throwOnError:false, displayMode:!!display}); return true; }
+    catch(e){ return false; }
+  }
+  function setTeX(el, tex, fallback){
+    if (!el) return;
+    el.dataset.tex = tex;
+    if (!renderTeX(el, tex, false)) el.textContent = fallback;
+  }
+  window.addEventListener('load', () => {
+    document.querySelectorAll('[data-tex]').forEach(el => renderTeX(el, el.dataset.tex, el.hasAttribute('data-display')));
+    drawAll();
+  });
+  window.addEventListener('load', () => { if (document.fonts && document.fonts.load) document.fonts.load(MATH_FONT).then(drawAll); });
+
+  // ---------- Main draw ----------
+  // phase in degrees, hidden (NaN) where the magnitude is negligible, so rounding noise is not drawn
+  function phaseOf(vals, mags){
+    const top = Math.max(...mags);
+    return vals.map((c, i) => mags[i] < 1e-3 * top ? NaN : Math.atan2(c.im, c.re) * 180 / Math.PI);
+  }
+  const re = (v) => typeof v === 'number' ? v : v.re;
+  // The card under the controls: the selected property's transform pair and what it means
+  const PROP_INFO = {
+    scale:  {name: 'Time scaling and reversal',
+             tex: String.raw`x(at)\ \longleftrightarrow\ \frac{1}{|a|}\,X\!\left(\frac{f}{a}\right)`,
+             note: 'Squeezing a signal in time (|a| > 1) stretches its spectrum and lowers it; a = −1 reverses time, so x(−t) ↔ X(−f).'},
+    shift:  {name: 'Time shift',
+             tex: String.raw`x(t-t_0)\ \longleftrightarrow\ X(f)\,e^{-j2\pi f t_0}`,
+             note: 'A delay leaves |X(f)| unchanged and adds a phase −2πf t₀ that grows linearly with frequency.'},
+    fshift: {name: 'Frequency shift',
+             tex: String.raw`x(t)\,e^{j2\pi f_c t}\ \longleftrightarrow\ X(f-f_c)`,
+             note: 'Multiplying by a complex exponential moves the whole spectrum to f<sub>c</sub>.'},
+    mod:    {name: 'Modulation',
+             tex: String.raw`x(t)\cos(2\pi f_c t)\ \longleftrightarrow\ \tfrac12\big[X(f-f_c)+X(f+f_c)\big]`,
+             note: 'A cosine is half of e<sup>j2πf<sub>c</sub>t</sup> plus half of e<sup>−j2πf<sub>c</sub>t</sup>, so the spectrum splits into two half-height copies at ±f<sub>c</sub>.'},
+    conv:   {name: 'Convolution',
+             tex: String.raw`(x*w)(t)\ \longleftrightarrow\ X(f)\,W(f)`,
+             note: 'Convolution in time is multiplication in frequency. Here w(t) is an averaging pulse of width W and area 1, so W(f) = sinc(Wf).'},
+    diff:   {name: 'Differentiation',
+             tex: String.raw`\frac{dx(t)}{dt}\ \longleftrightarrow\ j2\pi f\,X(f)`,
+             note: 'Differentiation multiplies the spectrum by j2πf: high frequencies are boosted and the phase moves by ±90°.'},
+  };
+  function setProperty(){
+    const p = PROPS[elProp.value], info = PROP_INFO[elProp.value];
+    el('propName').textContent = info.name;
+    const pf = el('propFormula');
+    pf.dataset.tex = info.tex; pf.setAttribute('data-display', '');
+    if (!renderTeX(pf, info.tex, true)) pf.textContent = info.name;
+    el('propNote').innerHTML = info.note;   // fixed strings from PROP_INFO (sub/superscripts)
+    el('parBox').style.display = p.par ? '' : 'none';
+    el('noPar').style.display = p.par ? 'none' : '';
+    if (p.par){ elPar.min = p.par.min; elPar.max = p.par.max; elPar.step = p.par.step; elPar.value = p.par.def; }
+    drawAll();
+  }
+  function drawAll(){
+    const key = elProp.value, p = PROPS[key], s = SIGNALS[elSig.value], v = p.par ? parseFloat(elPar.value) : 0;
+    const n2 = (x) => x.toFixed(2);
+    const A = effA(v);
+    if (key === 'scale') setTeX(el('parval'), `a=${n2(A)}`, `a = ${n2(A)}`);
+    if (key === 'shift') setTeX(el('parval'), String.raw`t_0=${n2(v)}\ \text{s}`, `t₀ = ${n2(v)} s`);
+    if (key === 'mod' || key === 'fshift') setTeX(el('parval'), String.raw`f_c=${n2(v)}\ \text{Hz}`, `fc = ${n2(v)} Hz`);
+    if (key === 'conv')  setTeX(el('parval'), String.raw`W=${n2(v)}\ \text{s}`, `W = ${n2(v)} s`);
+
+    // titles say what the dashed curves are
+    const tT = key === 'fshift' ? String.raw`\text{Time domain: }\mathrm{Re}\,y(t)\ \text{(blue)},\ \mathrm{Im}\,y(t)\ \text{(purple)};\ \text{dashed: }|x(t)|`
+             : key === 'conv'   ? String.raw`\text{Time domain: }y(t)=(x*w)(t);\ \text{dashed: }x(t)\ \text{and the pulse }w(t)`
+             : String.raw`\text{Time domain: }y(t);\ \text{dashed: the original }x(t)`;
+    setTeX(el('titleT'), tT, 'Time domain');
+    setTeX(el('titleM'), key === 'conv' ? String.raw`\text{Magnitude }|Y(f)|;\ \text{dashed: }|X(f)|\ \text{and }|W(f)|` : String.raw`\text{Magnitude }|Y(f)|;\ \text{dashed: }|X(f)|`, 'Magnitude');
+
+    // 1) time
+    // Array.from (not TT.map): y can be complex, and a typed array would turn the objects into NaN
+    const xs = TT.map(s.x), ys = Array.from(TT, (t) => p.y(s, v, t));
+    const [ylo, yhi] = p.timeYr;
+    let F = frame(ctxT, [T0, T1], [ylo, yhi], niceTicks(T0, T1, 9), niceTicks(ylo, yhi, 5));
+    line(F, TT, xs, C_X, 1.5, 0.8, [6, 5]);
+    if (key === 'conv') line(F, TT, TT.map((t) => p.wt(v, t)), C_W, 1.5, 0.9, [6, 5]);
+    if (p.complex){
+      line(F, TT, ys.map((c) => c.im), C_W, 2);
+      line(F, TT, ys.map((c) => c.re), C_Y, 2.5);
+    } else line(F, TT, ys.map(re), C_Y, 2.5);
+    const imps = p.imp ? p.imp(s) : [];
+    for (const d of imps) arrow(F, d.t, d.a, C_Y);
+
+    // 2) magnitude and 3) phase
+    const Xc = Array.from(FF, s.X), Yc = Array.from(FF, (f) => p.Y(s, v, f));
+    const Xm = Xc.map((c) => Math.hypot(c.re, c.im)), Ym = Yc.map((c) => Math.hypot(c.re, c.im));
+    const ft = niceTicks(F0, F1, 7);
+    F = frame(ctxM, [F0, F1], [-0.05 * p.magMax, 1.1 * p.magMax], ft);
+    line(F, FF, Xm, C_X, 1.5, 0.8, [6, 5]);
+    if (key === 'conv') line(F, FF, FF.map((f) => p.Wf(v, f)), C_W, 1.5, 0.9, [6, 5]);
+    line(F, FF, Ym, C_Y, 2.5);
+    F = frame(ctxP, [F0, F1], [-200, 200], ft, [-180, -90, 0, 90, 180], (d) => Math.round(d) + '°');
+    line(F, FF, phaseOf(Xc, Xm), C_X, 1.5, 0.8, [6, 5], 180);
+    line(F, FF, phaseOf(Yc, Ym), C_Y, 2, 1, null, 180);
+
+    // Parseval: energy in time and in frequency, computed separately
+    const pv = el('parseval');
+    if (imps.length){
+      setTeX(pv, String.raw`\text{Parseval: }\int|y(t)|^2dt=\int|Y(f)|^2df=\infty\ \text{(the derivative contains impulses)}`, 'Parseval: both energies are infinite (the derivative contains impulses)');
+    } else {
+      let et = 0, ef = 0;
+      for (const t of ET){ const c = p.y(s, v, t); et += typeof c === 'number' ? c * c : c.re * c.re + c.im * c.im; }
+      for (const f of EF){ const c = p.Y(s, v, f); ef += c.re * c.re + c.im * c.im; }
+      et *= 0.002; ef *= 0.01;
+      setTeX(pv, String.raw`\text{Parseval: }\int|y(t)|^2dt=${et.toFixed(3)},\quad \int|Y(f)|^2df=${ef.toFixed(3)}`, `Parseval: time energy ${et.toFixed(3)}, frequency energy ${ef.toFixed(3)}`);
+    }
+
+    // readout: the property with the numbers filled in
+    let tex, txt;
+    if (key === 'scale'){
+      tex = String.raw`y(t)=x(${n2(A)}\,t)\ \longleftrightarrow\ Y(f)=\frac{1}{${n2(Math.abs(A))}}\,X\!\left(\frac{f}{${n2(A)}}\right)`;
+      txt = `y(t) = x(${n2(A)} t)  ⟷  Y(f) = (1/${n2(Math.abs(A))}) X(f/${n2(A)})`;
+    } else if (key === 'shift'){
+      const sg = v < 0 ? '+' : '-';
+      tex = String.raw`y(t)=x(t${sg}${n2(Math.abs(v))})\ \longleftrightarrow\ Y(f)=X(f)\,e^{-j2\pi f\,(${n2(v)})}`;
+      txt = `y(t) = x(t ${sg} ${n2(Math.abs(v))})  ⟷  Y(f) = X(f) exp(−j2πf·${n2(v)})`;
+    } else if (key === 'fshift'){
+      tex = String.raw`y(t)=x(t)\,e^{j2\pi(${n2(v)})t}\ \longleftrightarrow\ Y(f)=X(f-(${n2(v)}))`;
+      txt = `y(t) = x(t) exp(j2π·${n2(v)} t)  ⟷  Y(f) = X(f − ${n2(v)})`;
+    } else if (key === 'mod'){
+      tex = String.raw`y(t)=x(t)\cos(2\pi\cdot ${n2(v)}\,t)\ \longleftrightarrow\ Y(f)=\tfrac12\big[X(f-${n2(v)})+X(f+${n2(v)})\big]`;
+      txt = `y(t) = x(t) cos(2π·${n2(v)} t)  ⟷  Y(f) = ½[X(f − ${n2(v)}) + X(f + ${n2(v)})]`;
+    } else if (key === 'conv'){
+      tex = String.raw`y(t)=(x*w)(t),\ w(t)=\tfrac{1}{${n2(v)}}\,\mathrm{rect}\!\left(\tfrac{t}{${n2(v)}}\right)\ \longleftrightarrow\ Y(f)=X(f)\,\mathrm{sinc}(${n2(v)}\,f)`;
+      txt = `y = x * w, w = rect(t/${n2(v)})/${n2(v)}  ⟷  Y(f) = X(f) sinc(${n2(v)} f)`;
+    } else {
+      tex = String.raw`y(t)=\frac{dx}{dt}\ \longleftrightarrow\ Y(f)=j2\pi f\,X(f)`;
+      txt = 'y(t) = dx/dt  ⟷  Y(f) = j2πf X(f)';
+    }
+    const lm = el('liveMath');
+    if (!renderTeX(lm, tex, true)) lm.textContent = txt;
+  }
+
+  // ---------- Play: move the parameter to the top of its range (dragging the slider stops it) ----------
+  let raf = null, lastTs = 0, val = 0;
+  function stopPlay(){
+    if (raf) cancelAnimationFrame(raf);
+    raf = null; elPlay.innerHTML = '&#9654;&#xFE0E; Play';
+  }
+  function step(ts){
+    const lo = parseFloat(elPar.min), hi = parseFloat(elPar.max), st = parseFloat(elPar.step);
+    const dt = lastTs ? Math.min(0.1, (ts - lastTs) / 1000) : 0;
+    lastTs = ts;
+    val = Math.min(hi, val + (hi - lo) / 8 * dt);      // the whole range in 8 s
+    elPar.value = Math.round(val / st) * st;
+    drawAll();
+    if (val >= hi) { stopPlay(); return; }
+    raf = requestAnimationFrame(step);
+  }
+  elPlay.addEventListener('click', () => {
+    if (raf) { stopPlay(); return; }
+    val = parseFloat(elPar.value);
+    if (val >= parseFloat(elPar.max)) val = parseFloat(elPar.min);
+    lastTs = 0; elPlay.innerHTML = '&#10074;&#10074;&#xFE0E; Pause';
+    raf = requestAnimationFrame(step);
+  });
+
+  // listeners
+  elPar.addEventListener('input', () => { stopPlay(); drawAll(); });
+  elProp.addEventListener('change', () => { stopPlay(); setProperty(); });
+  elSig.addEventListener('change', drawAll);
+  window.addEventListener('resize', drawAll);
+
+  setProperty();
+})();
+</script>
+</body>
+</html>

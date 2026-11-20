@@ -5,6 +5,16 @@
 <head>
 <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <script>/* ?embed=1: hide the site menu and footer (e.g. inside a Brightspace page) and credit the source */
+      if (/[?&]embed=1(&|$)/.test(location.search)) {
+        document.documentElement.classList.add('embed');
+        document.addEventListener('DOMContentLoaded', function () {
+          var p = document.createElement('p'); p.className = 'embed-credit';
+          p.innerHTML = 'Interactive demo &copy; 2021&ndash;2026 <a href="/teaching.html" target="_blank" rel="noopener">Ahmed Hamdi Sakr</a> &middot; <a href="' + location.pathname + '" target="_blank" rel="noopener">Open the full page &#8599;</a>';
+          var panel = document.querySelector('main .panel'); (panel || document.body).appendChild(p);
+        });
+      }
+    </script>
 <title>Why Fourier Analysis Works | Ahmed Hamdi Sakr</title>
 <meta name="description" content="Interactive demo of why Fourier analysis works: multiply a square-wave burst by a probe cosine (and sine), watch the positive and negative areas cancel, and see the net area trace out the spectrum." />
     <script defer src="https://cdn.jsdelivr.net/npm/feather-icons@4.29.2/dist/feather.min.js"></script>
@@ -27,8 +37,13 @@
         <main class="page fade-in" id="main">
   <div class="panel panel--static">
   <h1 class="title-lg mb-4">Why Fourier Analysis Works</h1>
-  <p>To ask how much of a frequency <span class="m" data-tex="f">f</span> is inside a signal <span class="m" data-tex="x(t)">x(t)</span>, multiply the signal by a probe cosine and a probe sine at that frequency and measure the net area under each product. When <span class="m" data-tex="f">f</span> matches a frequency in <span class="m" data-tex="x(t)">x(t)</span>, the signal and the probe rise and fall together, the product stays mostly on one side of zero and the area builds up. When it does not, the positive (green) and negative (red) pieces cancel and the net area is close to zero. Plotting the net area against <span class="m" data-tex="f">f</span> gives the spectrum.</p>
+  <p>To ask how much of a frequency <span class="m" data-tex="f">f</span> is inside a signal <span class="m" data-tex="x(t)">x(t)</span>, multiply the signal by a probe cosine and a probe sine at that frequency and measure the net area under each product. When <span class="m" data-tex="f">f</span> matches a frequency in <span class="m" data-tex="x(t)">x(t)</span>, the signal and the probe rise and fall together, the product stays mostly on one side of zero and the area builds up. When it does not, the positive (teal) and negative (orange) pieces cancel and the net area is close to zero. Plotting the net area against <span class="m" data-tex="f">f</span> gives the spectrum.</p>
   <p class="mb-4"><strong>Try it:</strong> with the square wave, move <span class="m" data-tex="f">f</span> to 1, 3 and 5 Hz (the odd harmonics), then to 2 Hz or anywhere in between. The area only builds up near the harmonics, so the spectrum is a set of narrow spikes, close to the deltas of a periodic square wave. Then set <span class="m" data-tex="\tau = 0.25\ \text{s}">&tau; = 0.25 s</span>: at 1 Hz the cosine area vanishes and the sine area takes over, even though that frequency is still in the signal. That is why the Fourier transform uses both, <span class="m" data-tex="e^{-j2\pi f t} = \cos(2\pi f t) - j\sin(2\pi f t)">e<sup>-j2&pi;ft</sup> = cos(2&pi;ft) - j sin(2&pi;ft)</span>, and why <span class="m" data-tex="|X(f)|">|X(f)|</span> does not change with the shift. Finally, switch the signal: each shape collects its area at its own set of frequencies.</p>
+  <div class="predict">
+    <h2 class="predict-title">Predict, then check</h2>
+    <details><summary>With the square wave, will the spectrum have a spike at 2 Hz?</summary><p>No. A square wave with a 50% duty cycle has only odd harmonics (1, 3, 5, 7 Hz). At 2 Hz the positive and negative areas cancel exactly.</p></details>
+    <details><summary>Switch to the pulse train (25% duty). Which harmonic between 1 and 8 Hz is missing?</summary><p>4 Hz (and 8 Hz, at the edge of the plot). The harmonic amplitudes of a 25% pulse train follow <span class="m" data-tex="\sin(\pi k/4)/(\pi k)">sin(&pi;k/4)/(&pi;k)</span>, which is zero whenever <span class="m" data-tex="k">k</span> is a multiple of 4.</p></details>
+  </div>
 
   <div class="controls controls--sticky controls--3">
     <div class="control">
@@ -131,7 +146,7 @@
   const css = getComputedStyle(document.documentElement);
   const col = (name, fb) => css.getPropertyValue(name).trim() || fb;
   const C_X = col('--xcolor', '#f59e0b'), C_COS = col('--ycolor', '#60a5fa'), C_SIN = col('--scolor', '#c084fc');
-  const C_POS = col('--poscolor', '#22c55e'), C_NEG = col('--negcolor', '#ef4444');
+  const C_POS = col('--poscolor', '#2dd4bf'), C_NEG = col('--negcolor', '#fb923c');
   const C_GRID = col('--grid', '#15223e'), C_AXIS = '#223356', C_TICK = '#94a3b8', C_BG = '#0a1326', C_PROD = '#e2e8f0';
   const fGrid = Array.from({length: NF}, (_, i) => FMIN + i * (FMAX - FMIN) / (NF - 1));
 
@@ -194,6 +209,21 @@
     return String(Number(u.toPrecision(3)));
   }
   const fmt = (v) => (Math.abs(v) < 5e-4 ? 0 : v).toFixed(3);
+  // Round tick values (steps of 1, 2, 2.5 or 5 times a power of ten), about `target` of them
+  function niceTicks(lo, hi, target = 5){
+    if (!(hi > lo)) return [lo];
+    const e = Math.floor(Math.log10((hi - lo) / target));
+    let best = null;
+    for (const p of [e - 1, e, e + 1]) for (const m of [1, 2, 2.5, 5]){
+      const s = m * Math.pow(10, p);
+      const n = Math.floor(hi / s + 1e-9) - Math.ceil(lo / s - 1e-9) + 1;
+      const score = Math.abs(n - target);
+      if (!best || score < best.score || (score === best.score && s > best.s)) best = {s, score};
+    }
+    const out = [];
+    for (let k = Math.ceil(lo / best.s - 1e-9); k * best.s <= hi + 1e-9 * best.s; k++) out.push(k === 0 ? 0 : k * best.s);
+    return out;
+  }
 
   // Background, grid, ticks and zero axis. Returns the mappers used by the drawing helpers.
   // xTicks: a number of evenly spaced ticks, or an explicit list of tick positions.
@@ -206,25 +236,28 @@
     const [xmin, xmax] = xr, [ymin, ymax] = yr;
     const X = (v) => P.x0 + (v - xmin) * (P.w / (xmax - xmin));
     const Y = (v) => P.y0 + P.h - ((v - ymin) / (ymax - ymin)) * P.h;
-    const yTicks = 5;
+    const yt = niceTicks(ymin, ymax);   // round tick values
 
     ctx.clearRect(0, 0, width, height);
     ctx.fillStyle = C_BG; ctx.fillRect(0, 0, width, height);
 
     ctx.save(); ctx.beginPath(); ctx.rect(P.x0, P.y0, P.w, P.h); ctx.clip();
     ctx.strokeStyle = C_GRID; ctx.lineWidth = 1;
-    for (let i = 0; i < yTicks; i++){ const y = Y(ymin + i*(ymax-ymin)/(yTicks-1)); ctx.beginPath(); ctx.moveTo(P.x0, y); ctx.lineTo(P.x0 + P.w, y); ctx.stroke(); }
+    for (const v of yt){ const y = Y(v); ctx.beginPath(); ctx.moveTo(P.x0, y); ctx.lineTo(P.x0 + P.w, y); ctx.stroke(); }
     for (const u of xt){ const x = X(u); ctx.beginPath(); ctx.moveTo(x, P.y0); ctx.lineTo(x, P.y0 + P.h); ctx.stroke(); }
     ctx.restore();
 
     ctx.fillStyle = C_TICK; ctx.font = MATH_FONT; ctx.textAlign = "right"; ctx.textBaseline = "middle";
-    for (let i = 0; i < yTicks; i++){
-      const v = ymin + i*(ymax-ymin)/(yTicks-1), y = Y(v);
-      ctx.fillText((Math.abs(v) < 5e-3 ? 0 : v).toFixed(2), P.x0 - 8, y);
+    for (const v of yt){
+      const y = Y(v);
+      ctx.fillText(fmtTick(v), P.x0 - 8, y);
       ctx.strokeStyle = C_AXIS; ctx.beginPath(); ctx.moveTo(P.x0-4, y); ctx.lineTo(P.x0, y); ctx.stroke();
     }
     ctx.textAlign = "center"; ctx.textBaseline = "top";
-    for (const u of xt) ctx.fillText(fmtTick(u), X(u), P.y0 + P.h + 6);
+    // thin out the labels on narrow screens (keep the one at 0)
+    const gap = xt.length > 1 ? Math.abs(X(xt[1]) - X(xt[0])) : Infinity, every = Math.max(1, Math.ceil(30 / gap));
+    const i0 = xt.reduce((b, u, i) => Math.abs(u) < Math.abs(xt[b]) ? i : b, 0);
+    xt.forEach((u, i) => { if ((((i - i0) % every) + every) % every === 0) ctx.fillText(fmtTick(u), X(u), P.y0 + P.h + 6); });
 
     if (ymin <= 0 && ymax >= 0){
       ctx.strokeStyle = C_AXIS; ctx.lineWidth = 1.5;

@@ -5,6 +5,16 @@
 <head>
 <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <script>/* ?embed=1: hide the site menu and footer (e.g. inside a Brightspace page) and credit the source */
+      if (/[?&]embed=1(&|$)/.test(location.search)) {
+        document.documentElement.classList.add('embed');
+        document.addEventListener('DOMContentLoaded', function () {
+          var p = document.createElement('p'); p.className = 'embed-credit';
+          p.innerHTML = 'Interactive demo &copy; 2021&ndash;2026 <a href="/teaching.html" target="_blank" rel="noopener">Ahmed Hamdi Sakr</a> &middot; <a href="' + location.pathname + '" target="_blank" rel="noopener">Open the full page &#8599;</a>';
+          var panel = document.querySelector('main .panel'); (panel || document.body).appendChild(p);
+        });
+      }
+    </script>
 <title>Frequency Response: A Sinusoid Through a Filter | Ahmed Hamdi Sakr</title>
 <meta name="description" content="Interactive demo of frequency response: how a first-order low-pass filter scales and delays a cosine of adjustable frequency, in the time and frequency domains." />
     <script defer src="https://cdn.jsdelivr.net/npm/feather-icons@4.29.2/dist/feather.min.js"></script>
@@ -27,12 +37,20 @@
         <main class="page fade-in" id="main">
   <div class="panel panel--static">
   <h1 class="title-lg mb-4">Frequency Response: A Sinusoid Through a Filter</h1>
-  <p>Slider changes the frequency <span class="m" data-tex="f_0">f<sub>0</sub></span> of the input cosine. It passes through a first-order low-pass filter, so the output is the input scaled by <span class="m" data-tex="|H(f_0)|">|H(f<sub>0</sub>)|</span> and phase-shifted by <span class="m" data-tex="\phi(f_0)">&phi;(f<sub>0</sub>)</span>.</p>
+  <p>A cosine of frequency <span class="m" data-tex="f_0">f<sub>0</sub></span> passes through a first-order low-pass filter with a 50 Hz cutoff. Because the filter is LTI, the output is a cosine at the same frequency, scaled by the magnitude response <span class="m" data-tex="|H(f_0)|">|H(f<sub>0</sub>)|</span> and shifted by the phase response <span class="m" data-tex="\phi(f_0)">&phi;(f<sub>0</sub>)</span>. Use the slider to change <span class="m" data-tex="f_0">f<sub>0</sub></span>.</p>
   <p class="mb-4"><strong>Try it:</strong> start at a low frequency: the output looks just like the input. Move <span class="m" data-tex="f_0">f<sub>0</sub></span> to the 50 Hz cutoff: the output drops to <span class="m" data-tex="1/\sqrt{2}\approx 0.71">1/&radic;2 &asymp; 0.71</span> of the input and lags it by <span class="m" data-tex="45^\circ">45&deg;</span>. At 400 Hz it is only about 0.12 of the input. Through all of this the output keeps the frequency of the input: an LTI system can only scale and delay a sinusoid, never change its frequency. That is why the output spectrum is the input spectrum multiplied by <span class="m" data-tex="|H(f)|">|H(f)|</span>.</p>
+  <div class="predict">
+    <h2 class="predict-title">Predict, then check</h2>
+    <details><summary>At what input frequency is the output half as large as the input?</summary><p>Where <span class="m" data-tex="|H(f_0)|=1/\sqrt{1+(f_0/50)^2}=1/2">|H(f<sub>0</sub>)| = 1/&radic;(1 + (f<sub>0</sub>/50)&sup2;) = 1/2</span>, that is <span class="m" data-tex="f_0=50\sqrt{3}\approx 87\ \text{Hz}">f<sub>0</sub> = 50&radic;3 &asymp; 87 Hz</span>. Check it with the slider and the readout under the output.</p></details>
+    <details><summary>Can the output ever lag the input by more than <span class="m" data-tex="90^\circ">90&deg;</span>?</summary><p>No. For this first-order filter <span class="m" data-tex="\phi(f_0)=-\arctan(f_0/50)">&phi;(f<sub>0</sub>) = &minus;arctan(f<sub>0</sub>/50)</span>, which approaches <span class="m" data-tex="-90^\circ">&minus;90&deg;</span> but never reaches it (at 400 Hz it is <span class="m" data-tex="-82.9^\circ">&minus;82.9&deg;</span>).</p></details>
+  </div>
 
 <div class="controls controls--sticky">
     <div class="control">
-      <label for="f0">Input frequency <span id="f0val" class="m">f<sub>0</sub> = 10 Hz</span></label>
+      <div class="control-head">
+        <label for="f0">Input frequency <span id="f0val" class="m">f<sub>0</sub> = 10 Hz</span></label>
+        <button class="btn btn-primary sweep-btn" id="btnSweep" type="button">&#9654;&#xFE0E; Sweep f&#8320;</button>
+      </div>
       <input id="f0" type="range" min="1" max="400" step="1" value="10"/>
     </div>
 
@@ -65,6 +83,9 @@
       <canvas id="cX" role="img" aria-label="Magnitude spectrum of input"></canvas>
       <div class="axis-label" data-tex="f\ (\mathrm{Hz})">f (Hz)</div>
     </div>
+  </div>
+
+  <div class="plot-grid plot-grid--3 group">
     <div class="card">
       <h2 data-tex="h(t) = \alpha e^{-\alpha t}\,u(t),\quad \alpha = 2\pi\cdot 50">h(t) = &alpha; e<sup>-&alpha; t</sup> u(t), &alpha; = 2π·50</h2>
       <canvas id="ch" role="img" aria-label="Impulse response h(t)"></canvas>
@@ -76,9 +97,18 @@
       <div class="axis-label" data-tex="f\ (\mathrm{Hz})">f (Hz)</div>
     </div>
     <div class="card">
+      <h2 data-tex="\phi(f)=\angle H(f)=-\arctan\dfrac{2\pi f}{\alpha}">&phi;(f) = &ang;H(f) = -arctan(2&pi;f/&alpha;)</h2>
+      <canvas id="cP" role="img" aria-label="Filter phase response in degrees, with the input frequency marked"></canvas>
+      <div class="axis-label" data-tex="f\ (\mathrm{Hz})">f (Hz)</div>
+    </div>
+  </div>
+
+  <div class="plot-grid group">
+    <div class="card">
       <h2 data-tex="y(t) = |H(f_0)|\cos\!\big(2\pi f_0 t + \phi(f_0)\big)">y(t) = |H(f<sub>0</sub>)| cos(2π f<sub>0</sub> t + &phi;(f<sub>0</sub>))</h2>
       <canvas id="cy" role="img" aria-label="Output signal y(t)"></canvas>
       <div class="axis-label" data-tex="t\ (\mathrm{s})">t (s)</div>
+      <div class="math-block live" id="outMath" aria-live="polite"></div>
     </div>
     <div class="card">
       <h2 data-tex="|Y(f)| = \tfrac{1}{2}|H(f_0)|\left[\delta(f-f_0)+\delta(f+f_0)\right]">|Y(f)| = 1&frasl;2 |H(f<sub>0</sub>)|[&delta;(f-f<sub>0</sub>) + &delta;(f+f<sub>0</sub>)]</h2>
@@ -100,7 +130,7 @@
 (function(){
   // ---------- Config ----------
   const TWO_PI = Math.PI * 2;
-  const Tmax = 0.5;            // max time window for plotting (seconds)
+  const T_WINDOW = 0.1;        // time window for x(t) and y(t) (seconds), the same for every f0
   const Fs = 20000;            // time sampling for smooth curves
   const css = getComputedStyle(document.documentElement);
   const col = (name) => css.getPropertyValue(name).trim();
@@ -119,6 +149,7 @@
   const cX = document.getElementById('cX').getContext('2d');
   const ch = document.getElementById('ch').getContext('2d');
   const cH = document.getElementById('cH').getContext('2d');
+  const cP = document.getElementById('cP').getContext('2d');
   const cy = document.getElementById('cy').getContext('2d');
   const cY = document.getElementById('cY').getContext('2d');
 
@@ -138,7 +169,22 @@
     if (Math.abs(u) >= 1000) return Number((u/1000).toPrecision(3)) + "k";
     return String(Number(u.toPrecision(3)));
   }
-  function plotXY(ctx, X, Y, opts={}){	
+  // Round tick values (steps of 1, 2, 2.5 or 5 times a power of ten), about `target` of them
+  function niceTicks(lo, hi, target = 5){
+    if (!(hi > lo)) return [lo];
+    const e = Math.floor(Math.log10((hi - lo) / target));
+    let best = null;
+    for (const p of [e - 1, e, e + 1]) for (const m of [1, 2, 2.5, 5]){
+      const s = m * Math.pow(10, p);
+      const n = Math.floor(hi / s + 1e-9) - Math.ceil(lo / s - 1e-9) + 1;
+      const score = Math.abs(n - target);
+      if (!best || score < best.score || (score === best.score && s > best.s)) best = {s, score};
+    }
+    const out = [];
+    for (let k = Math.ceil(lo / best.s - 1e-9); k * best.s <= hi + 1e-9 * best.s; k++) out.push(k === 0 ? 0 : k * best.s);
+    return out;
+  }
+  function plotXY(ctx, X, Y, opts={}){
     const {width, height} = fitCanvas(ctx.canvas);
     const margin = {left: 56, right: 12, top: 10, bottom: 28};
     const plot = {x0: margin.left, y0: margin.top, w: width - margin.left - margin.right, h: height - margin.top - margin.bottom};
@@ -160,17 +206,16 @@
     ctx.fillStyle = "#0a1326"; ctx.fillRect(0,0,width,height);
 
     // grid aligned with ticks
-    const yTicks = 5, xTicks = 5;
+    // round tick values; opts.yTicks gives explicit ones (e.g. degrees)
+    const yT = opts.yTicks || niceTicks(ymin, ymax), xT = niceTicks(xmin, xmax);
     ctx.save(); ctx.beginPath(); ctx.rect(plot.x0, plot.y0, plot.w, plot.h); ctx.clip();
     ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue("--grid") || "#15223e";
     ctx.lineWidth = 1;
-    for(let i=0;i<yTicks;i++){
-      const v = ymin + i*(ymax-ymin)/(yTicks-1);
+    for (const v of yT){
       const y = yToPx(v);
       ctx.beginPath(); ctx.moveTo(plot.x0, y); ctx.lineTo(plot.x0 + plot.w, y); ctx.stroke();
     }
-    for(let i=0;i<xTicks;i++){
-      const u = xmin + i*(xmax-xmin)/(xTicks-1);
+    for (const u of xT){
       const x = xToPx(u);
       ctx.beginPath(); ctx.moveTo(x, plot.y0); ctx.lineTo(x, plot.y0 + plot.h); ctx.stroke();
     }
@@ -178,15 +223,14 @@
 
     // labels
     ctx.fillStyle = "#94a3b8"; ctx.font = MATH_FONT; ctx.textAlign = "right"; ctx.textBaseline = "middle";
-    for(let i=0;i<yTicks;i++){
-      const v = ymin + i*(ymax-ymin)/(yTicks-1);
+    const yFmt = opts.yFmt || fmtTick;
+    for (const v of yT){
       const y = yToPx(v);
-      ctx.fillText(v.toFixed(2), plot.x0 - 8, y);
+      ctx.fillText(yFmt(v), plot.x0 - 8, y);
       ctx.strokeStyle = "#223356"; ctx.beginPath(); ctx.moveTo(plot.x0-4, y); ctx.lineTo(plot.x0, y); ctx.stroke();
     }
     ctx.textAlign = "center"; ctx.textBaseline = "top";
-    for(let i=0;i<xTicks;i++){
-      const u = xmin + i*(xmax-xmin)/(xTicks-1);
+    for (const u of xT){
       const x = xToPx(u);
       ctx.fillText(fmtTick(u), x, plot.y0 + plot.h + 6);
     }
@@ -238,17 +282,15 @@
     ctx.fillStyle = "#0a1326"; ctx.fillRect(0,0,width,height);
 
     // grid aligned to ticks
-    const yTicks = 5, xTicks = 5;
+    const yT = niceTicks(ymin, ymax), xT = niceTicks(fmin, fmax);   // round tick values
     ctx.save(); ctx.beginPath(); ctx.rect(plot.x0, plot.y0, plot.w, plot.h); ctx.clip();
     ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue("--grid") || "#15223e";
     ctx.lineWidth = 1;
-    for(let i=0;i<yTicks;i++){
-      const v = ymin + i*(ymax-ymin)/(yTicks-1);
+    for (const v of yT){
       const y = yToPx(v);
       ctx.beginPath(); ctx.moveTo(plot.x0, y); ctx.lineTo(plot.x0 + plot.w, y); ctx.stroke();
     }
-    for(let i=0;i<xTicks;i++){
-      const u = fmin + i*(fmax-fmin)/(xTicks-1);
+    for (const u of xT){
       const x = xToPx(u);
       ctx.beginPath(); ctx.moveTo(x, plot.y0); ctx.lineTo(x, plot.y0 + plot.h); ctx.stroke();
     }
@@ -256,16 +298,14 @@
 
     // y ticks
     ctx.fillStyle = "#94a3b8"; ctx.font = MATH_FONT; ctx.textAlign = "right"; ctx.textBaseline = "middle";
-    for(let i=0;i<yTicks;i++){
-      const v = ymin + i*(ymax-ymin)/(yTicks-1);
+    for (const v of yT){
       const y = yToPx(v);
-      ctx.fillText(v.toFixed(2), plot.x0 - 8, y);
+      ctx.fillText(fmtTick(v), plot.x0 - 8, y);
       ctx.strokeStyle = "#223356"; ctx.beginPath(); ctx.moveTo(plot.x0-4, y); ctx.lineTo(plot.x0, y); ctx.stroke();
     }
     // x labels
     ctx.textAlign = "center"; ctx.textBaseline = "top";
-    for(let i=0;i<xTicks;i++){
-      const u = fmin + i*(fmax-fmin)/(xTicks-1);
+    for (const u of xT){
       const x = xToPx(u);
       ctx.fillText(fmtTick(u), x, plot.y0 + plot.h + 6);
     }
@@ -301,9 +341,18 @@
   let lastLive = null;
   function updateLive(f0, A0, phi0){
     lastLive = [f0, A0, phi0];
+    const dB = 20*Math.log10(A0), deg = phi0*180/Math.PI;
+    // Under the output plot: the output with the actual numbers filled in
+    const out = document.getElementById('outMath');
+    if (out){
+      const sgn = deg < 0 ? '-' : '+';
+      const texOut = String.raw`\begin{gathered}y(t)=${A0.toFixed(3)}\cos\!\big(2\pi\cdot ${f0.toFixed(0)}\,t ${sgn} ${Math.abs(deg).toFixed(1)}^\circ\big)\\ |H(f_0)|=${A0.toFixed(3)}\ (${dB.toFixed(2)}\ \text{dB})\\ \phi(f_0)=${deg.toFixed(1)}^\circ\end{gathered}`;
+      if (!renderTeX(out, texOut, true)){
+        out.textContent = 'y(t) = ' + A0.toFixed(3) + ' cos(2π·' + f0.toFixed(0) + 't ' + sgn + ' ' + Math.abs(deg).toFixed(1) + '°),  |H(f0)| = ' + A0.toFixed(3) + ' (' + dB.toFixed(2) + ' dB),  phase = ' + deg.toFixed(1) + '°';
+      }
+    }
     const el = document.getElementById('liveMath');
     if (!el) return;
-    const dB = 20*Math.log10(A0), deg = phi0*180/Math.PI;
     const tex = String.raw`f_0=${f0.toFixed(0)}\ \text{Hz}:\quad |H(f_0)|=\frac{\alpha}{\sqrt{\alpha^2+(2\pi f_0)^2}}=${A0.toFixed(3)}\ (${dB.toFixed(2)}\ \text{dB}),\qquad \phi(f_0)=-\arctan\frac{2\pi f_0}{\alpha}=${deg.toFixed(1)}^\circ`;
     if (!renderTeX(el, tex, true)){
       el.textContent = 'f0 = ' + f0.toFixed(0) + ' Hz:  |H(f0)| = ' + A0.toFixed(3) + ' (' + dB.toFixed(2) + ' dB),  phase = ' + deg.toFixed(1) + ' deg';
@@ -321,8 +370,8 @@
     const f0 = parseFloat(elF0.value);
     setTeX(elF0Val, String.raw`f_0=${f0.toFixed(0)}\ \text{Hz}`, 'f0 = ' + f0.toFixed(0) + ' Hz');
 
-    // Time window: a few cycles of f0 so the waveform is never aliased on screen
-    const Tw = Math.min(Tmax, 4/f0);
+    // Fixed time window, so a higher f0 shows more cycles (Fs = 20 kHz keeps 50 samples per cycle at 400 Hz)
+    const Tw = T_WINDOW;
     const t = Array.from({length: Math.floor(Tw*Fs)+1}, (_,k)=>k/Fs);
 
     // Input cosine
@@ -376,12 +425,53 @@
 	  ]
 	});
 
+	// Phase response in degrees, with the input frequency marked (as the magnitude plot)
+	const PHdeg = f.map(ff => -Math.atan2(TWO_PI*ff, alpha) * 180/Math.PI);
+	const phDeg0 = phi0 * 180/Math.PI;
+	plotXY(cP, f, PHdeg, {
+	  color: "#22c55e",
+	  width: 2,
+	  xRange: [-500, 500],
+	  yRange: [-90, 90],
+	  yTicks: [-90, -45, 0, 45, 90],
+	  yFmt: (v) => Math.round(v) + "°",
+	  markers: [
+		{ x: -f0, y: -phDeg0, color: col("--xcolor"), radius: 4 },
+		{ x:  +f0, y:  phDeg0, color: col("--xcolor"), radius: 4 },
+	  ]
+	});
+
     plotXY(cy, t, y,   { color: col("--ycolor"), width:2, xRange:[0, Tw], yRange:[-1.1, 1.1] });
     plotImpulses(cY, -500, 500, Ystems, { yMax: 0.6, color: col("--ycolor") });
   }
 
+  // Sweep f0 from its current value to the top of the slider (dragging the slider stops it)
+  const elSweep = document.getElementById('btnSweep');
+  const F_LO = parseFloat(elF0.min), F_HI = parseFloat(elF0.max), SWEEP_RATE = 40;   // Hz per second
+  let raf = null, lastTs = 0, sweepF = 0;
+  function stopSweep(){
+    if (raf) cancelAnimationFrame(raf);
+    raf = null; elSweep.innerHTML = '&#9654;&#xFE0E; Sweep f&#8320;';
+  }
+  function step(ts){
+    const dt = lastTs ? Math.min(0.1, (ts - lastTs) / 1000) : 0;
+    lastTs = ts;
+    sweepF = Math.min(F_HI, sweepF + SWEEP_RATE * dt);
+    elF0.value = Math.round(sweepF);
+    drawAll();
+    if (sweepF >= F_HI) { stopSweep(); return; }
+    raf = requestAnimationFrame(step);
+  }
+  elSweep.addEventListener('click', () => {
+    if (raf) { stopSweep(); return; }
+    sweepF = parseFloat(elF0.value);
+    if (sweepF >= F_HI) sweepF = F_LO;
+    lastTs = 0; elSweep.innerHTML = '&#10074;&#10074;&#xFE0E; Pause';
+    raf = requestAnimationFrame(step);
+  });
+
   // listeners
-  elF0.addEventListener('input', drawAll);
+  elF0.addEventListener('input', () => { stopSweep(); drawAll(); });
   window.addEventListener('resize', drawAll);
 
   // initial

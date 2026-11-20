@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+<meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <script>/* ?embed=1: hide the site menu and footer (e.g. inside a Brightspace page) and credit the source */
+      if (/[?&]embed=1(&|$)/.test(location.search)) {
+        document.documentElement.classList.add('embed');
+        document.addEventListener('DOMContentLoaded', function () {
+          var p = document.createElement('p'); p.className = 'embed-credit';
+          p.innerHTML = 'Interactive demo &copy; 2021&ndash;2026 <a href="/teaching.html" target="_blank" rel="noopener">Ahmed Hamdi Sakr</a> &middot; <a href="' + location.pathname + '" target="_blank" rel="noopener">Open the full page &#8599;</a>';
+          var panel = document.querySelector('main .panel'); (panel || document.body).appendChild(p);
+        });
+      }
+    </script>
+<title>Sampling and Aliasing | Ahmed Hamdi Sakr</title>
+<meta name="description" content="Interactive demo of sampling and aliasing: sample a sinusoid, reconstruct it, and watch its frequency fold back once it passes half the sampling rate, in time and in frequency." />
+    <script defer src="https://cdn.jsdelivr.net/npm/feather-icons@4.29.2/dist/feather.min.js"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css" />
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+
+    <link href="/styles.css" rel="stylesheet" />
+    <link href="/demos/demo.css" rel="stylesheet" />
+    <link rel="icon" type="image/x-icon" href="/images/icon.ico" />
+    <script defer src="/app.js"></script>
+
+</head>
+
+<body data-page="teaching">
+
+    <div id="site-nav"></div>
+
+        <div class="site-container">
+        <main class="page fade-in" id="main">
+  <div class="panel panel--static">
+  <h1 class="title-lg mb-4">Sampling and Aliasing</h1>
+  <p>Sampling a signal <span class="m" data-tex="x(t)">x(t)</span> every <span class="m" data-tex="T_s=1/F_s">T<sub>s</sub> = 1/F<sub>s</sub></span> seconds keeps only the values <span class="m" data-tex="x[n]=x(nT_s)">x[n] = x(nT<sub>s</sub>)</span>. In frequency, sampling makes copies of the spectrum at every multiple of <span class="m" data-tex="F_s">F<sub>s</sub></span>. An ideal reconstruction filter keeps only the band from <span class="m" data-tex="-F_s/2">&minus;F<sub>s</sub>/2</span> to <span class="m" data-tex="F_s/2">F<sub>s</sub>/2</span>. If the signal fits inside that band, it comes back unchanged. If it does not, a copy lands in the band instead and the samples look like a lower frequency: <strong>aliasing</strong>. The sampling theorem says a sinusoid at <span class="m" data-tex="f_0">f<sub>0</sub></span> is recovered when <span class="m" data-tex="F_s&gt;2f_0">F<sub>s</sub> &gt; 2f<sub>0</sub></span>.</p>
+  <p class="mb-4"><strong>Try it:</strong> start with <span class="m" data-tex="f_0=3\ \text{Hz}">f<sub>0</sub> = 3 Hz</span>: the samples trace the signal and the reconstruction (blue) lies on top of it. Press Sweep. Once <span class="m" data-tex="f_0">f<sub>0</sub></span> passes <span class="m" data-tex="F_s/2=10\ \text{Hz}">F<sub>s</sub>/2 = 10 Hz</span>, the reconstruction shows a lower frequency than the signal: in the spectrum, a copy has entered the shaded band. As the sweep goes on, the apparent frequency in the readout falls back to 0 at <span class="m" data-tex="f_0=F_s=20\ \text{Hz}">f<sub>0</sub> = F<sub>s</sub> = 20 Hz</span> (where every sample has the same value), then climbs again. Then set <span class="m" data-tex="f_0=8\ \text{Hz}">f<sub>0</sub> = 8 Hz</span>, move <span class="m" data-tex="F_s">F<sub>s</sub></span> to its lowest value and press Sweep <span class="m" data-tex="F_s">F<sub>s</sub></span>: the band widens, and the aliasing stops once <span class="m" data-tex="F_s&gt;2f_0=16\ \text{Hz}">F<sub>s</sub> &gt; 2f<sub>0</sub> = 16 Hz</span>.</p>
+  <div class="predict">
+    <h2 class="predict-title">Predict, then check</h2>
+    <details><summary>With <span class="m" data-tex="F_s=20\ \text{Hz}">F<sub>s</sub> = 20 Hz</span>, a 13 Hz cosine is sampled. What frequency does the reconstruction show?</summary><p>7 Hz. 13 Hz is 3 Hz above the Nyquist frequency of 10 Hz, so it folds back to 10 &minus; 3 = 7 Hz (equivalently, <span class="m" data-tex="|13-20|=7">|13 &minus; 20| = 7</span>).</p></details>
+    <details><summary>Choose the sine and set <span class="m" data-tex="f_0=F_s/2=10\ \text{Hz}">f<sub>0</sub> = F<sub>s</sub>/2 = 10 Hz</span>. What do the samples look like?</summary><p>They are all zero: <span class="m" data-tex="\sin(2\pi\cdot 10\cdot n/20)=\sin(\pi n)=0">sin(2&pi;&middot;10&middot;n/20) = sin(&pi;n) = 0</span>, so the samples miss the signal entirely. Sampling at exactly twice the frequency is not enough; the theorem needs <span class="m" data-tex="F_s&gt;2f_0">F<sub>s</sub> &gt; 2f<sub>0</sub></span>.</p></details>
+  </div>
+
+  <div class="controls controls--sticky controls--3">
+    <div class="control">
+      <label for="sig">Signal</label>
+      <select id="sig" class="sig-select">
+        <option value="cos">Cosine: cos(2&pi;f&#8320;t)</option>
+        <option value="sin">Sine: sin(2&pi;f&#8320;t)</option>
+      </select>
+    </div>
+    <div class="control">
+      <div class="control-head">
+        <label for="f0">Frequency <span id="f0val" class="m">f&#8320; = 3.0 Hz</span></label>
+        <button class="btn btn-primary sweep-btn" id="btnSweep" type="button">&#9654;&#xFE0E; Sweep f&#8320;</button>
+      </div>
+      <input id="f0" type="range" min="0" max="30" step="0.1" value="3"/>
+    </div>
+    <div class="control">
+      <div class="control-head">
+        <label for="fs">Sampling <span id="fsval" class="m">F&#8347; = 20 Hz</span></label>
+        <button class="btn btn-primary sweep-btn" id="btnSweepFs" type="button">&#9654;&#xFE0E; Sweep F&#8347;</button>
+      </div>
+      <input id="fs" type="range" min="2" max="40" step="0.5" value="20"/>
+    </div>
+  </div>
+
+  <div class="canvas-row">
+    <div class="card">
+      <h2><span>Signal <span class="m" data-tex="x(t)">x(t)</span>, its samples <span class="m" data-tex="x(nT_s)">x(nT<sub>s</sub>)</span>, and the reconstruction from the samples</span></h2>
+      <canvas id="ct" role="img" aria-label="The signal, its samples, and the signal reconstructed from the samples"></canvas>
+      <div class="axis-label" data-tex="t\ (\mathrm{s})">t (s)</div>
+      <div class="chip-row">
+        <span class="chip"><span class="dot x"></span>Signal <span class="m" data-tex="x(t)">x(t)</span></span>
+        <span class="chip"><span class="dot" style="background:#f8fafc;box-shadow:0 0 0 1px #64748b"></span>Samples</span>
+        <span class="chip"><span class="dot y"></span>Reconstruction (ideal low-pass, cutoff <span class="m" data-tex="F_s/2">F<sub>s</sub>/2</span>)</span>
+      </div>
+      <div class="math-block live" id="liveMath" aria-live="polite"></div>
+    </div>
+  </div>
+
+  <div class="canvas-row group">
+    <div class="card">
+      <h2><span>Spectrum after sampling <span class="probe-note">(shaded: <span class="m" data-tex="|f|&lt;F_s/2">|f| &lt; F<sub>s</sub>/2</span>, what the reconstruction keeps)</span></span></h2>
+      <canvas id="cf" role="img" aria-label="Spectrum lines of the signal and of the copies created by sampling, with the reconstruction band shaded"></canvas>
+      <div class="axis-label" data-tex="f\ (\mathrm{Hz})">f (Hz)</div>
+      <div class="chip-row">
+        <span class="chip"><span class="dot x"></span>Signal <span class="m" data-tex="\pm f_0">&plusmn;f<sub>0</sub></span></span>
+        <span class="chip"><span class="dot" style="background:var(--scolor)"></span>Copies <span class="m" data-tex="\pm f_0+kF_s">&plusmn;f<sub>0</sub> + kF<sub>s</sub></span></span>
+        <span class="chip"><span class="dot y"></span>Kept</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+        </main>
+        <footer class="site-footer fade-in">
+            <p>&copy; 2021&ndash;2026 Ahmed Hamdi Sakr. All rights reserved.</p>
+        </footer>
+        </div>
+
+
+<script>
+(function(){
+  // ---------- Config ----------
+  const TWO_PI = Math.PI * 2;
+  const T_WIN = 1;                               // time plot: 0 to 1 s
+  const NT = 2000;
+  const TT = Float64Array.from({length: NT + 1}, (_, i) => i * T_WIN / NT);
+  const F_SPAN = 60;                             // spectrum axis: -60 to 60 Hz
+  const F0_MAX = 30;                             // top of the f0 slider (sweep end)
+  const SWEEP_RATE = 2;                          // Hz per second while sweeping
+  const css = getComputedStyle(document.documentElement);
+  const col = (name, fb) => css.getPropertyValue(name).trim() || fb;
+  const C_X = col('--xcolor', '#f59e0b'), C_Y = col('--ycolor', '#60a5fa'), C_COPY = col('--scolor', '#c084fc');
+  const C_GRID = col('--grid', '#15223e'), C_AXIS = '#223356', C_TICK = '#94a3b8', C_BG = '#0a1326', C_SAMPLE = '#f8fafc';
+
+  // DOM
+  const el = (id) => document.getElementById(id);
+  const elSig = el('sig'), elF0 = el('f0'), elFs = el('fs'), elSweep = el('btnSweep');
+  const ctxT = el('ct').getContext('2d'), ctxF = el('cf').getContext('2d');
+
+  // ---------- Plot helpers (style matches the other demos) ----------
+  const MATH_FONT = '13px KaTeX_Main, "Times New Roman", Times, serif';   // canvas tick labels
+  function fitCanvas(canvas){
+    const d = window.devicePixelRatio || 1;
+    const w = canvas.clientWidth, h = canvas.clientHeight;
+    const pw = Math.round(w*d), ph = Math.round(h*d);
+    if (canvas.width !== pw || canvas.height !== ph){ canvas.width = pw; canvas.height = ph; }
+    canvas.getContext('2d').setTransform(d,0,0,d,0,0);
+    return {width: w, height: h};
+  }
+  function fmtTick(u){
+    if (Math.abs(u) < 1e-12) return "0";
+    return String(Number(u.toPrecision(3)));
+  }
+  // Round tick values (steps of 1, 2, 2.5 or 5 times a power of ten), about `target` of them
+  function niceTicks(lo, hi, target = 5){
+    if (!(hi > lo)) return [lo];
+    const e = Math.floor(Math.log10((hi - lo) / target));
+    let best = null;
+    for (const p of [e - 1, e, e + 1]) for (const m of [1, 2, 2.5, 5]){
+      const s = m * Math.pow(10, p);
+      const n = Math.floor(hi / s + 1e-9) - Math.ceil(lo / s - 1e-9) + 1;
+      const score = Math.abs(n - target);
+      if (!best || score < best.score || (score === best.score && s > best.s)) best = {s, score};
+    }
+    const out = [];
+    for (let k = Math.ceil(lo / best.s - 1e-9); k * best.s <= hi + 1e-9 * best.s; k++) out.push(k === 0 ? 0 : k * best.s);
+    return out;
+  }
+  function frame(ctx, xr, yr, xt, yt){
+    const {width, height} = fitCanvas(ctx.canvas);
+    const m = {left: 56, right: 12, top: 10, bottom: 28};
+    const P = {x0: m.left, y0: m.top, w: width - m.left - m.right, h: height - m.top - m.bottom};
+    const [xmin, xmax] = xr, [ymin, ymax] = yr;
+    const X = (v) => P.x0 + (v - xmin) * (P.w / (xmax - xmin));
+    const Y = (v) => P.y0 + P.h - ((v - ymin) / (ymax - ymin)) * P.h;
+    yt = yt || niceTicks(ymin, ymax);
+
+    ctx.clearRect(0, 0, width, height);
+    ctx.fillStyle = C_BG; ctx.fillRect(0, 0, width, height);
+
+    ctx.save(); ctx.beginPath(); ctx.rect(P.x0, P.y0, P.w, P.h); ctx.clip();
+    ctx.strokeStyle = C_GRID; ctx.lineWidth = 1;
+    for (const v of yt){ const y = Y(v); ctx.beginPath(); ctx.moveTo(P.x0, y); ctx.lineTo(P.x0 + P.w, y); ctx.stroke(); }
+    for (const u of xt){ const x = X(u); ctx.beginPath(); ctx.moveTo(x, P.y0); ctx.lineTo(x, P.y0 + P.h); ctx.stroke(); }
+    ctx.restore();
+
+    ctx.fillStyle = C_TICK; ctx.font = MATH_FONT; ctx.textAlign = "right"; ctx.textBaseline = "middle";
+    for (const v of yt){
+      const y = Y(v);
+      ctx.fillText(fmtTick(v), P.x0 - 8, y);
+      ctx.strokeStyle = C_AXIS; ctx.beginPath(); ctx.moveTo(P.x0-4, y); ctx.lineTo(P.x0, y); ctx.stroke();
+    }
+    ctx.textAlign = "center"; ctx.textBaseline = "top";
+    // thin out the labels on narrow screens (keep the one at 0)
+    const gap = xt.length > 1 ? Math.abs(X(xt[1]) - X(xt[0])) : Infinity, every = Math.max(1, Math.ceil(30 / gap));
+    const i0 = xt.reduce((b, u, i) => Math.abs(u) < Math.abs(xt[b]) ? i : b, 0);
+    xt.forEach((u, i) => { if ((((i - i0) % every) + every) % every === 0) ctx.fillText(fmtTick(u), X(u), P.y0 + P.h + 6); });
+
+    if (ymin <= 0 && ymax >= 0){
+      ctx.strokeStyle = C_AXIS; ctx.lineWidth = 1.5;
+      ctx.beginPath(); ctx.moveTo(P.x0, Y(0)); ctx.lineTo(P.x0 + P.w, Y(0)); ctx.stroke();
+    }
+    return {ctx, P, X, Y};
+  }
+  function clipped(F, fn){
+    const {ctx, P} = F;
+    ctx.save(); ctx.beginPath(); ctx.rect(P.x0, P.y0, P.w, P.h); ctx.clip(); fn(ctx); ctx.restore();
+  }
+  function line(F, xs, ys, color, width = 2, alpha = 1, dash = null){
+    clipped(F, (ctx) => {
+      ctx.strokeStyle = color; ctx.lineWidth = width; ctx.globalAlpha = alpha; ctx.lineJoin = 'round';
+      if (dash) ctx.setLineDash(dash);
+      ctx.beginPath();
+      for (let i = 0; i < xs.length; i++){ const x = F.X(xs[i]), y = F.Y(ys[i]); if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y); }
+      ctx.stroke();
+    });
+  }
+  function stem(F, x, y, color, {width = 2.5, r = 4, alpha = 1} = {}){
+    clipped(F, (ctx) => {
+      ctx.globalAlpha = alpha; ctx.strokeStyle = color; ctx.fillStyle = color; ctx.lineWidth = width;
+      ctx.beginPath(); ctx.moveTo(F.X(x), F.Y(0)); ctx.lineTo(F.X(x), F.Y(y)); ctx.stroke();
+      ctx.beginPath(); ctx.arc(F.X(x), F.Y(y), r, 0, TWO_PI); ctx.fill();
+    });
+  }
+  function dot(F, x, y, color, r = 6){
+    clipped(F, (ctx) => {
+      ctx.fillStyle = color; ctx.strokeStyle = C_BG; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.arc(F.X(x), F.Y(y), r, 0, TWO_PI); ctx.fill(); ctx.stroke();
+    });
+  }
+  function vline(F, x, color, dash = [4, 4]){
+    clipped(F, (ctx) => {
+      ctx.strokeStyle = color; ctx.lineWidth = 1; ctx.setLineDash(dash);
+      ctx.beginPath(); ctx.moveTo(F.X(x), F.P.y0); ctx.lineTo(F.X(x), F.P.y0 + F.P.h); ctx.stroke();
+    });
+  }
+  function band(F, x0, x1, color){
+    clipped(F, (ctx) => { ctx.fillStyle = color; ctx.fillRect(F.X(x0), F.P.y0, F.X(x1) - F.X(x0), F.P.h); });
+  }
+
+  // ---------- Math rendering (KaTeX; plain-text fallback is already in the markup) ----------
+  function renderTeX(el, tex, display){
+    if (!window.katex) return false;
+    try { katex.render(tex, el, {throwOnError:false, displayMode:!!display}); return true; }
+    catch(e){ return false; }
+  }
+  function setTeX(el, tex, fallback){
+    if (!el) return;
+    el.dataset.tex = tex;
+    if (!renderTeX(el, tex, false)) el.textContent = fallback;
+  }
+  window.addEventListener('load', () => {
+    document.querySelectorAll('[data-tex]').forEach(el => renderTeX(el, el.dataset.tex, el.hasAttribute('data-display')));
+    drawAll();
+  });
+  window.addEventListener('load', () => { if (document.fonts && document.fonts.load) document.fonts.load(MATH_FONT).then(drawAll); });
+
+  // ---------- Aliasing ----------
+  // x(t) = cos(2π f0 t + φ). Its samples equal those of cos(2π fr t + φ) with fr = f0 - k Fs, the copy
+  // nearest 0 (|fr| <= Fs/2). The ideal reconstruction (low-pass, cutoff Fs/2) returns that sinusoid:
+  // cos(2π|fr| t ± φ), the sign flipping when fr < 0. At |fr| = Fs/2 exactly the samples are
+  // (-1)^n cos φ, which reconstruct to cos φ · cos(π Fs t) (zero for a sine).
+  const apparent = (f0, Fs) => Math.abs(f0 - Fs * Math.round(f0 / Fs));
+  function reconstruction(f0, Fs, phi){
+    const fr = f0 - Fs * Math.round(f0 / Fs);
+    if (Math.abs(Math.abs(fr) - Fs / 2) < 1e-9) return (t) => Math.cos(phi) * Math.cos(Math.PI * Fs * t);
+    const s = fr < 0 ? -1 : 1;
+    return (t) => Math.cos(TWO_PI * Math.abs(fr) * t + s * phi);
+  }
+
+  // ---------- Main draw ----------
+  function drawAll(){
+    const f0 = parseFloat(elF0.value), Fs = parseFloat(elFs.value);
+    const isSin = elSig.value === 'sin', phi = isSin ? -Math.PI / 2 : 0;   // sin θ = cos(θ - π/2)
+    const name = isSin ? 'sine' : 'cosine';
+    setTeX(el('f0val'), String.raw`f_0=${f0.toFixed(1)}\ \text{Hz}`, `f₀ = ${f0.toFixed(1)} Hz`);
+    setTeX(el('fsval'), String.raw`F_s=${Fs.toFixed(1)}\ \text{Hz}`, `Fs = ${Fs.toFixed(1)} Hz`);
+
+    const x = (t) => Math.cos(TWO_PI * f0 * t + phi);
+    const xr = reconstruction(f0, Fs, phi);
+    const fa = apparent(f0, Fs), nyq = Fs / 2;
+
+    // 1) time: reconstruction (blue, underneath), signal (amber), samples (white)
+    let F = frame(ctxT, [0, T_WIN], [-1.3, 1.3], niceTicks(0, T_WIN, 6), [-1, -0.5, 0, 0.5, 1]);
+    line(F, TT, TT.map(xr), C_Y, 3, 0.9);
+    line(F, TT, TT.map(x), C_X, 1.5);
+    const N = Math.floor(T_WIN * Fs + 1e-9);
+    for (let n = 0; n <= N; n++){
+      const tn = n / Fs;
+      stem(F, tn, x(tn), C_SAMPLE, {width: 1, r: 3.5, alpha: 0.9});
+    }
+
+    // 2) spectrum: reconstruction band, copies (purple), the signal (amber), kept lines (blue)
+    F = frame(ctxF, [-F_SPAN, F_SPAN], [0, 0.6], niceTicks(-F_SPAN, F_SPAN, 7), [0, 0.25, 0.5]);
+    band(F, -nyq, nyq, 'rgba(96, 165, 250, 0.12)');
+    vline(F, -nyq, '#64748b'); vline(F, nyq, '#64748b');
+    const K = Math.ceil((F_SPAN + f0) / Fs);
+    const kept = [];
+    for (let k = -K; k <= K; k++){
+      for (const sgn of [1, -1]){
+        const f = sgn * f0 + k * Fs;
+        if (Math.abs(f) > F_SPAN) continue;
+        if (k !== 0) stem(F, f, 0.5, C_COPY, {width: 2, r: 3.5, alpha: 0.75});
+        if (Math.abs(f) < nyq - 1e-9 || Math.abs(Math.abs(f) - nyq) < 1e-9) kept.push(f);
+      }
+    }
+    stem(F, f0, 0.5, C_X); stem(F, -f0, 0.5, C_X);
+    for (const f of kept) dot(F, f, 0.5, C_Y, 6);
+
+    // readout
+    let tex, txt;
+    const fmt = (v) => Number(v.toFixed(2));
+    if (f0 < nyq - 1e-9){
+      tex = String.raw`f_0=${fmt(f0)}\ \text{Hz}<F_s/2=${fmt(nyq)}\ \text{Hz}\\ \text{no aliasing: the reconstruction is }x(t)`;
+      txt = `f0 = ${fmt(f0)} Hz < Fs/2 = ${fmt(nyq)} Hz: no aliasing, the reconstruction is x(t)`;
+    } else if (Math.abs(f0 - nyq) < 1e-9){
+      tex = String.raw`f_0=F_s/2=${fmt(nyq)}\ \text{Hz}\\ \text{on the edge: the samples are }(-1)^n\cos\phi` + (isSin ? String.raw`=0` : '');
+      txt = `f0 = Fs/2 = ${fmt(nyq)} Hz: on the edge` + (isSin ? ', the samples are all zero' : '');
+    } else {
+      tex = String.raw`f_0=${fmt(f0)}\ \text{Hz}>F_s/2=${fmt(nyq)}\ \text{Hz}\\ \text{aliasing: the samples look like a }${fmt(fa)}\ \text{Hz ${name}}`;
+      txt = `f0 = ${fmt(f0)} Hz > Fs/2 = ${fmt(nyq)} Hz: aliasing, the samples look like a ${fmt(fa)} Hz ${name}`;
+    }
+    const lm = el('liveMath');
+    if (!renderTeX(lm, String.raw`\begin{gathered}` + tex + String.raw`\end{gathered}`, true)) lm.textContent = txt;
+  }
+
+  // ---------- Sweeps of f0 and Fs (one at a time; dragging a slider stops it) ----------
+  // Each sweep runs from the slider's current value to its top (from the bottom if already at the top).
+  const sweeps = [
+    {btn: elSweep, slider: elF0, rate: SWEEP_RATE, label: '&#9654;&#xFE0E; Sweep f&#8320;'},
+    {btn: el('btnSweepFs'), slider: elFs, rate: 3, label: '&#9654;&#xFE0E; Sweep F&#8347;'},   // Hz per second
+  ];
+  let active = null, raf = null, lastTs = 0, val = 0;
+  function stopSweep(){
+    if (raf) cancelAnimationFrame(raf);
+    if (active) active.btn.innerHTML = active.label;
+    raf = null; active = null;
+  }
+  function step(ts){
+    const s = active, hi = parseFloat(s.slider.max), stepSize = parseFloat(s.slider.step);
+    const dt = lastTs ? Math.min(0.1, (ts - lastTs) / 1000) : 0;
+    lastTs = ts;
+    val = Math.min(hi, val + s.rate * dt);
+    s.slider.value = Math.round(val / stepSize) * stepSize;
+    drawAll();
+    if (val >= hi) { stopSweep(); return; }
+    raf = requestAnimationFrame(step);
+  }
+  for (const s of sweeps){
+    s.btn.addEventListener('click', () => {
+      const wasThis = active === s;
+      stopSweep();
+      if (wasThis) return;                        // second click pauses
+      val = parseFloat(s.slider.value);
+      if (val >= parseFloat(s.slider.max)) val = parseFloat(s.slider.min);
+      active = s; lastTs = 0; s.btn.innerHTML = '&#10074;&#10074;&#xFE0E; Pause';
+      raf = requestAnimationFrame(step);
+    });
+  }
+
+  // listeners
+  elF0.addEventListener('input', () => { if (active && active.slider === elF0) stopSweep(); drawAll(); });
+  elFs.addEventListener('input', () => { if (active && active.slider === elFs) stopSweep(); drawAll(); });
+  elSig.addEventListener('change', drawAll);
+  window.addEventListener('resize', drawAll);
+
+  drawAll();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+<meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <script>/* ?embed=1: hide the site menu and footer (e.g. inside a Brightspace page) and credit the source */
+      if (/[?&]embed=1(&|$)/.test(location.search)) {
+        document.documentElement.classList.add('embed');
+        document.addEventListener('DOMContentLoaded', function () {
+          var p = document.createElement('p'); p.className = 'embed-credit';
+          p.innerHTML = 'Interactive demo &copy; 2021&ndash;2026 <a href="/teaching.html" target="_blank" rel="noopener">Ahmed Hamdi Sakr</a> &middot; <a href="' + location.pathname + '" target="_blank" rel="noopener">Open the full page &#8599;</a>';
+          var panel = document.querySelector('main .panel'); (panel || document.body).appendChild(p);
+        });
+      }
+    </script>
+<title>Poles, Zeros and Frequency Response | Ahmed Hamdi Sakr</title>
+<meta name="description" content="Interactive demo of poles and zeros: drag them in the s-plane or the z-plane and see the magnitude response, the phase response and the impulse response change." />
+    <script defer src="https://cdn.jsdelivr.net/npm/feather-icons@4.29.2/dist/feather.min.js"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css" />
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+
+    <link href="/styles.css" rel="stylesheet" />
+    <link href="/demos/demo.css" rel="stylesheet" />
+    <link rel="icon" type="image/x-icon" href="/images/icon.ico" />
+    <script defer src="/app.js"></script>
+
+</head>
+
+<body data-page="teaching">
+
+    <div id="site-nav"></div>
+
+        <div class="site-container">
+        <main class="page fade-in" id="main">
+  <div class="panel panel--static">
+  <h1 class="title-lg mb-4">Poles, Zeros and Frequency Response</h1>
+  <p>A rational transfer function is fixed, up to a gain <span class="m" data-tex="K">K</span>, by its zeros <span class="m" data-tex="z_i">z<sub>i</sub></span> and poles <span class="m" data-tex="p_i">p<sub>i</sub></span>. In continuous time the frequency response is <span class="m" data-tex="H(s)">H(s)</span> on the <span class="m" data-tex="j\omega">j&omega;</span> axis; in discrete time it is <span class="m" data-tex="H(z)">H(z)</span> on the unit circle <span class="m" data-tex="z=e^{j\Omega}">z = e<sup>j&Omega;</sup></span>. Each factor is a vector from a pole or zero to that point, so</p>
+  <div class="math-block mb-4" data-display data-tex="|H(j\omega)|=K\,\frac{\prod_i |j\omega-z_i|}{\prod_i |j\omega-p_i|},\qquad \angle H(j\omega)=\sum_i \angle(j\omega-z_i)-\sum_i \angle(j\omega-p_i).">|H(j&omega;)| = K &prod;|j&omega; &minus; z<sub>i</sub>| / &prod;|j&omega; &minus; p<sub>i</sub>|, &ang;H(j&omega;) = &Sigma;&ang;(j&omega; &minus; z<sub>i</sub>) &minus; &Sigma;&ang;(j&omega; &minus; p<sub>i</sub>)</div>
+  <p class="mb-4"><strong>Try it:</strong> with the resonance preset, press Sweep and watch the dashed vectors: as the point passes the pole near <span class="m" data-tex="4j">4j</span>, its vector becomes short and <span class="m" data-tex="|H|">|H|</span> peaks. Drag that pole toward the <span class="m" data-tex="j\omega">j&omega;</span> axis: the peak gets taller and narrower and <span class="m" data-tex="h(t)">h(t)</span> rings longer. Drag it into the right half-plane and <span class="m" data-tex="h(t)">h(t)</span> grows without bound. Choose the notch preset: a zero on the axis makes <span class="m" data-tex="|H|">|H|</span> exactly zero at that frequency. Then switch to the z-plane, where the unit circle plays the role of the <span class="m" data-tex="j\omega">j&omega;</span> axis and stable poles lie inside the circle.</p>
+  <div class="predict">
+    <h2 class="predict-title">Predict, then check</h2>
+    <details><summary>With poles at <span class="m" data-tex="-\sigma\pm 4j">&minus;&sigma; &plusmn; 4j</span>, what happens to the peak of <span class="m" data-tex="|H|">|H|</span> and to <span class="m" data-tex="h(t)">h(t)</span> as <span class="m" data-tex="\sigma">&sigma;</span> shrinks toward 0?</summary><p>The peak near <span class="m" data-tex="\omega=4\ \text{rad/s}">&omega; = 4 rad/s</span> gets taller and narrower (its width is about <span class="m" data-tex="2\sigma">2&sigma;</span>), and <span class="m" data-tex="h(t)\propto e^{-\sigma t}\sin(4t)">h(t) &prop; e<sup>&minus;&sigma;t</sup> sin(4t)</span> rings longer, since it decays with time constant <span class="m" data-tex="1/\sigma">1/&sigma;</span>.</p></details>
+    <details><summary>In the z-plane, a single pole at <span class="m" data-tex="z=-0.9">z = &minus;0.9</span>: low-pass or high-pass? What does <span class="m" data-tex="h[n]">h[n]</span> look like?</summary><p>High-pass. The pole is closest to <span class="m" data-tex="z=-1=e^{j\pi}">z = &minus;1 = e<sup>j&pi;</sup></span>, the highest frequency <span class="m" data-tex="\Omega=\pi">&Omega; = &pi;</span>, so <span class="m" data-tex="|H|">|H|</span> peaks there. The impulse response <span class="m" data-tex="h[n]\propto(-0.9)^n">h[n] &prop; (&minus;0.9)<sup>n</sup></span> alternates in sign as it decays.</p></details>
+  </div>
+
+  <div class="controls controls--sticky controls--3">
+    <div class="control">
+      <label for="dom">Domain</label>
+      <select id="dom" class="sig-select">
+        <option value="s">s-plane (continuous time)</option>
+        <option value="z">z-plane (discrete time)</option>
+      </select>
+      <label for="preset">Preset</label>
+      <select id="preset" class="sig-select"></select>
+    </div>
+    <div class="control">
+      <label>Poles and zeros <span class="probe-note">(drag them; click one to select)</span></label>
+      <div class="actions" style="flex-wrap:wrap">
+        <button class="chip" id="addP" type="button">+ pole</button>
+        <button class="chip" id="addPP" type="button">+ pole pair</button>
+        <button class="chip" id="addZ" type="button">+ zero</button>
+        <button class="chip" id="addZZ" type="button">+ zero pair</button>
+        <button class="chip" id="remove" type="button" disabled>Remove selected</button>
+      </div>
+      <div class="small" id="status" role="status" aria-live="polite" style="margin-top:6px"></div>
+    </div>
+    <div class="control">
+      <div class="control-head">
+        <label for="wsel">Frequency <span id="wval" class="m">&omega; = 4 rad/s</span></label>
+        <button class="btn btn-primary sweep-btn" id="btnSweep" type="button">&#9654;&#xFE0E; Sweep</button>
+      </div>
+      <input id="wsel" type="range" min="0" max="1000" step="1" value="500"/>
+    </div>
+  </div>
+
+  <div class="plot-grid">
+    <div class="card">
+      <h2 id="titlePZ"><span>Pole-zero plot</span></h2>
+      <canvas id="cpz" role="img" aria-label="Pole-zero plot with draggable poles and zeros, and vectors to the current frequency point" style="touch-action:none"></canvas>
+      <div class="axis-label" id="axPZ" data-tex="\mathrm{Re}\,s\ (1/\mathrm{s})">Re s (1/s)</div>
+      <div class="chip-row">
+        <span class="chip"><span class="dot" style="background:var(--xcolor)"></span>Poles &times;</span>
+        <span class="chip"><span class="dot" style="background:var(--poscolor)"></span>Zeros &#9675;</span>
+        <span class="chip"><span class="dot" style="background:#f8fafc;box-shadow:0 0 0 1px #64748b"></span>Frequency point</span>
+      </div>
+      <div class="math-block live" id="liveMath" aria-live="polite"></div>
+    </div>
+    <div class="card">
+      <h2 id="titleM"><span>Magnitude response <span class="m" data-tex="|H(j\omega)|">|H(j&omega;)|</span> <span class="probe-note">(normalized to a peak of 1)</span></span></h2>
+      <canvas id="cm" role="img" aria-label="Magnitude response, with the current frequency marked"></canvas>
+      <div class="axis-label" id="axM" data-tex="\omega\ (\mathrm{rad/s})">&omega; (rad/s)</div>
+    </div>
+    <div class="card">
+      <h2 id="titleP"><span>Phase response <span class="m" data-tex="\angle H(j\omega)">&ang;H(j&omega;)</span></span></h2>
+      <canvas id="cp" role="img" aria-label="Phase response in degrees, with the current frequency marked"></canvas>
+      <div class="axis-label" id="axP" data-tex="\omega\ (\mathrm{rad/s})">&omega; (rad/s)</div>
+    </div>
+    <div class="card">
+      <h2 id="titleH"><span>Impulse response <span class="m" data-tex="h(t)">h(t)</span></span></h2>
+      <canvas id="ch" role="img" aria-label="Impulse response of the system"></canvas>
+      <div class="axis-label" id="axH" data-tex="t\ (\mathrm{s})">t (s)</div>
+      <div class="readout" aria-live="polite"><span class="part" id="stab"></span></div>
+    </div>
+  </div>
+
+</div>
+
+        </main>
+        <footer class="site-footer fade-in">
+            <p>&copy; 2021&ndash;2026 Ahmed Hamdi Sakr. All rights reserved.</p>
+        </footer>
+        </div>
+
+
+<script>
+(function(){
+  // ---------- Config ----------
+  const TWO_PI = Math.PI * 2;
+  const NW = 801;                                   // frequency grid points
+  const DOMAINS = {
+    s: {box: [-6, 3, -9, 9], wMax: 8, T: 10, unit: 'rad/s', w: '\\omega', W: 'ω'},
+    z: {box: [-1.6, 1.6, -1.6, 1.6], wMax: Math.PI, N: 40, unit: 'rad/sample', w: '\\Omega', W: 'Ω'},
+  };
+  // Presets: real roots {re}, conjugate pairs {re, im} (im > 0 stands for re ± j im)
+  const pol = (r, deg) => ({re: r * Math.cos(deg * Math.PI / 180), im: r * Math.sin(deg * Math.PI / 180)});
+  const PRESETS = {
+    s: {
+      res:   {name: 'Resonance (2nd-order low-pass)', poles: [{re: -0.5, im: 4}], zeros: [], w: 3},
+      lp1:   {name: 'First-order low-pass',           poles: [{re: -2}], zeros: [], w: 2},
+      bp:    {name: 'Band-pass',                      poles: [{re: -0.5, im: 4}], zeros: [{re: 0}], w: 4},
+      notch: {name: 'Notch',                          poles: [{re: -1, im: 4}], zeros: [{re: 0, im: 4}], w: 4},
+      hp:    {name: 'High-pass (2nd order)',          poles: [{re: -2, im: 2}], zeros: [{re: 0}, {re: 0}], w: 2},
+    },
+    z: {
+      lp1:   {name: 'Low-pass (one pole)',            poles: [{re: 0.9}], zeros: [], w: 0.5},
+      res:   {name: 'Resonator',                      poles: [pol(0.95, 45)], zeros: [], w: Math.PI / 4},
+      notch: {name: 'Notch',                          poles: [pol(0.9, 45)], zeros: [pol(1, 45)], w: Math.PI / 4},
+      ma:    {name: 'Moving average (4 samples)',     poles: [{re: 0}, {re: 0}, {re: 0}], zeros: [{re: 0, im: 1}, {re: -1}], w: Math.PI / 4},
+      hp1:   {name: 'High-pass (one pole)',           poles: [{re: -0.9}], zeros: [], w: 2.5},
+    },
+  };
+  const css = getComputedStyle(document.documentElement);
+  const col = (name, fb) => css.getPropertyValue(name).trim() || fb;
+  const C_POLE = col('--xcolor', '#f59e0b'), C_ZERO = col('--poscolor', '#2dd4bf'), C_Y = col('--ycolor', '#60a5fa');
+  const C_GRID = col('--grid', '#15223e'), C_AXIS = '#223356', C_TICK = '#94a3b8', C_BG = '#0a1326', C_PT = '#f8fafc';
+
+  // DOM
+  const el = (id) => document.getElementById(id);
+  const elDom = el('dom'), elPreset = el('preset'), elW = el('wsel'), elSweep = el('btnSweep'), elRemove = el('remove'), elStatus = el('status');
+  const cvPZ = el('cpz'), ctxPZ = cvPZ.getContext('2d'), ctxM = el('cm').getContext('2d'), ctxP = el('cp').getContext('2d'), ctxH = el('ch').getContext('2d');
+
+  // ---------- Plot helpers (style matches the other demos) ----------
+  const MATH_FONT = '13px KaTeX_Main, "Times New Roman", Times, serif';   // canvas tick labels
+  function fitCanvas(canvas){
+    const d = window.devicePixelRatio || 1;
+    const w = canvas.clientWidth, h = canvas.clientHeight;
+    const pw = Math.round(w*d), ph = Math.round(h*d);
+    if (canvas.width !== pw || canvas.height !== ph){ canvas.width = pw; canvas.height = ph; }
+    canvas.getContext('2d').setTransform(d,0,0,d,0,0);
+    return {width: w, height: h};
+  }
+  function fmtTick(u){
+    if (Math.abs(u) < 1e-12) return "0";
+    return String(Number(u.toPrecision(3)));
+  }
+  // Round tick values (steps of 1, 2, 2.5 or 5 times a power of ten), about `target` of them
+  function niceTicks(lo, hi, target = 5){
+    if (!(hi > lo)) return [lo];
+    const e = Math.floor(Math.log10((hi - lo) / target));
+    let best = null;
+    for (const p of [e - 1, e, e + 1]) for (const m of [1, 2, 2.5, 5]){
+      const s = m * Math.pow(10, p);
+      const n = Math.floor(hi / s + 1e-9) - Math.ceil(lo / s - 1e-9) + 1;
+      const score = Math.abs(n - target);
+      if (!best || score < best.score || (score === best.score && s > best.s)) best = {s, score};
+    }
+    const out = [];
+    for (let k = Math.ceil(lo / best.s - 1e-9); k * best.s <= hi + 1e-9 * best.s; k++) out.push(k === 0 ? 0 : k * best.s);
+    return out;
+  }
+  const PI_LABEL = (v) => { const r = Math.round(v / (Math.PI / 4)); return ['0', 'π/4', 'π/2', '3π/4', 'π'][r] ?? fmtTick(v); };
+  // Plot frame. opts: {xt, yt, xFmt, yFmt, equal} — equal: same scale on both axes (pole-zero plot)
+  function frame(ctx, xr, yr, opts = {}){
+    const {width, height} = fitCanvas(ctx.canvas);
+    const m = {left: 56, right: 12, top: 10, bottom: 28};
+    const P = {x0: m.left, y0: m.top, w: width - m.left - m.right, h: height - m.top - m.bottom};
+    let [xmin, xmax] = xr, [ymin, ymax] = yr;
+    if (opts.equal){                                  // grow one range so a unit is the same length on both axes
+      const sx = P.w / (xmax - xmin), sy = P.h / (ymax - ymin), s = Math.min(sx, sy);
+      const cx = (xmin + xmax) / 2, cy = (ymin + ymax) / 2;
+      xmin = cx - P.w / s / 2; xmax = cx + P.w / s / 2; ymin = cy - P.h / s / 2; ymax = cy + P.h / s / 2;
+    }
+    const X = (v) => P.x0 + (v - xmin) * (P.w / (xmax - xmin));
+    const Y = (v) => P.y0 + P.h - ((v - ymin) / (ymax - ymin)) * P.h;
+    const xt = opts.xt || niceTicks(xmin, xmax, 6), yt = opts.yt || niceTicks(ymin, ymax);
+    const xFmt = opts.xFmt || fmtTick, yFmt = opts.yFmt || fmtTick;
+
+    ctx.clearRect(0, 0, width, height);
+    ctx.fillStyle = C_BG; ctx.fillRect(0, 0, width, height);
+    ctx.save(); ctx.beginPath(); ctx.rect(P.x0, P.y0, P.w, P.h); ctx.clip();
+    if (opts.under) opts.under({ctx, P, X, Y});
+    ctx.strokeStyle = C_GRID; ctx.lineWidth = 1;
+    for (const v of yt){ const y = Y(v); ctx.beginPath(); ctx.moveTo(P.x0, y); ctx.lineTo(P.x0 + P.w, y); ctx.stroke(); }
+    for (const u of xt){ const x = X(u); ctx.beginPath(); ctx.moveTo(x, P.y0); ctx.lineTo(x, P.y0 + P.h); ctx.stroke(); }
+    ctx.restore();
+
+    ctx.fillStyle = C_TICK; ctx.font = MATH_FONT; ctx.textAlign = "right"; ctx.textBaseline = "middle";
+    for (const v of yt){
+      const y = Y(v);
+      ctx.fillText(yFmt(v), P.x0 - 8, y);
+      ctx.strokeStyle = C_AXIS; ctx.beginPath(); ctx.moveTo(P.x0-4, y); ctx.lineTo(P.x0, y); ctx.stroke();
+    }
+    ctx.textAlign = "center"; ctx.textBaseline = "top";
+    const gap = xt.length > 1 ? Math.abs(X(xt[1]) - X(xt[0])) : Infinity, every = Math.max(1, Math.ceil(30 / gap));
+    const i0 = xt.reduce((b, u, i) => Math.abs(u) < Math.abs(xt[b]) ? i : b, 0);
+    xt.forEach((u, i) => { if ((((i - i0) % every) + every) % every === 0) ctx.fillText(xFmt(u), X(u), P.y0 + P.h + 6); });
+
+    ctx.strokeStyle = C_AXIS; ctx.lineWidth = 1.5;
+    if (ymin <= 0 && ymax >= 0){ ctx.beginPath(); ctx.moveTo(P.x0, Y(0)); ctx.lineTo(P.x0 + P.w, Y(0)); ctx.stroke(); }
+    if (opts.jAxis && xmin <= 0 && xmax >= 0){ ctx.beginPath(); ctx.moveTo(X(0), P.y0); ctx.lineTo(X(0), P.y0 + P.h); ctx.stroke(); }
+    return {ctx, P, X, Y, xr: [xmin, xmax], yr: [ymin, ymax]};
+  }
+  function clipped(F, fn){
+    const {ctx, P} = F;
+    ctx.save(); ctx.beginPath(); ctx.rect(P.x0, P.y0, P.w, P.h); ctx.clip(); fn(ctx); ctx.restore();
+  }
+  function line(F, xs, ys, color, width = 2, alpha = 1, dash = null){
+    clipped(F, (ctx) => {
+      ctx.strokeStyle = color; ctx.lineWidth = width; ctx.globalAlpha = alpha; ctx.lineJoin = 'round';
+      if (dash) ctx.setLineDash(dash);
+      ctx.beginPath();
+      let pen = false;
+      for (let i = 0; i < xs.length; i++){
+        if (!isFinite(ys[i])) { pen = false; continue; }
+        const x = F.X(xs[i]), y = Math.max(-1e5, Math.min(1e5, F.Y(ys[i])));
+        if (!pen) { ctx.moveTo(x, y); pen = true; } else ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+    });
+  }
+  function dot(F, x, y, color, r = 6){
+    clipped(F, (ctx) => {
+      ctx.fillStyle = color; ctx.strokeStyle = C_BG; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.arc(F.X(x), F.Y(y), r, 0, TWO_PI); ctx.fill(); ctx.stroke();
+    });
+  }
+  function vline(F, x, color){
+    clipped(F, (ctx) => {
+      ctx.strokeStyle = color; ctx.lineWidth = 1; ctx.setLineDash([4, 4]);
+      ctx.beginPath(); ctx.moveTo(F.X(x), F.P.y0); ctx.lineTo(F.X(x), F.P.y0 + F.P.h); ctx.stroke();
+    });
+  }
+  function stems(F, xs, ys, color){
+    clipped(F, (ctx) => {
+      ctx.strokeStyle = color; ctx.fillStyle = color; ctx.lineWidth = 2;
+      const y0 = F.Y(0);
+      for (let i = 0; i < xs.length; i++){
+        if (!isFinite(ys[i])) continue;
+        const x = F.X(xs[i]), y = Math.max(-1e5, Math.min(1e5, F.Y(ys[i])));
+        ctx.beginPath(); ctx.moveTo(x, y0); ctx.lineTo(x, y); ctx.stroke();
+        ctx.beginPath(); ctx.arc(x, y, 3.5, 0, TWO_PI); ctx.fill();
+      }
+    });
+  }
+
+  // ---------- Math rendering (KaTeX; plain-text fallback is already in the markup) ----------
+  function renderTeX(el, tex, display){
+    if (!window.katex) return false;
+    try { katex.render(tex, el, {throwOnError:false, displayMode:!!display}); return true; }
+    catch(e){ return false; }
+  }
+  function setTeX(el, tex, fallback){
+    if (!el) return;
+    el.dataset.tex = tex;
+    if (!renderTeX(el, tex, false)) el.textContent = fallback;
+  }
+  window.addEventListener('load', () => {
+    document.querySelectorAll('[data-tex]').forEach(el => renderTeX(el, el.dataset.tex, el.hasAttribute('data-display')));
+    drawAll();
+  });
+  window.addEventListener('load', () => { if (document.fonts && document.fonts.load) document.fonts.load(MATH_FONT).then(drawAll); });
+
+  // ---------- Model ----------
+  // items: {kind: 'pole'|'zero', re, im, pair} — a pair stands for re ± j im (im >= 0) and counts twice
+  let dom = 's', items = [], sel = -1;
+  const D = () => DOMAINS[dom];
+  const count = (kind) => items.reduce((n, it) => n + (it.kind === kind ? (it.pair ? 2 : 1) : 0), 0);
+  function roots(kind){
+    const r = [];
+    for (const it of items) if (it.kind === kind){
+      if (it.pair){ r.push({re: it.re, im: it.im}, {re: it.re, im: -it.im}); } else r.push({re: it.re, im: 0});
+    }
+    return r;
+  }
+  // polynomial with the given roots, highest power first (real coefficients since roots come in conjugates)
+  function poly(rs){
+    let re = [1], im = [0];
+    for (const r of rs){
+      const nre = re.concat(0), nim = im.concat(0);
+      for (let k = 1; k < nre.length; k++){
+        nre[k] -= r.re * re[k-1] - r.im * im[k-1];
+        nim[k] -= r.re * im[k-1] + r.im * re[k-1];
+      }
+      re = nre; im = nim;
+    }
+    return re;
+  }
+  // point on the jω axis or the unit circle for frequency w
+  const pointAt = (w) => dom === 's' ? {re: 0, im: w} : {re: Math.cos(w), im: Math.sin(w)};
+  // unnormalized |H| and angle (rad) at frequency w: products of vector lengths, sums of vector angles
+  function response(w, zs, ps){
+    const q = pointAt(w);
+    let mag = 1, ang = 0;
+    for (const z of zs){ const dx = q.re - z.re, dy = q.im - z.im; mag *= Math.hypot(dx, dy); ang += Math.atan2(dy, dx); }
+    for (const p of ps){ const dx = q.re - p.re, dy = q.im - p.im; const d = Math.hypot(dx, dy); mag = d > 1e-12 ? mag / d : Infinity; ang -= Math.atan2(dy, dx); }
+    return {mag, ang};
+  }
+
+  // Impulse response. s: controllable canonical state space, RK4 (works for repeated and unstable poles).
+  // z: difference equation from the coefficients.
+  function impulse(K, zs, ps){
+    const a = poly(ps), n = a.length - 1;
+    if (dom === 's'){
+      const T = D().T, dt = 0.005, steps = Math.round(T / dt);
+      const b = poly(zs).map((v) => K * v), bb = new Array(n + 1 - b.length).fill(0).concat(b);
+      const Dd = n >= 0 ? bb[0] : 0;
+      const beta = []; for (let k = 1; k <= n; k++) beta[k] = bb[k] - Dd * a[k];
+      const ts = new Float64Array(steps + 1), hs = new Float64Array(steps + 1);
+      if (n === 0) return {ts, hs, delta: Dd};
+      const f = (x) => { const d = new Float64Array(n); for (let j = 0; j < n - 1; j++) d[j] = x[j+1]; let s = 0; for (let k = 1; k <= n; k++) s -= a[k] * x[n-k]; d[n-1] = s; return d; };
+      const out = (x) => { let s = 0; for (let k = 1; k <= n; k++) s += beta[k] * x[n-k]; return s; };
+      let x = new Float64Array(n); x[n-1] = 1;
+      for (let i = 0; i <= steps; i++){
+        ts[i] = i * dt; hs[i] = out(x);
+        if (!isFinite(hs[i]) || Math.abs(hs[i]) > 1e12){ for (let j = i; j <= steps; j++){ ts[j] = j * dt; hs[j] = NaN; } break; }
+        const k1 = f(x), x2 = x.map((v, j) => v + dt / 2 * k1[j]), k2 = f(x2), x3 = x.map((v, j) => v + dt / 2 * k2[j]), k3 = f(x3), x4 = x.map((v, j) => v + dt * k3[j]), k4 = f(x4);
+        x = x.map((v, j) => v + dt / 6 * (k1[j] + 2*k2[j] + 2*k3[j] + k4[j]));
+      }
+      return {ts, hs, delta: Math.abs(Dd) > 1e-9 ? Dd : 0};
+    }
+    const N = D().N, m = zs.length;
+    const b = new Array(n - m).fill(0).concat(poly(zs).map((v) => K * v));
+    const ns = Float64Array.from({length: N + 1}, (_, i) => i), hs = new Float64Array(N + 1);
+    for (let k = 0; k <= N; k++){
+      let s = k < b.length ? b[k] : 0;
+      for (let j = 1; j <= n && j <= k; j++) s -= a[j] * hs[k-j];
+      hs[k] = s;
+    }
+    return {ts: ns, hs, delta: 0};
+  }
+
+  // ---------- Presets and editing ----------
+  function fillPresets(){
+    elPreset.innerHTML = '';
+    for (const [k, p] of Object.entries(PRESETS[dom])){ const o = document.createElement('option'); o.value = k; o.textContent = p.name; elPreset.appendChild(o); }
+  }
+  function loadPreset(){
+    const p = PRESETS[dom][elPreset.value];
+    items = [];
+    for (const r of p.poles) items.push({kind: 'pole', re: r.re, im: Math.abs(r.im || 0), pair: r.im !== undefined});
+    for (const r of p.zeros) items.push({kind: 'zero', re: r.re, im: Math.abs(r.im || 0), pair: r.im !== undefined});
+    sel = -1;
+    elW.value = Math.round(1000 * p.w / D().wMax);
+    setStatus('');
+    drawAll();
+  }
+  function setStatus(msg){ elStatus.textContent = msg; }
+  function add(kind, pair){
+    const extra = pair ? 2 : 1;
+    if (kind === 'zero' && count('zero') + extra > count('pole')){
+      setStatus('A causal system has no more zeros than poles. Add a pole first.'); return;
+    }
+    const at = dom === 's' ? (pair ? {re: -1, im: 3} : {re: -1, im: 0}) : (pair ? {re: 0.5, im: 0.5} : {re: 0.5, im: 0});
+    items.push({kind, re: at.re, im: at.im, pair});
+    sel = items.length - 1; setStatus(''); drawAll();
+  }
+  el('addP').addEventListener('click', () => add('pole', false));
+  el('addPP').addEventListener('click', () => add('pole', true));
+  el('addZ').addEventListener('click', () => add('zero', false));
+  el('addZZ').addEventListener('click', () => add('zero', true));
+  elRemove.addEventListener('click', () => {
+    if (sel < 0) return;
+    const it = items[sel];
+    if (it.kind === 'pole' && count('zero') > count('pole') - (it.pair ? 2 : 1)){
+      setStatus('Removing this pole would leave more zeros than poles. Remove a zero first.'); return;
+    }
+    items.splice(sel, 1); sel = -1; setStatus(''); drawAll();
+  });
+
+  // ---------- Dragging on the pole-zero plot ----------
+  let pzF = null, drag = null;
+  function canvasPos(e){ const r = cvPZ.getBoundingClientRect(); return {x: e.clientX - r.left, y: e.clientY - r.top}; }
+  const toCoord = (px, py) => ({re: pzF.xr[0] + (px - pzF.P.x0) / pzF.P.w * (pzF.xr[1] - pzF.xr[0]),
+                                im: pzF.yr[0] + (pzF.P.y0 + pzF.P.h - py) / pzF.P.h * (pzF.yr[1] - pzF.yr[0])});
+  cvPZ.addEventListener('pointerdown', (e) => {
+    if (!pzF) return;
+    const {x, y} = canvasPos(e);
+    let best = -1, bestD = 14, sign = 1;
+    items.forEach((it, i) => {
+      for (const s of (it.pair ? [1, -1] : [1])){
+        const d = Math.hypot(pzF.X(it.re) - x, pzF.Y(s * it.im) - y);
+        if (d < bestD){ bestD = d; best = i; sign = s; }
+      }
+    });
+    sel = best;
+    if (best >= 0){ drag = {i: best, sign}; cvPZ.setPointerCapture(e.pointerId); }
+    drawAll();
+  });
+  cvPZ.addEventListener('pointermove', (e) => {
+    if (!drag) return;
+    const {x, y} = canvasPos(e), c = toCoord(x, y), it = items[drag.i];
+    const [x0, x1] = pzF.xr, [y0, y1] = pzF.yr;
+    it.re = Math.max(x0, Math.min(x1, c.re));
+    if (Math.abs(it.re) < 0.03 * (x1 - x0) / 10) it.re = 0;                 // snap to the imaginary axis
+    if (it.pair) it.im = Math.max(0, Math.min(y1, drag.sign * c.im));
+    drawAll();
+  });
+  const endDrag = () => { drag = null; };
+  cvPZ.addEventListener('pointerup', endDrag);
+  cvPZ.addEventListener('pointercancel', endDrag);
+
+  // ---------- Main draw ----------
+  const fmt = (v, d = 3) => (Math.abs(v) < 5 * Math.pow(10, -d - 1) ? 0 : v).toFixed(d);
+  function drawAll(){
+    const Dm = D(), zs = roots('zero'), ps = roots('pole');
+    const w = elW.value / 1000 * Dm.wMax;
+    // (the unit rad/sample is on the plot axes; here it would push the Sweep button onto its own line)
+    const wTex = dom === 's' ? String.raw`\omega=${w.toFixed(2)}\ \text{rad/s}` : String.raw`\Omega=${(w / Math.PI).toFixed(2)}\pi`;
+    setTeX(el('wval'), wTex, dom === 's' ? `ω = ${w.toFixed(2)} rad/s` : `Ω = ${(w / Math.PI).toFixed(2)}π`);
+    elRemove.disabled = sel < 0;
+    el('addZ').disabled = count('zero') + 1 > count('pole');
+    el('addZZ').disabled = count('zero') + 2 > count('pole');
+
+    // frequency response on the grid, normalized to a peak of 1
+    const wg = Float64Array.from({length: NW}, (_, i) => i * Dm.wMax / (NW - 1));
+    const raw = Array.from(wg, (v) => response(v, zs, ps));
+    let peak = 0; for (const r of raw) if (isFinite(r.mag)) peak = Math.max(peak, r.mag);
+    const K = peak > 0 ? 1 / peak : 1;
+    const mags = raw.map((r) => Math.min(r.mag * K, 1e3));
+    const now = response(w, zs, ps), magNow = now.mag * K;
+    // continuous phase in degrees: unwrap jumps of 360 between grid points
+    const phs = [];
+    raw.forEach((r, i) => { let d = r.ang * 180 / Math.PI; if (i){ while (d - phs[i-1] > 180) d -= 360; while (d - phs[i-1] < -180) d += 360; } phs.push(d); });
+    let phNow = now.ang * 180 / Math.PI;
+    const j = Math.round(w / Dm.wMax * (NW - 1));
+    while (phNow - phs[j] > 180) phNow -= 360; while (phNow - phs[j] < -180) phNow += 360;
+
+    // 1) pole-zero plot: stable region, vectors to the frequency point, poles and zeros
+    const [bx0, bx1, by0, by1] = Dm.box;
+    // equal scales in the z-plane keep the unit circle round; the s-plane uses the whole plot area
+    pzF = frame(ctxPZ, [bx0, bx1], [by0, by1], {equal: dom === 'z', jAxis: true, xt: dom === 's' ? null : [-1.5, -1, -0.5, 0, 0.5, 1, 1.5], yt: dom === 's' ? null : [-1.5, -1, -0.5, 0, 0.5, 1, 1.5],
+      under: ({ctx, P, X, Y}) => {
+        ctx.fillStyle = 'rgba(45, 212, 191, 0.08)';
+        if (dom === 's') ctx.fillRect(P.x0, P.y0, X(0) - P.x0, P.h);
+        else { ctx.beginPath(); ctx.arc(X(0), Y(0), X(1) - X(0), 0, TWO_PI); ctx.fill(); }
+      }});
+    const F = pzF, q = pointAt(w);
+    clipped(F, (ctx) => {
+      if (dom === 'z'){ ctx.strokeStyle = '#64748b'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(F.X(0), F.Y(0), F.X(1) - F.X(0), 0, TWO_PI); ctx.stroke(); }
+      else { ctx.strokeStyle = '#64748b'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(F.X(0), F.Y(0)); ctx.lineTo(F.X(0), F.Y(Dm.wMax)); ctx.stroke(); }
+      ctx.setLineDash([4, 4]); ctx.lineWidth = 1.2;
+      for (const [rs, c] of [[zs, C_ZERO], [ps, C_POLE]]) for (const r of rs){
+        ctx.strokeStyle = c; ctx.globalAlpha = 0.75;
+        ctx.beginPath(); ctx.moveTo(F.X(r.re), F.Y(r.im)); ctx.lineTo(F.X(q.re), F.Y(q.im)); ctx.stroke();
+      }
+      ctx.setLineDash([]); ctx.globalAlpha = 1;
+      items.forEach((it, i) => {
+        for (const s of (it.pair ? [1, -1] : [1])){
+          const x = F.X(it.re), y = F.Y(s * it.im), on = i === sel;
+          if (on){ ctx.fillStyle = 'rgba(248, 250, 252, 0.18)'; ctx.beginPath(); ctx.arc(x, y, 12, 0, TWO_PI); ctx.fill(); }
+          ctx.lineWidth = 2.5;
+          if (it.kind === 'pole'){ ctx.strokeStyle = C_POLE; ctx.beginPath(); ctx.moveTo(x-6, y-6); ctx.lineTo(x+6, y+6); ctx.moveTo(x+6, y-6); ctx.lineTo(x-6, y+6); ctx.stroke(); }
+          else { ctx.strokeStyle = C_ZERO; ctx.beginPath(); ctx.arc(x, y, 6, 0, TWO_PI); ctx.stroke(); }
+        }
+      });
+    });
+    dot(F, q.re, q.im, C_PT, 6);
+
+    // 2) magnitude and 3) phase, with the current frequency marked
+    const piAxis = dom === 'z' ? {xt: [0, Math.PI/4, Math.PI/2, 3*Math.PI/4, Math.PI], xFmt: PI_LABEL} : {};
+    let G = frame(ctxM, [0, Dm.wMax], [0, 1.1], {...piAxis, yt: [0, 0.25, 0.5, 0.75, 1]});
+    vline(G, w, '#64748b'); line(G, wg, mags, C_Y, 2.5); dot(G, w, Math.min(magNow, 1.1), C_PT, 6);
+    let lo = Math.min(...phs), hi = Math.max(...phs);
+    lo = Math.floor(lo / 90) * 90; hi = Math.ceil(hi / 90) * 90; if (hi - lo < 180){ const c = (hi + lo) / 2; lo = c - 90; hi = c + 90; }
+    const stepDeg = hi - lo > 360 ? 90 : 45, pt = []; for (let v = lo; v <= hi + 1e-9; v += stepDeg) pt.push(v);
+    G = frame(ctxP, [0, Dm.wMax], [lo - 0.04 * (hi - lo), hi + 0.04 * (hi - lo)], {...piAxis, yt: pt, yFmt: (v) => Math.round(v) + '°'});
+    vline(G, w, '#64748b'); line(G, wg, phs, C_Y, 2.5); dot(G, w, phNow, C_PT, 6);
+
+    // 4) impulse response
+    const imp = impulse(K, zs, ps);
+    let amax = 0; for (const v of imp.hs) if (isFinite(v)) amax = Math.max(amax, Math.abs(v));
+    if (amax === 0) amax = 1;
+    const yr = [-1.15 * amax, 1.15 * amax];
+    if (dom === 's'){
+      G = frame(ctxH, [0, Dm.T], yr, {});
+      line(G, imp.ts, imp.hs, C_Y, 2.5);
+      if (imp.delta){ const c = G.ctx; c.fillStyle = C_PT; c.font = MATH_FONT; c.textAlign = 'left'; c.textBaseline = 'top'; c.fillText(`plus ${fmt(imp.delta, 3)} δ(t) at t = 0`, G.P.x0 + 8, G.P.y0 + 6); }
+    } else {
+      G = frame(ctxH, [-0.5, Dm.N + 0.5], yr, {xt: niceTicks(0, Dm.N, 8)});
+      stems(G, imp.ts, imp.hs, C_Y);
+    }
+
+    // stability and the vector readout
+    const unstable = dom === 's' ? ps.some((p) => p.re > 1e-9) : ps.some((p) => Math.hypot(p.re, p.im) > 1 + 1e-9);
+    const marginal = !unstable && (dom === 's' ? ps.some((p) => Math.abs(p.re) <= 1e-9) : ps.some((p) => Math.abs(Math.hypot(p.re, p.im) - 1) <= 1e-9));
+    const st = el('stab');
+    st.style.color = unstable ? col('--negcolor', '#fb923c') : marginal ? '#facc15' : col('--poscolor', '#2dd4bf');
+    st.textContent = unstable ? (dom === 's' ? '✗ Unstable: a pole in the right half-plane, so h(t) grows without bound'
+                                            : '✗ Unstable: a pole outside the unit circle, so h[n] grows without bound')
+                   : marginal ? (dom === 's' ? '! Marginally stable: a pole on the jω axis, so h(t) does not decay'
+                                             : '! Marginally stable: a pole on the unit circle, so h[n] does not decay')
+                   : (dom === 's' ? '✓ Stable: all poles in the left half-plane, so h(t) decays' : '✓ Stable: all poles inside the unit circle, so h[n] decays');
+    const v = dom === 's' ? 'j\\omega' : 'e^{j\\Omega}';
+    const tex = String.raw`\begin{gathered}|H(${v})|=K\frac{\prod|\text{zero vectors}|}{\prod|\text{pole vectors}|}=${isFinite(magNow) ? fmt(magNow) : '\\infty'}\\ \angle H(${v})=${phNow.toFixed(1)}^\circ\end{gathered}`;
+    const lm = el('liveMath');
+    if (!renderTeX(lm, tex, true)) lm.textContent = `|H| = ${isFinite(magNow) ? fmt(magNow) : '∞'}, angle = ${phNow.toFixed(1)}°`;
+  }
+
+  function setDomain(){
+    dom = elDom.value;
+    const Dm = D(), w = Dm.w;
+    setTeX(el('axPZ'), dom === 's' ? String.raw`\mathrm{Re}\,s\ (1/\mathrm{s})` : String.raw`\mathrm{Re}\,z`, dom === 's' ? 'Re s (1/s)' : 'Re z');
+    for (const id of ['axM', 'axP']) setTeX(el(id), dom === 's' ? String.raw`\omega\ (\mathrm{rad/s})` : String.raw`\Omega\ (\mathrm{rad/sample})`, dom === 's' ? 'ω (rad/s)' : 'Ω (rad/sample)');
+    setTeX(el('axH'), dom === 's' ? String.raw`t\ (\mathrm{s})` : String.raw`n\ (\text{samples})`, dom === 's' ? 't (s)' : 'n (samples)');
+    setTeX(el('titleM'), String.raw`\text{Magnitude response }|H(${dom === 's' ? 'j\\omega' : 'e^{j\\Omega}'})|\ \text{(peak normalized to 1)}`, 'Magnitude response (peak normalized to 1)');
+    setTeX(el('titleP'), String.raw`\text{Phase response }\angle H(${dom === 's' ? 'j\\omega' : 'e^{j\\Omega}'})`, 'Phase response');
+    setTeX(el('titleH'), dom === 's' ? String.raw`\text{Impulse response }h(t)` : String.raw`\text{Impulse response }h[n]`, 'Impulse response');
+    fillPresets(); loadPreset();
+  }
+
+  // ---------- Sweep the frequency (dragging the slider stops it) ----------
+  let raf = null, lastTs = 0, sweepV = 0;
+  function stopSweep(){
+    if (raf) cancelAnimationFrame(raf);
+    raf = null; elSweep.innerHTML = '&#9654;&#xFE0E; Sweep';
+  }
+  function step(ts){
+    const dt = lastTs ? Math.min(0.1, (ts - lastTs) / 1000) : 0;
+    lastTs = ts;
+    sweepV = Math.min(1000, sweepV + 100 * dt);       // the whole range in 10 s
+    elW.value = Math.round(sweepV);
+    drawAll();
+    if (sweepV >= 1000) { stopSweep(); return; }
+    raf = requestAnimationFrame(step);
+  }
+  elSweep.addEventListener('click', () => {
+    if (raf) { stopSweep(); return; }
+    sweepV = parseFloat(elW.value);
+    if (sweepV >= 1000) sweepV = 0;
+    lastTs = 0; elSweep.innerHTML = '&#10074;&#10074;&#xFE0E; Pause';
+    raf = requestAnimationFrame(step);
+  });
+
+  // listeners
+  elW.addEventListener('input', () => { stopSweep(); drawAll(); });
+  elDom.addEventListener('change', () => { stopSweep(); setDomain(); });
+  elPreset.addEventListener('change', () => { stopSweep(); loadPreset(); });
+  window.addEventListener('resize', drawAll);
+
+  setDomain();
+})();
+</script>
+</body>
+</html>

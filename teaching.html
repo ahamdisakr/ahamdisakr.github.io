@@ -41,27 +41,54 @@
                     <i data-feather="activity"></i>
                     <h2>Interactive Demos</h2>
                 </div>
-                <ul class="bullets stack-1">
+                <p class="text-soft mb-4">Interactive demos that run in the browser, each with a short &ldquo;Try it&rdquo; guide.</p>
+
+                <h3 class="title-md mb-2">Systems and Convolution</h3>
+                <ul class="bullets stack-2 mb-6">
                     <li>
-                        <h3 class="item-title"><a class="link" href="demos/lti-systems.html">Linearity and Time Invariance</a></h3>
+                        <h4 class="item-title mb-2"><a class="link" href="demos/lti-systems.html">Linearity and Time Invariance</a></h4>
+                        <p class="text-soft text-sm">Scale, shift and add two inputs, and check whether an RC filter, a squarer and a time-varying gain follow the LTI prediction.</p>
                     </li>
                     <li>
-                        <h3 class="item-title"><a class="link" href="demos/convolution-impulses.html">Convolution from Impulse Responses</a></h3>
+                        <h4 class="item-title mb-2"><a class="link" href="demos/convolution-impulses.html">Convolution from Impulse Responses</a></h4>
+                        <p class="text-soft text-sm">Cut the input into narrow pulses and add up their responses; as the pulses get narrower, the sum becomes the convolution integral.</p>
                     </li>
                     <li>
-                        <h3 class="item-title"><a class="link" href="demos/convolution-flip-slide.html">Convolution: Flip and Slide</a></h3>
+                        <h4 class="item-title mb-2"><a class="link" href="demos/convolution-flip-slide.html">Convolution: Flip and Slide</a></h4>
+                        <p class="text-soft text-sm">Flip one signal, slide it across the other and add up the product, in continuous or discrete time.</p>
+                    </li>
+                </ul>
+
+                <h3 class="title-md mb-2">Fourier Analysis</h3>
+                <ul class="bullets stack-2">
+                    <li>
+                        <h4 class="item-title mb-2"><a class="link" href="demos/fourier-intuition.html">Why Fourier Analysis Works</a></h4>
+                        <p class="text-soft text-sm">Multiply a signal by probe cosines and sines, and watch the net area trace out its spectrum.</p>
                     </li>
                     <li>
-                        <h3 class="item-title"><a class="link" href="demos/fourier-intuition.html">Why Fourier Analysis Works</a></h3>
+                        <h4 class="item-title mb-2"><a class="link" href="demos/fourier-series.html">Fourier Series Coefficients</a></h4>
+                        <p class="text-soft text-sm">Rebuild a periodic signal from its harmonics, and see how the number of terms, a time shift and the period change the spectrum.</p>
                     </li>
                     <li>
-                        <h3 class="item-title"><a class="link" href="demos/fourier-series.html">Fourier Series Coefficients</a></h3>
+                        <h4 class="item-title mb-2"><a class="link" href="demos/fourier-transform.html">Frequency Response: A Sinusoid Through a Filter</a></h4>
+                        <p class="text-soft text-sm">Send a cosine through a low-pass filter and see how the magnitude and phase response scale and delay it.</p>
                     </li>
                     <li>
-                        <h3 class="item-title"><a class="link" href="demos/fourier-transform.html">Frequency Response: A Sinusoid Through a Filter</a></h3>
+                        <h4 class="item-title mb-2"><a class="link" href="demos/fourier-filtering.html">Filtering Signals and Audio</a></h4>
+                        <p class="text-soft text-sm">Apply low-pass, high-pass, band-pass and notch filters to test signals or your own audio, and listen to the result.</p>
                     </li>
                     <li>
-                        <h3 class="item-title"><a class="link" href="demos/fourier-filtering.html">Filtering Signals and Audio</a></h3>
+                        <h4 class="item-title mb-2"><a class="link" href="demos/ft-properties.html">Fourier Transform Properties</a></h4>
+                        <p class="text-soft text-sm">Scale, shift or modulate a pulse and watch its magnitude and phase spectrum change.</p>
+                    </li>
+                    <li>
+                        <h4 class="item-title mb-2"><a class="link" href="demos/sampling-aliasing.html">Sampling and Aliasing</a></h4>
+                        <p class="text-soft text-sm">Sample a sinusoid and reconstruct it, and watch its frequency fold back once it passes half the sampling rate.</p>
+                    </li>
+                    <!-- keep Poles, Zeros last in this list -->
+                    <li>
+                        <h4 class="item-title mb-2"><a class="link" href="demos/poles-zeros.html">Poles, Zeros and Frequency Response</a></h4>
+                        <p class="text-soft text-sm">Drag poles and zeros in the s-plane or the z-plane, and see the magnitude, phase and impulse response follow.</p>
                     </li>
                 </ul>
             </div>
