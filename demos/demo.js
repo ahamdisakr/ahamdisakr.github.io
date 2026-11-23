@@ -31,6 +31,21 @@
 
   // ---------- Embed mode (?embed=1), e.g. inside a Brightspace page ----------
   var COPYRIGHT_YEARS = '2021&ndash;2026';          // keep in step with the site footer
+
+  // ---------- Feedback link (Microsoft Form) ----------
+  // FEEDBACK_URL: the form's share link. To fill in the demo's name automatically, set FEEDBACK_PREFILL to the
+  // form's pre-filled URL (Forms: "..." > Get pre-filled URL) with the demo name replaced by {demo}.
+  var FEEDBACK_URL = 'https://forms.cloud.microsoft/r/L8gv1R6a3D';
+  var FEEDBACK_PREFILL = 'https://forms.cloud.microsoft/Pages/ResponsePage.aspx?id=szP5EmE9GUuaTWiQId6MyUrIgxBSj_lBicxqrnXH0YlUNjZYVUkxUFA0QURJWEJOMjVLWU81N0wxRi4u&r800616aa1d964f5c8bdb420e1d68076c={demo}';
+  // the form's list uses the full titles where the previous / next links use short ones
+  var FORM_NAMES = {
+    'Frequency Response': 'Frequency Response: A Sinusoid Through a Filter',
+    'DTFT and DFT': 'DTFT and DFT: Windowing, Leakage and Zero-Padding'
+  };
+  function feedbackUrl(title) {
+    var name = FORM_NAMES[title] || title;
+    return FEEDBACK_PREFILL ? FEEDBACK_PREFILL.replace('{demo}', encodeURIComponent(name)) : FEEDBACK_URL;
+  }
   var EMBED = /[?&]embed=1(&|$)/.test(location.search);
   if (EMBED) document.documentElement.classList.add('embed');
 
@@ -55,6 +70,12 @@
         '<a class="demo-nav-all" href="/teaching.html#demos"' + (EMBED ? ' target="_blank" rel="noopener"' : '') + '>All demos</a>' +
         (i < DEMOS.length - 1 ? link(DEMOS[i + 1], 'next', 'Next &rarr;') : '<span></span>');
       panel.appendChild(nav);
+      // under the links: report an issue or send feedback (opens the form in a new tab)
+      var fb = document.createElement('p');
+      fb.className = 'demo-feedback';
+      fb.innerHTML = 'Found a problem or have an idea? <a href="' + feedbackUrl(DEMOS[i][1]) +
+        '" target="_blank" rel="noopener">Report an issue or send feedback &#8599;</a>';
+      panel.appendChild(fb);
     }
 
     if (EMBED) {

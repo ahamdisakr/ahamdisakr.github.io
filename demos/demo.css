@@ -107,6 +107,9 @@ canvas.short { height: 200px; }
 .demo-nav-link:hover { background: #e2e8f0; }
 .demo-nav-link:focus-visible, .demo-nav-all:focus-visible { outline: 2px solid #2563eb; outline-offset: 2px; }
 .demo-nav-link.next { align-items: flex-end; text-align: right; }
+/* "Report an issue or send feedback" under the previous / next links */
+.demo-feedback { margin: 12px 0 0; text-align: center; font-size: 13px; color: #4b5563; }
+.demo-feedback a { color: #2563eb; text-decoration: underline; }
 .demo-nav-dir { font-size: 13px; font-weight: 600; color: #2563eb; }
 .demo-nav-title { font-size: 14px; }
 
