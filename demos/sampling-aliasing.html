@@ -29,7 +29,7 @@
   <div class="panel panel--static">
   <h1 class="title-lg mb-4">Sampling and Aliasing</h1>
   <p>Sampling a signal <span class="m" data-tex="x(t)">x(t)</span> every <span class="m" data-tex="T_s=1/F_s">T<sub>s</sub> = 1/F<sub>s</sub></span> seconds keeps only the values <span class="m" data-tex="x[n]=x(nT_s)">x[n] = x(nT<sub>s</sub>)</span>. In frequency, sampling makes copies of the spectrum at every multiple of <span class="m" data-tex="F_s">F<sub>s</sub></span>. An ideal reconstruction filter keeps only the band from <span class="m" data-tex="-F_s/2">&minus;F<sub>s</sub>/2</span> to <span class="m" data-tex="F_s/2">F<sub>s</sub>/2</span>. If the signal fits inside that band, it comes back unchanged. If it does not, a copy lands in the band instead and the samples look like a lower frequency: <strong>aliasing</strong>. The sampling theorem says a sinusoid at <span class="m" data-tex="f_0">f<sub>0</sub></span> is recovered when <span class="m" data-tex="F_s&gt;2f_0">F<sub>s</sub> &gt; 2f<sub>0</sub></span>.</p>
-  <p class="mb-4"><strong>Try it:</strong> start with <span class="m" data-tex="f_0=3\ \text{Hz}">f<sub>0</sub> = 3 Hz</span>: the samples trace the signal and the reconstruction (blue) lies on top of it. Press Sweep. Once <span class="m" data-tex="f_0">f<sub>0</sub></span> passes <span class="m" data-tex="F_s/2=10\ \text{Hz}">F<sub>s</sub>/2 = 10 Hz</span>, the reconstruction shows a lower frequency than the signal: in the spectrum, a copy has entered the shaded band. As the sweep goes on, the apparent frequency in the readout falls back to 0 at <span class="m" data-tex="f_0=F_s=20\ \text{Hz}">f<sub>0</sub> = F<sub>s</sub> = 20 Hz</span> (where every sample has the same value), then climbs again. Then set <span class="m" data-tex="f_0=8\ \text{Hz}">f<sub>0</sub> = 8 Hz</span>, move <span class="m" data-tex="F_s">F<sub>s</sub></span> to its lowest value and press Sweep <span class="m" data-tex="F_s">F<sub>s</sub></span>: the band widens, and the aliasing stops once <span class="m" data-tex="F_s&gt;2f_0=16\ \text{Hz}">F<sub>s</sub> &gt; 2f<sub>0</sub> = 16 Hz</span>. To look closely at the samples or the spectrum lines, zoom into either plot (Ctrl + scroll or pinch, drag to pan, double-click to reset).</p>
+  <p class="mb-4"><strong>Try it:</strong> start with <span class="m" data-tex="f_0=3\ \text{Hz}">f<sub>0</sub> = 3 Hz</span>: the samples trace the signal and the reconstruction (blue) lies on top of it. Press Sweep. Once <span class="m" data-tex="f_0">f<sub>0</sub></span> passes <span class="m" data-tex="F_s/2=10\ \text{Hz}">F<sub>s</sub>/2 = 10 Hz</span>, the reconstruction shows a lower frequency than the signal: in the spectrum, a copy has entered the shaded band. As the sweep goes on, the apparent frequency in the readout falls back to 0 at <span class="m" data-tex="f_0=F_s=20\ \text{Hz}">f<sub>0</sub> = F<sub>s</sub> = 20 Hz</span> (where every sample has the same value), then climbs again. Then set <span class="m" data-tex="f_0=8\ \text{Hz}">f<sub>0</sub> = 8 Hz</span>, move <span class="m" data-tex="F_s">F<sub>s</sub></span> to its lowest value and press Sweep <span class="m" data-tex="F_s">F<sub>s</sub></span>: the band widens, and the aliasing stops once <span class="m" data-tex="F_s&gt;2f_0=16\ \text{Hz}">F<sub>s</sub> &gt; 2f<sub>0</sub> = 16 Hz</span>. To hear it, tick "Play the sweeps too" and sweep <span class="m" data-tex="f_0">f<sub>0</sub></span> again (everything plays 200 times faster): the pitch rises, then falls once <span class="m" data-tex="f_0">f<sub>0</sub></span> passes <span class="m" data-tex="F_s/2">F<sub>s</sub>/2</span>, even though the slider keeps moving up. To look closely at the samples or the spectrum lines, zoom into either plot (Ctrl + scroll or pinch, drag to pan, double-click to reset).</p>
   <div class="predict">
     <h2 class="predict-title">Predict, then check</h2>
     <details><summary>With <span class="m" data-tex="F_s=20\ \text{Hz}">F<sub>s</sub> = 20 Hz</span>, a 13 Hz cosine is sampled. What frequency does the reconstruction show?</summary><p>7 Hz. 13 Hz is 3 Hz above the Nyquist frequency of 10 Hz, so it folds back to 10 &minus; 3 = 7 Hz (equivalently, <span class="m" data-tex="|13-20|=7">|13 &minus; 20| = 7</span>).</p></details>
@@ -57,6 +57,17 @@
         <button class="btn btn-primary sweep-btn" id="btnSweepFs" type="button">&#9654;&#xFE0E; Sweep F&#8347;</button>
       </div>
       <input id="fs" type="range" min="2" max="40" step="0.5" value="20"/>
+    </div>
+  </div>
+
+  <div class="controls" style="grid-template-columns:minmax(0,1fr)">   <!-- one full-width box -->
+    <div class="control">
+      <label>Sound <span class="probe-note" id="soundNote"></span></label>
+      <div class="actions" style="flex-wrap:wrap;align-items:center">
+        <button class="chip" id="btnPlayX" type="button">&#9654;&#xFE0E; Play the original</button>
+        <button class="chip" id="btnPlayY" type="button">&#9654;&#xFE0E; Play the reconstruction</button>
+        <label style="margin:0;font-weight:400;font-size:14px"><input type="checkbox" id="sweepSound"/> Play the sweeps too</label>
+      </div>
     </div>
   </div>
 
@@ -269,7 +280,46 @@
     }
     const lm = el('liveMath');
     if (!renderTeX(lm, String.raw`\begin{gathered}` + tex + String.raw`\end{gathered}`, true)) lm.textContent = txt;
+    soundNote();
   }
+
+  // ---------- Sound: the same signals played 200 times faster (3 Hz -> 600 Hz, Fs = 20 Hz -> 4 kHz) ----------
+  // The original tone (orig = true) or the ideal reconstruction from its samples, a tone at the apparent
+  // (folded) frequency. f0 and Fs may change linearly in time (for the sweeps): f0(t) = fA + kf t,
+  // Fs(t) = FsA + kF t (demo units).
+  const SPEED = 200, VOL = 0.2;
+  let AC = null, src = null;
+  const ensureAC = () => AC || (AC = new (window.AudioContext || window.webkitAudioContext)());
+  function stopAudio(){ if (src){ try { src.stop(); } catch (e) { /* already stopped */ } src = null; } }
+  function synth(D, {fA, kf = 0, FsA, kF = 0}, phi, orig = false){
+    const R = ensureAC().sampleRate, n = Math.max(1, Math.round(D * R)), out = new Float32Array(n);
+    let ph = phi;
+    for (let i = 0; i < n; i++){
+      const t = i / R;
+      out[i] = Math.cos(ph);                            // phase kept continuous as the frequency changes
+      ph += TWO_PI * SPEED * (orig ? fA + kf * t : apparent(fA + kf * t, FsA + kF * t)) / R;
+    }
+    const fade = Math.min(n >> 1, Math.round(0.02 * R));   // 20 ms fades, no clicks
+    for (let i = 0; i < fade; i++){ const g = i / fade; out[i] *= g; out[n - 1 - i] *= g; }
+    return out;
+  }
+  async function play(samples){
+    const ac = ensureAC();
+    try { await ac.resume(); } catch (e) { /* ignore */ }
+    stopAudio();
+    const buf = ac.createBuffer(1, samples.length, ac.sampleRate), d = buf.getChannelData(0);
+    for (let i = 0; i < samples.length; i++) d[i] = VOL * samples[i];
+    src = ac.createBufferSource(); src.buffer = buf; src.connect(ac.destination);
+    src.onended = () => { src = null; };
+    src.start();
+  }
+  const phiNow = () => elSig.value === 'sin' ? -Math.PI / 2 : 0;
+  function soundNote(){
+    const f0 = parseFloat(elF0.value), Fs = parseFloat(elFs.value), hz = (v) => v >= 1000 ? (v / 1000).toFixed(1) + ' kHz' : v.toFixed(0) + ' Hz';
+    el('soundNote').textContent = `(played 200 times faster: a ${hz(f0 * SPEED)} tone sampled at ${hz(Fs * SPEED)} comes back as ${hz(apparent(f0, Fs) * SPEED)})`;
+  }
+  el('btnPlayX').addEventListener('click', () => { stopSweep(); play(synth(2, {fA: parseFloat(elF0.value), FsA: parseFloat(elFs.value)}, phiNow(), true)); });
+  el('btnPlayY').addEventListener('click', () => { stopSweep(); play(synth(2, {fA: parseFloat(elF0.value), FsA: parseFloat(elFs.value)}, phiNow())); });
 
   // ---------- Sweeps of f0 and Fs (one at a time; dragging a slider stops it) ----------
   // Each sweep runs from the slider's current value to its top (from the bottom if already at the top).
@@ -281,7 +331,14 @@
   function stopSweep(){
     if (raf) cancelAnimationFrame(raf);
     if (active) active.btn.innerHTML = active.label;
+    if (active) stopAudio();                          // a sweep's sound ends with it
     raf = null; active = null;
+  }
+  // the sound of a sweep, from the current value to the top of the slider, at the sweep's rate
+  function sweepSound(s, from){
+    const D = (parseFloat(s.slider.max) - from) / s.rate;
+    const p = s.slider === elF0 ? {fA: from, kf: s.rate, FsA: parseFloat(elFs.value)} : {fA: parseFloat(elF0.value), FsA: from, kF: s.rate};
+    play(synth(D, p, phiNow()));
   }
   function step(ts){
     const s = active, hi = parseFloat(s.slider.max), stepSize = parseFloat(s.slider.step);
@@ -301,13 +358,15 @@
       val = parseFloat(s.slider.value);
       if (val >= parseFloat(s.slider.max)) val = parseFloat(s.slider.min);
       active = s; lastTs = 0; s.btn.innerHTML = '&#10074;&#10074;&#xFE0E; Pause';
+      if (el('sweepSound').checked) sweepSound(s, val);
       raf = requestAnimationFrame(step);
     });
   }
 
   // listeners
-  elF0.addEventListener('input', () => { if (active && active.slider === elF0) stopSweep(); drawAll(); });
-  elFs.addEventListener('input', () => { if (active && active.slider === elFs) stopSweep(); drawAll(); });
+  // moving a slider by hand stops its sweep, and any sound (it no longer matches the settings)
+  elF0.addEventListener('input', () => { if (active && active.slider === elF0) stopSweep(); stopAudio(); drawAll(); });
+  elFs.addEventListener('input', () => { if (active && active.slider === elFs) stopSweep(); stopAudio(); drawAll(); });
   elSig.addEventListener('change', drawAll);
   window.addEventListener('resize', drawAll);
 
