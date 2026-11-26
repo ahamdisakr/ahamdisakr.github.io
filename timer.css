@@ -33,13 +33,39 @@ html:-webkit-full-screen header a { pointer-events: none; }
 .bc-zone { font-size: .8rem; color: #6b7280; margin-top: .35rem; }
 @media (prefers-reduced-motion: reduce) { .bc-colon { animation: none; } }
 
+/* ---- Header tools (fullscreen, keep awake) next to the Clock / Timer switch ---- */
+.toggle-group { flex-wrap: wrap; row-gap: .5rem; }
+.mode-toggle { display: inline-flex; align-items: center; gap: .75rem; white-space: nowrap; }   /* Clock / switch / Timer stay together */
+.header-tools { display: inline-flex; align-items: center; gap: .75rem; margin-left: .25rem; padding-left: 1rem; border-left: 1px solid #e5e7eb; }
+.header-tools .btn { padding: .35rem .8rem; font-size: .9rem; }
+@media (max-width: 640px) { .header-tools { margin-left: 0; padding-left: 0; border-left: 0; } }
+
+/* ---- Timer layout: phones stack everything; wide screens put the buttons left of the digits and
+   the lengths in one row under them ---- */
+.timer-layout { display: grid; grid-template-columns: minmax(0, 1fr); grid-template-areas: "disp" "msg" "acts" "pre" "man"; }
+.timer-layout > .tdisp-wrap { grid-area: disp; }
+.timer-layout > .timer-msg { grid-area: msg; }
+.timer-layout > .timer-actions { grid-area: acts; }
+.timer-layout > .preset-row { grid-area: pre; }
+.timer-layout > .manual-row { grid-area: man; }
+@media (min-width: 900px) {
+  .timer-layout { grid-template-columns: auto minmax(0, 1fr); grid-template-areas: "acts disp" "acts pre" "acts msg" "man man"; column-gap: 1.25rem; align-items: center; }
+  .timer-layout > .timer-actions { flex-direction: column; flex-wrap: nowrap; width: 6rem; gap: .5rem; margin: 0; }
+  .timer-layout > .timer-actions .btn { width: 100%; justify-content: center; padding-inline: .5rem; }
+  .timer-layout > .preset-row { margin-top: .25rem; }
+}
+
 /* ---- Countdown display ---- */
-.tdisp { display: grid; grid-template-columns: auto auto auto auto auto; justify-content: center; align-items: center; column-gap: clamp(.4rem, 2vw, 1.5rem); row-gap: .5rem; margin: 1rem 0 .75rem; }
-.tile { position: relative; display: flex; align-items: center; justify-content: center; width: clamp(4rem, 19vw, 15rem); aspect-ratio: 4 / 3; background: #f8fafc; border: 1px solid #e5e7eb; border-radius: 1.25rem; box-shadow: inset 0 2px 6px rgba(15,23,42,.06), 0 4px 12px rgba(15,23,42,.06); overflow: hidden; }
-.tile span { font-size: clamp(2.5rem, 11vw, 8rem); font-weight: 700; line-height: 1; font-variant-numeric: tabular-nums; color: #1f2937; transition: color .3s ease; }
+/* The tiles fill the width they are given (the middle column): --tw is one tile's width, and the digits,
+   colons and gaps scale with it. 5rem leaves room for the two colons and the four gaps. */
+.tdisp-wrap { container-type: inline-size; }
+.tdisp { --tw: clamp(4rem, 19vw, 15rem); display: grid; grid-template-columns: auto auto auto auto auto; justify-content: center; align-items: center; column-gap: .75rem; row-gap: .5rem; margin: 1rem 0 .75rem; }
+@supports (width: 1cqw) { .tdisp { --tw: clamp(3.5rem, calc((100cqw - 5rem) / 3), 15rem); } }
+.tile { position: relative; display: flex; align-items: center; justify-content: center; width: var(--tw); aspect-ratio: 4 / 3; background: #f8fafc; border: 1px solid #e5e7eb; border-radius: 1.25rem; box-shadow: inset 0 2px 6px rgba(15,23,42,.06), 0 4px 12px rgba(15,23,42,.06); overflow: hidden; }
+.tile span { font-size: calc(var(--tw) * .53); font-weight: 700; line-height: 1; font-variant-numeric: tabular-nums; color: #1f2937; transition: color .3s ease; }
 .tlabel { text-align: center; font-size: .75rem; letter-spacing: .08em; text-transform: uppercase; color: #6b7280; }
-.colon { display: flex; flex-direction: column; gap: clamp(.6rem, 2.5vw, 1.6rem); }
-.colon i { display: block; width: clamp(.5rem, 1.6vw, 1rem); height: clamp(.5rem, 1.6vw, 1rem); border-radius: 9999px; background: #9ca3af; }
+.colon { display: flex; flex-direction: column; gap: calc(var(--tw) * .1); }
+.colon i { display: block; width: calc(var(--tw) * .066); height: calc(var(--tw) * .066); border-radius: 9999px; background: #9ca3af; }
 .tdisp[data-state="warn"] .tile span { color: #d97706; }
 .tdisp[data-state="danger"] .tile span, .tdisp[data-state="done"] .tile span { color: #dc2626; }
 .tdisp[data-state="done"] .tile { animation: tblink 1s ease-in-out infinite; }

@@ -31,10 +31,25 @@
                     <div class="toggle-group">
                         <span class="chip" id="nowChip" hidden></span>
                         <span class="chip" id="bgChip" hidden></span>
-                        <span class="mode-label" id="lblClock" data-active="true">Clock</span>
-                        <button type="button" class="switch" id="modeSwitch" role="switch" aria-checked="false"
-                            aria-label="Switch between clock and countdown timer"><span class="knob"></span></button>
-                        <span class="mode-label" id="lblTimer" data-active="false">Timer</span>
+                        <span class="mode-toggle">
+                            <span class="mode-label" id="lblClock" data-active="true">Clock</span>
+                            <button type="button" class="switch" id="modeSwitch" role="switch" aria-checked="false"
+                                aria-label="Switch between clock and countdown timer"><span class="knob"></span></button>
+                            <span class="mode-label" id="lblTimer" data-active="false">Timer</span>
+                        </span>
+                        <!-- tools in the header, so the card stays short and the notes stay in view -->
+                        <span class="header-tools">
+                            <button id="fsBtn" type="button" class="btn btn-primary">
+                                <span id="fsEnter"><i data-feather="maximize-2" class="icon-4"></i></span>
+                                <span id="fsExit" hidden><i data-feather="minimize-2" class="icon-4"></i></span>
+                                <span id="fsLabel">Fullscreen</span>
+                            </button>
+                            <span class="awake-toggle">
+                                <button type="button" class="switch" id="awakeSwitch" role="switch" aria-checked="true"
+                                    aria-label="Keep screen awake"><span class="knob"></span></button>
+                                <span class="text-sm text-soft nowrap">Keep awake</span>
+                            </span>
+                        </span>
                     </div>
                 </div>
 
@@ -53,6 +68,9 @@
 
                 <!-- Countdown timer view -->
                 <div id="timerView" class="view is-off" aria-hidden="true" inert>
+                    <!-- wide screens: buttons on the left, lengths on the right; phones: stacked -->
+                    <div class="timer-layout">
+                    <div class="tdisp-wrap">
                     <div class="tdisp" id="timerDisplay" role="timer" aria-label="Countdown timer" data-state="">
                         <div class="tile"><span id="tH">01</span></div>
                         <div class="colon" aria-hidden="true"><i></i><i></i></div>
@@ -62,6 +80,7 @@
                         <div class="tlabel">Hours</div><div></div>
                         <div class="tlabel">Minutes</div><div></div>
                         <div class="tlabel">Seconds</div>
+                    </div>
                     </div>
 
                     <p class="timer-msg" id="timerMsg" role="status"
@@ -98,23 +117,10 @@
                         <span class="colon-sep" aria-hidden="true">:</span>
                         <label class="mlab">Seconds<input class="minput" id="mS" type="number" min="0" max="59" value="0" inputmode="numeric" /></label>
                     </div>
+                    </div>
+                    <!-- /timer-layout -->
                 </div>
                 <!-- /Countdown timer view -->
-                </div>
-
-
-                <div class="timer-tools">
-                    <button id="fsBtn" type="button"
-                        class="btn btn-primary">
-                        <span id="fsEnter"><i data-feather="maximize-2"></i></span>
-                        <span id="fsExit" hidden><i data-feather="minimize-2"></i></span>
-                        <span id="fsLabel">Fullscreen</span>
-                    </button>
-                    <div class="awake-toggle">
-                        <button type="button" class="switch" id="awakeSwitch" role="switch" aria-checked="true"
-                            aria-label="Keep screen awake"><span class="knob"></span></button>
-                        <span class="text-sm text-soft nowrap">Keep screen awake</span>
-                    </div>
                 </div>
             </div>
 
